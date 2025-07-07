@@ -1,0 +1,8 @@
+path: path/to/dataset/root
+train: path/to/train/images
+val: path/to/val/images
+nc: 3
+names:
+  0: FT
+  1: Engine
+  2: Solar Panel

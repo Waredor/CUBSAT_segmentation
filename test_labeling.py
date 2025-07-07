@@ -1,50 +1,45 @@
 import os
 from PIL import Image, ImageDraw
+import json
 
 # Настройки классов и цветов
-CLASS_NAMES = {0: "Engine", 1: "FT", 2: "Solar Panel"}
+CLASS_NAMES = {"FT": 0, "Engine": 1, "Solar Panel": 2}
 CLASS_COLORS = {
-    0: (255, 0, 0),    # Красный для Engine
-    1: (0, 255, 0),    # Зеленый для FT
+    0: (0, 255, 0),    # Зеленый для FT
+    1: (255, 0, 0),    # Красный для Engine
     2: (0, 0, 255)     # Синий для Solar Panel
 }
 
 # Ручное указание путей (измените эти строки при необходимости)
-image_path = "D:/Python projects/CUBSAT_dataset_segmentation/0441.tif"
-annotation_path = "D:/Python projects/CUBSAT_dataset_segmentation/labels/0441.txt"
-output_path = "D:/Python projects/CUBSAT_dataset_segmentation/test_output/0441.png"
+image_path = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/0026.tif"
+annotation_path = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/0026.json"
+output_path = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/test_output/0026.png"
 
 def read_yolo_annotations(annotation_path):
-    """Читает YOLO аннотации из файла .txt."""
-    annotations = []
+    """Читает LabelMe аннотации из файла .json"""
     if not os.path.exists(annotation_path):
         print(f"⚠ Файл аннотаций {annotation_path} не найден.")
-        return annotations
-
-    with open(annotation_path, "r") as f:
-        for line in f:
-            parts = line.strip().split()
-            if len(parts) < 5:  # Минимум: class_id + bbox (4 значения)
-                continue
-            try:
-                class_id = int(parts[0])
-                x_center, y_center, width, height = map(float, parts[1:5])
-                # Чтение полигона без преобразований
+        return None
+    else:
+        with open(annotation_path) as f:
+            data = json.load(f)
+            annotations = []
+            shapes = data['shapes']
+            for el in shapes:
+                class_name = el['label']
+                points = el['points']
                 polygon = []
-                for i in range(5, len(parts), 2):
-                    if i + 1 < len(parts):
-                        x, y = float(parts[i]), float(parts[i + 1])
-                        polygon.append((x, y))
-                if polygon or len(parts) == 5:  # Поддержка как с полигоном, так и без
-                    annotations.append({
-                        "class_id": class_id,
-                        "bbox": (x_center, y_center, width, height),
-                        "polygon": polygon
-                    })
-            except (ValueError, IndexError) as e:
-                print(f"⚠ Ошибка при парсинге строки в {annotation_path}: {e}")
-                continue
-    return annotations
+                class_id = CLASS_NAMES[class_name]
+
+                for el in points:
+                    polygon.append((el[0], el[1]))
+
+                annotations.append({
+                    "class_id": class_id,
+                    "polygon": polygon
+                })
+
+        return annotations
 
 def draw_masks(image_path, annotation_path, output_path):
     """Отрисовывает маски на изображении без преобразований."""
@@ -75,9 +70,6 @@ def draw_masks(image_path, annotation_path, output_path):
         img.save(output_path)
         return
 
-    # Размеры изображения
-    img_width, img_height = img.size
-
     # Отрисовка масок и bounding box
     for ann in annotations:
         class_id = ann["class_id"]
@@ -86,21 +78,8 @@ def draw_masks(image_path, annotation_path, output_path):
 
         # Денормализация координат полигона
         if polygon and len(polygon) >= 2:
-            denorm_polygon = [(x * img_width, y * img_height) for x, y in polygon]
             # Отрисовка полигона с заливкой
-            draw.polygon(denorm_polygon, fill=color + (128,))
-
-        # Отрисовка bounding box
-        x_center, y_center, width, height = ann["bbox"]
-        x1 = max(0, (x_center - width / 2) * img_width)
-        y1 = max(0, (y_center - height / 2) * img_height)
-        x2 = min(img_width, (x_center + width / 2) * img_width)
-        y2 = min(img_height, (y_center + height / 2) * img_height)
-        draw.rectangle([x1, y1, x2, y2], outline=color + (255,), width=2)
-
-        # Добавление текста с названием класса
-        class_name = CLASS_NAMES.get(class_id, f"Class {class_id}")
-        draw.text((x1 + 4, y1 + 4), class_name, fill=color + (255,))
+            draw.polygon(polygon, fill=color + (128,))
 
     # Наложение маски на изображение
     result = Image.alpha_composite(img, mask_layer)
