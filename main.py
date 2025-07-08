@@ -2,16 +2,16 @@ from ultralytics import YOLO
 
 # Create YOLOv11n model for instance segmentation
 model_cfg = "Model_cfg/yolo11n-seg.yaml"
-data_cfg = "Data/cubsat.yaml"
+data_cfg = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/Fine_tuning/dataset.yaml"
 model = YOLO(model_cfg)
 
 # Training model
 model.train(data=data_cfg,
             epochs=50,
             imgsz=640,
-            batch=16,
+            batch=4,
             patience=30,
-            device=0
+            device="cpu"
 )
 
 # Validation

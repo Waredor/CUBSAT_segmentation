@@ -4,15 +4,15 @@ import glob
 from PIL import Image
 
 # === ПАРАМЕТРЫ ===
-LABELME_DIR = "./labelme_json"         # Папка с JSON и изображениями
-YOLO_LABELS_DIR = "./yolo_labels"      # Куда сохранить YOLO .txt файлы
+LABELME_DIR = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/" # Папка с JSON и изображениями
+YOLO_LABELS_DIR = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/Fine_tuning/labels/train/"      # Куда сохранить YOLO .txt файлы
 
 # === СЛОВАРЬ КЛАССОВ ===
 # Названия классов должны точно соответствовать тем, что в JSON (регистр важен!)
 class_map = {
-    'cat': 0,
-    'dog': 1,
-    'car': 2
+    'FT': 0,
+    'Engine': 1,
+    'Solar Panel': 2
 }
 
 # === ПОДГОТОВКА ===
