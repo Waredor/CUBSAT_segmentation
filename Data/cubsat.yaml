@@ -1,8 +1,5 @@
-path: path/to/dataset/root
-train: path/to/train/images
-val: path/to/val/images
+path: "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/Fine_tuning/"
+train: images/train
+val: images/val
 nc: 3
-names:
-  0: FT
-  1: Engine
-  2: Solar Panel
+names: ["FT", "Engine", "Solar Panel"]

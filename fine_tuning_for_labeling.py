@@ -9,7 +9,7 @@ import torch
 
 # 1. Настройка путей и параметров
 DATASET_PATH = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/Fine_tuning/"  # Укажите путь к вашему датасету
-MODEL_PATH = "Model_cfg/yolo11n-seg.pt"  # Предобученная модель YOLOv11n для сегментации
+MODEL_PATH = "Model_cfg/yolo11n-seg_labeling.pt"  # Предобученная модель YOLOv11n для сегментации аннотаций
 OUTPUT_DIR = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/"  # Папка для сохранения аннотаций LabelMe
 NUM_CLASSES = 3  # Количество классов в вашем датасете
 CLASS_NAMES = ["FT", "Engine", "Solar Panel"]  # Названия классов

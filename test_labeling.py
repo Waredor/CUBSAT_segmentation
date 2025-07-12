@@ -11,9 +11,9 @@ CLASS_COLORS = {
 }
 
 # Ручное указание путей (измените эти строки при необходимости)
-image_path = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/0026.tif"
-annotation_path = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/0026.json"
-output_path = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/test_output/0026.png"
+image_path = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/0250.tif"
+annotation_path = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/0250.json"
+output_path = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/test_output/0250.png"
 
 def read_yolo_annotations(annotation_path):
     """Читает LabelMe аннотации из файла .json"""

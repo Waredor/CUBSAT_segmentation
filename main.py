@@ -1,31 +1,28 @@
+from utils import Pipeline
 from ultralytics import YOLO
 
-# Create YOLOv11n model for instance segmentation
-model_cfg = "Model_cfg/yolo11n-seg.yaml"
-data_cfg = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/Fine_tuning/dataset.yaml"
-model = YOLO(model_cfg)
+# Hyperparameters and configs
+model_cfg = "Model_cfg/model_cfg.json" # параметры модели для обучения
+data_cfg = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/Fine_tuning/dataset.yaml" # конфигурация датасета
+data_path = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/Fine_tuning/"
+output_path = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/Fine_tuning/images/test/"
+model_path = "Model_cfg/yolo11n-seg.pt"
+model_output_path = "Model_cfg/"
+class_names = ["FT", "Engine", "Solar Panel"]
 
-# Training model
-model.train(data=data_cfg,
-            epochs=50,
-            imgsz=640,
-            batch=4,
-            patience=30,
-            device="cpu"
+#model = YOLO(model_path)
+#modules = list(model.model.modules())
+#for module in modules:
+    #print(module)
+
+
+
+labeling_pipeline = Pipeline(
+    model_hyperparameters=model_cfg,
+    data_cfg=data_cfg,
+    data_dir=data_path,
+    output_dir=output_path,
+    model_cfg=model_path,
 )
 
-# Validation
-metrics = model.val()
-print(f"mAP50-95 (masks): {metrics.seg.map}")
-
-# Inference
-results = model.predict("path/to/image.jpg", save=True)
-
-# Results processing
-for result in results:
-    # Masks and BBoxes
-    masks = result.masks.xy
-    boxes = result.boxes.xyxy
-    classes = result.boxes.cls
-    for mask, box, cls in zip(masks, boxes, classes):
-        print(f"Class: {cls}, Box: {box}, Mask: {mask}")
+labeling_pipeline.fine_tune_for_labeling(model_output_path)
