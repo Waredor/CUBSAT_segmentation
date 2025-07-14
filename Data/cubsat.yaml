@@ -1,5 +1,0 @@
-path: "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/Fine_tuning/"
-train: images/train
-val: images/val
-nc: 3
-names: ["FT", "Engine", "Solar Panel"]
