@@ -403,23 +403,6 @@ class InferenceRunner:
                 print(f"Нет объектов в {image_path}")
 
 
-class ModelSaver:
-    """
-    Класс ModelSaver осуществляет сохранение модели после обучения в формате .pt.
-    Parameters:
-        model (torch.nn.Module): обученная модель для сохранения.
-    """
-    def __init__(self, model: torch.nn.Module) -> None:
-        self.model = model
-
-    def save_model(self, model_output_dir: str) -> None:
-        """
-        Метод save_model() осуществляет сохранение модели в выбранной директории.
-        Parameters:
-            model_output_dir (str): путь к директории для сохранения обученной модели
-        """
-        self.model.save(model_output_dir)
-
 class Pipeline:
     """
     Класс Pipeline предназначен для автоматизации процессов сбора, обработки и аугментации данных,
@@ -457,10 +440,7 @@ class Pipeline:
             model_output_dir (str): путь к директории для сохранения модели.
         """
         self.model = self.model_trainer.train_model()
-        model_saver = ModelSaver(
-            model = self.model
-        )
-        model_saver.save_model(model_output_dir)
+        self.model.save(model_output_dir)
 
 
     def create_new_json_annotations(self, test_images_dir: str, annotations_output_dir: str) -> None:
