@@ -97,6 +97,10 @@ class ConfigManager:
                 if json_dict[key] < 0:
                     raise ValueError(f"Значение, получаемое из .json файла по ключу {key} отрицательное")
 
+            elif key == "device":
+                    if json_dict[key] not in [0, "cpu"]:
+                        raise ValueError(f"неверное значение из .json, получаемое по ключу {key}"
+                                         f"expected: {[0, 'cpu']}, got: {json_dict[key]}")
 
     def _check_yaml_file(self, yaml_dict) -> None:
         """
