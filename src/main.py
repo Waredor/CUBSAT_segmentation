@@ -33,5 +33,5 @@ if __name__ == '__main__':
 
     #labeling_pipeline.convert_labelme_to_yolo(
         #labelme_annotations_path=labelme_input_labels_path,
-        #yolo_annotations_path=yolo_convert_labels_path,
+        #yolo_annotations_path=yolo_convert_labels_path
     #)
