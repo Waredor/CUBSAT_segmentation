@@ -1,14 +1,14 @@
-import torch
+from pathlib import Path
 import os
+import logging
+import glob
 import base64
 import json
+import torch
 import cv2
 import numpy as np
-import glob
 import yaml
-import logging
 import ultralytics
-from pathlib import Path
 from PIL import Image
 
 
@@ -56,16 +56,22 @@ class ConfigManager:
 
     def _validate_path(self, el: str, is_file: bool, is_dir: bool, extensions: list) -> None:
         """
-        Вспомогательный метод _validate_path() проверяет корректность путей к файлу/директории и расширение файла.
+        Вспомогательный метод _validate_path() проверяет корректность путей
+        к файлу/директории и расширение файла.
         Parameters:
             el (str): проверяемый путь
-            is_file (bool): флаг, отвечающий за то, является ли данный путь путем к файлу
-            is_dir (bool): флаг, отвечающий за то, является ли данный путь путем к директории
-            extensions (list): список с расширениями файла (если это путь к директории, то расширение - список с пустой строкой
-            в качестве единственного элемента)
+            is_file (bool): флаг, отвечающий за то,
+                является ли данный путь путем к файлу
+            is_dir (bool): флаг, отвечающий за то,
+                является ли данный путь путем к директории
+            extensions (list): список с расширениями файла
+                (если это путь к директории, то расширение - список с пустой строкой
+                в качестве единственного элемента)
         Raises:
-            NotADirectoryError: если путь, указанный как путь к директории, не является таковым
-            FileNotFoundError: если путь, указанный как путь к файлу, не является таковым
+            NotADirectoryError: если путь, указанный как путь к директории,
+                не является таковым
+            FileNotFoundError: если путь, указанный как путь к файлу,
+                не является таковым
             ValueError: если файл имеет неверное расширение
         """
         if is_dir:
@@ -78,23 +84,25 @@ class ConfigManager:
                 self.logger.error(f'{el} не является путем к файлу')
                 raise FileNotFoundError(f'{el} не является путем к файлу')
 
-            else:
-                if not Path(el).suffix in extensions:
-                    self.logger.error(f'{el} имеет неверное расширение файла')
-                    raise ValueError(f'{el} имеет неверное расширение файла')
+            if not Path(el).suffix in extensions:
+                self.logger.error(f'{el} имеет неверное расширение файла')
+                raise ValueError(f'{el} имеет неверное расширение файла')
 
 
     def _check_json_file(self, json_dict) -> None:
         """
         Вспомогательный метод _check_json_file() осуществляет проверку .json файла
-        с гиперпараметрами модели для обучения. Если обнаружены несоответствия типов данных значений словаря
-        с ожидаемыми типами данных, либо какие-то из пар ключ-значение отсутствуют - метод вызывает ошибку.
+        с гиперпараметрами модели для обучения.
+        Если обнаружены несоответствия типов данных значений словаря
+        с ожидаемыми типами данных, либо какие-то из пар ключ-значение
+        отсутствуют - метод вызывает ошибку.
         Parameters:
             json_dict (dict): словарь с именами и значениями гиперпараметров.
         Raises:
             KeyError: если в файле нет требуемого ключа.
             ValueError: если значение, получаемое по ключу отрицательное или None.
-            TypeError: если тип значения, получаемого по ключу, не соответствует требуемому.
+            TypeError: если тип значения, получаемого по ключу,
+                не соответствует требуемому.
         """
         json_metadata = {"epochs": [int],
                     "imgsz": [int],
@@ -106,44 +114,53 @@ class ConfigManager:
                     "freeze_layers": [int]
                     }
 
-        for key in json_metadata.keys():
+        for key, value in json_metadata.items():
             if key not in json_dict.keys():
                 self.logger.error(f"в .json файле гиперпараметров модели нет ключа {key}")
                 raise KeyError(f"в .json файле гиперпараметров модели нет ключа {key}")
 
-            elif json_dict[key] is None:
+            if json_dict[key] is None:
                 self.logger.error(f"Значение, получаемое из .json по ключу {key} None")
                 raise ValueError(f"Значение, получаемое из .json по ключу {key} None")
 
-            elif type(json_dict[key]) not in json_metadata[key]:
-                self.logger.error(f"Тип значения, получаемого из .json по ключу {key}, не соответствует требуемому типу"
-                                f"(expected: {json_metadata[key]}, got: {type(json_dict[key])})")
-                raise TypeError(f"Тип значения, получаемого из .json по ключу {key}, не соответствует требуемому типу"
-                                f"(expected: {json_metadata[key]}, got: {type(json_dict[key])})")
+            if type(json_dict[key]) not in value:
+                self.logger.error(f"Тип значения, получаемого из .json по ключу {key}, "
+                                  f"не соответствует требуемому типу"
+                                f"(expected: {value}, got: {type(json_dict[key])})")
+                raise TypeError(f"Тип значения, получаемого из .json по ключу {key}, "
+                                f"не соответствует требуемому типу"
+                                f"(expected: {value}, got: {type(json_dict[key])})")
 
-            elif json_metadata[key] == [int] or json_metadata[key] == [float]:
+            if value in ([int], [float]):
                 if json_dict[key] < 0:
-                    self.logger.error(f"Значение, получаемое из .json файла по ключу {key} отрицательное")
-                    raise ValueError(f"Значение, получаемое из .json файла по ключу {key} отрицательное")
+                    self.logger.error(f"Значение, получаемое из .json файла "
+                                      f"по ключу {key} отрицательное")
+                    raise ValueError(f"Значение, получаемое из .json файла "
+                                     f"по ключу {key} отрицательное")
 
-            elif key == "device":
+            if key == "device":
                 if json_dict[key] not in [0, "cpu"]:
-                    self.logger.error(f"неверное значение из .json, получаемое по ключу {key}"
+                    self.logger.error(f"Неверное значение из .json, получаемое по ключу {key}"
                                       f"expected: {[0, 'cpu']}, got: {json_dict[key]}")
-                    raise ValueError(f"неверное значение из .json, получаемое по ключу {key}"
+                    raise ValueError(f"Неверное значение из .json, получаемое по ключу {key}"
                                      f"expected: {[0, 'cpu']}, got: {json_dict[key]}")
 
 
     def _check_yaml_file(self, yaml_dict) -> None:
         """
-        Вспомогательный метод _check_yaml_file() осуществляет проверку .yaml файла конфигурации датасета на корректность.
+        Вспомогательный метод _check_yaml_file() осуществляет проверку .yaml файла
+        конфигурации датасета на корректность.
         Parameters:
-            yaml_dict (dict): словарь, полученный при открытии .yaml файла через .yaml.safe_load().
+            yaml_dict (dict): словарь, полученный при открытии .yaml файла
+                через .yaml.safe_load().
         Raises:
             KeyError: если в файле нет требуемого ключа.
-            ValueError: если значение, получаемое по ключу отрицательное, является пустой строкой или None.
-            TypeError: если тип значения, получаемого по ключу, не соответствует требуемому.
-            NotADirectoryError: если путь к директории не существует или этот путь не является путем к дирректории.
+            ValueError: если значение, получаемое по ключу отрицательное,
+                является пустой строкой или None.
+            TypeError: если тип значения, получаемого по ключу,
+                не соответствует требуемому.
+            NotADirectoryError: если путь к директории не существует или этот путь
+                не является путем к дирректории.
         """
         yaml_metadata = {"path": str,
                     "train": str,
@@ -152,60 +169,71 @@ class ConfigManager:
                     "names": list
                     }
 
-        for key in yaml_metadata.keys():
+        for key, value in yaml_metadata.items():
             if key not in yaml_dict.keys():
                 self.logger.error(f"в .yaml файле конфигурации датасета нет ключа {key}")
                 raise KeyError(f"в .yaml файле конфигурации датасета нет ключа {key}")
 
-            elif yaml_dict[key] is None:
+            if yaml_dict[key] is None:
                 self.logger.error(f"Значение, получаемое из .yaml по ключу {key} None")
                 raise ValueError(f"Значение, получаемое из .yaml по ключу {key} None")
 
-            elif type(yaml_dict[key]) != yaml_metadata[key]:
-                self.logger.error(f"Тип значения, получаемого из .yaml по ключу {key}, не соответствует требуемому типу"
-                                f"(expected: {yaml_metadata[key]}, got: {type(yaml_dict[key])})")
-                raise TypeError(f"Тип значения, получаемого из .yaml по ключу {key}, не соответствует требуемому типу"
-                                f"(expected: {yaml_metadata[key]}, got: {type(yaml_dict[key])})")
+            if not isinstance(yaml_dict[key], value):
+                self.logger.error(f"Тип значения, получаемого из .yaml по ключу {key}, "
+                                  f"не соответствует требуемому типу"
+                                f"(expected: {value}, got: {type(yaml_dict[key])})")
+                raise TypeError(f"Тип значения, получаемого из .yaml по ключу {key}, "
+                                f"не соответствует требуемому типу"
+                                f"(expected: {value}, got: {type(yaml_dict[key])})")
 
-            elif type(yaml_dict[key]) == int:
+            if isinstance(yaml_dict[key], int):
                 if yaml_dict[key] < 0:
-                    self.logger.error(f"Значение, получаемое из .yaml файла по ключу {key} отрицательное")
-                    raise ValueError(f"Значение, получаемое из .yaml файла по ключу {key} отрицательное")
+                    self.logger.error(f"Значение, получаемое из .yaml файла "
+                                      f"по ключу {key} отрицательное")
+                    raise ValueError(f"Значение, получаемое из .yaml файла "
+                                     f"по ключу {key} отрицательное")
 
-            elif type(yaml_dict[key]) == list:
+            if isinstance(yaml_dict[key], list):
                 if len(set(yaml_dict[key])) != yaml_dict["nc"]:
-                    self.logger.error(f"Длина списка с именами классов, получаемого по ключу 'names'"
-                                     f"не соответствует указанному в .yaml файле количеству классов,"
-                                     f"либо имена классов дублируются")
-                    raise ValueError(f"Длина списка с именами классов, получаемого по ключу 'names'"
-                                     f"не соответствует указанному в .yaml файле количеству классов,"
-                                     f"либо имена классов дублируются")
+                    self.logger.error("Длина списка с именами классов, получаемого по ключу "
+                                      "'names' не соответствует указанному в .yaml файле "
+                                      "количеству классов, либо имена классов дублируются")
+                    raise ValueError("Длина списка с именами классов, получаемого по ключу "
+                                     "'names' не соответствует указанному в .yaml файле "
+                                     "количеству классов, либо имена классов дублируются")
 
                 for el in yaml_dict[key]:
-                    if type(el) != str:
-                        self.logger.error(f"Тип значения элемента списка {el}, получаемого по ключу {key}, не соответствует требуемому типу"
-                                f"(expected: {str}, got: {type(el)}")
-                        raise TypeError(f"Тип значения элемента списка {el}, получаемого по ключу {key}, не соответствует требуемому типу"
-                                f"(expected: {str}, got: {type(el)}")
+                    if not isinstance(el, str):
+                        self.logger.error(f"Тип значения элемента списка {el}, "
+                                          f"получаемого по ключу {key}, не соответствует "
+                                          f"требуемому типу (expected: {str}, "
+                                          f"got: {type(el)}")
+                        raise TypeError(f"Тип значения элемента списка {el}, "
+                                        f"получаемого по ключу {key}, не соответствует "
+                                        f"требуемому типу "
+                                        f"(expected: {str}, got: {type(el)}")
 
-                    elif len(el) == 0:
-                        self.logger.error(f"Элемент {el} списка, получаемого по ключу {key} является пустой строкой")
-                        raise ValueError(f"Элемент {el} списка, получаемого по ключу {key} является пустой строкой")
+                    if len(el) == 0:
+                        self.logger.error(f"Элемент {el} списка, получаемого по ключу {key} "
+                                          f"является пустой строкой")
+                        raise ValueError(f"Элемент {el} списка, получаемого по ключу {key} "
+                                         f"является пустой строкой")
 
-            elif key == 'train' or key == 'val':
+            elif key in ('train', 'val'):
                 full_path = os.path.join(self.params[2], yaml_dict[key])
                 if not os.path.exists(full_path):
                     self.logger.error(f"Пути {full_path} не существует")
                     raise NotADirectoryError(f'Пути {full_path} не существует')
 
-                elif not os.path.isdir(full_path):
+                if not os.path.isdir(full_path):
                     self.logger.error(f"{full_path} не является директорией")
                     raise NotADirectoryError(f'{full_path} не является директорией')
 
 
     def validate_config(self) -> None:
         """
-        Метод validate_config() осуществляет проверку переданных в класс переменных на наличие различных ошибок.
+        Метод validate_config() осуществляет проверку переданных в класс переменных
+        на наличие различных ошибок.
         Raises:
              ValueError: если тип переменной не соответствует целевому, либо None
         """
@@ -215,25 +243,32 @@ class ConfigManager:
                 self.logger.error(f"Переменная {el} имеет тип данных None")
                 raise ValueError(f'Переменная {el} имеет тип данных None')
 
-            elif type(el) != self.metadata[idx]['expected_type']:
+            if not isinstance(el, self.metadata[idx]['expected_type']):
                 self.logger.error(f"Переменная {el} имеет неправильный тип данных"
-                                 f" (expected: {self.metadata[idx]['expected_type']}, got: {type(el)})")
+                                 f" (expected: {self.metadata[idx]['expected_type']}, "
+                                  f"got: {type(el)})")
                 raise ValueError(f"Переменная {el} имеет неправильный тип данных"
-                                 f" (expected: {self.metadata[idx]['expected_type']}, got: {type(el)})")
+                                 f" (expected: {self.metadata[idx]['expected_type']}, "
+                                 f"got: {type(el)})")
 
-            else:
-                if type(el) == str:
-                    self._validate_path(el, self.metadata[idx]['is_file'],
-                                        self.metadata[idx]['is_dir'], self.metadata[idx]['extension'])
+            if isinstance(el, str):
+                self._validate_path(
+                    el,
+                    self.metadata[idx]['is_file'],
+                    self.metadata[idx]['is_dir'],
+                    self.metadata[idx]['extension']
+                )
 
         self.logger.info("Валидация завершена")
 
 
     def load_config(self) -> dict:
         """
-        Метод load_config() осуществляет загрузку конфигурационых файлов и гиперпараметров модели.
+        Метод load_config() осуществляет загрузку конфигурационых файлов
+        и гиперпараметров модели.
         Returns:
-            hyperparameters (dict): словарь с путями конфигурационных файлов и гиперпараметрами модели.
+            hyperparameters (dict): словарь с путями конфигурационных файлов
+                и гиперпараметрами модели.
         Raises:
             ValueError: если возникает ошибка в парсинге .yaml и json файлов.
         """
@@ -243,27 +278,28 @@ class ConfigManager:
             if self.metadata[idx]['is_file'] is True:
                 if Path(el).suffix == '.json':
                     try:
-                        with open(el, 'r') as f:
+                        with open(el, mode='r', encoding='utf-8') as f:
                             train_hyperparameters = json.load(f)
                             self._check_json_file(train_hyperparameters)
                             for key in train_hyperparameters.keys():
                                 hyperparameters[key] = train_hyperparameters[key]
 
-                    except json.JSONDecodeError:
+                    except json.JSONDecodeError as exc:
                         self.logger.error(f"Ошибка в парсинге .json файла {el}")
-                        raise ValueError(f"Ошибка в парсинге .json файла {el}")
+                        raise ValueError(f"Ошибка в парсинге .json файла {el}") from exc
 
-                elif Path(el).suffix == '.yaml' and idx == 0: #указываем индекс, так как расширение .yaml может иметь и файл модели
+                # указываем индекс, так как расширение .yaml может иметь и файл модели
+                elif Path(el).suffix == '.yaml' and idx == 0:
                     try:
-                        with open(el) as f:
-                            data_dict = yaml.safe_load(f) # тут можно обработать исключения YAMLError
+                        with open(el, mode='r', encoding='utf-8') as f:
+                            data_dict = yaml.safe_load(f)
                             self._check_yaml_file(data_dict)
                             hyperparameters['data_path'] = el
                             hyperparameters['class_names'] = data_dict['names']
 
-                    except yaml.YAMLError:
+                    except yaml.YAMLError as exc:
                         self.logger.error(f"Ошибка в парсинге .yaml файла {el}")
-                        raise ValueError(f"Ошибка в парсинге .yaml файла {el}")
+                        raise ValueError(f"Ошибка в парсинге .yaml файла {el}") from exc
 
                 self.logger.info(f"Загружен файл конфигурации: {el}")
 
@@ -274,8 +310,10 @@ class ModelTrainer:
     """
     Класс ModelTrainer отвечает за инициализацию и обучение модели YOLOv11.
     Parameters:
-        model_cfg (str): путь к .yaml файлу конфигурации модели или .pt файлу предобученной модели.
-        hyperparameters (dict): словарь с гиперпараметрами модели для обучения и путем к конфигурационному файлу датасета.
+        model_cfg (str): путь к .yaml файлу конфигурации модели
+            или .pt файлу предобученной модели.
+        hyperparameters (dict): словарь с гиперпараметрами модели для обучения
+            и путем к конфигурационному файлу датасета.
     """
     def __init__(self, model_cfg: str, hyperparameters: dict) -> None:
         self.model_cfg = model_cfg
@@ -284,7 +322,7 @@ class ModelTrainer:
         self.logger = logging.getLogger(__name__)
 
 
-    def _freeze_layers(self, num_layers_to_freeze: int) -> None:
+    def freeze_layers(self, num_layers_to_freeze: int) -> None:
         """
         Вспомогательный метод _freeze_layers() осуществляет заморозку слоев в backbone.
         Parameters:
@@ -306,10 +344,10 @@ class ModelTrainer:
         Returns:
             self.model (torch.nn.Module)
         """
-        self.logger.info(f"Начало обучения")
+        self.logger.info("Начало обучения")
         self.logger.info(f"Обучение модели с параметрами: {self.hyperparameters}")
         num_layers_to_freeze = self.hyperparameters['freeze_layers']
-        self._freeze_layers(num_layers_to_freeze)
+        self.freeze_layers(num_layers_to_freeze)
         data_dir = self.hyperparameters['data_path']
         epochs = self.hyperparameters['epochs']
         batch_size = self.hyperparameters['batch']
@@ -328,13 +366,14 @@ class ModelTrainer:
             patience=patience,
             device=device
         )
-        self.logger.info(f"Обучение завершено")
+        self.logger.info("Обучение завершено")
         return self.model
 
 
 class AnnotationProcessor:
     """
-    Класс AnnotationProcessor создает аннотации в формате LabelMe .json к тестовым изображениям.
+    Класс AnnotationProcessor создает аннотации в формате LabelMe .json
+    к тестовым изображениям.
     Parameters:
         output_dir (str): директория для сохранения созданных аннотаций.
         class_names (list): список с именами используемых классов.
@@ -347,7 +386,8 @@ class AnnotationProcessor:
 
     def mask_to_polygons(self, mask: np.ndarray) -> list:
         """
-        Метод mask_to_polygons преобразует маски объектов, полученные в результате инференса, в список полигонов.
+        Метод mask_to_polygons преобразует маски объектов, полученные в результате инференса,
+        в список полигонов.
         Parameters:
             mask (np.ndarray): numpy маски объектов, полученные в результате инференса.
         Returns:
@@ -363,15 +403,19 @@ class AnnotationProcessor:
         return polygons
 
 
-    def create_labelme_json(self, image_path: str, masks: np.ndarray, labels: np.ndarray, class_names: list, output_dir: str) -> str:
+    def create_labelme_json(self, image_path: str, masks: np.ndarray, labels: np.ndarray,
+                            class_names: list, output_dir: str) -> str:
         """
-        Метод create_labelme_json() осуществляет создание аннотаций к инференсу из InferenceRunner в формате .json
+        Метод create_labelme_json() осуществляет создание аннотаций к инференсу
+        из InferenceRunner в формате .json
         Parameters:
             image_path (str): путь к изображению, для которого создается аннотация.
             masks (np.ndarray): numpy массив масок полигонов объектов на изображении.
             labels (np.ndarray): numpy массив меток классов полигонов на изображении.
-            class_names (list): список имен класов объектов, которые есть на изображениях в датасете.
-            output_dir (str): выходная директория для сохранения .json аннотаций к изображениям.
+            class_names (list): список имен класов объектов, которые есть
+                на изображениях в датасете.
+            output_dir (str): выходная директория для сохранения .json аннотаций
+                к изображениям.
         """
         image_name = Path(image_path).name
         image = cv2.imread(image_path)
@@ -402,9 +446,12 @@ class AnnotationProcessor:
                 }
                 labelme_data["shapes"].append(shape)
 
-        output_path = os.path.join(output_dir, image_name.replace(".jpg", ".json").replace(".png", ".json"))
+        output_path = os.path.join(
+            output_dir,
+            image_name.replace(".jpg", ".json").replace(".png", ".json")
+        )
         os.makedirs(output_dir, exist_ok=True)
-        with open(output_path, "w") as f:
+        with open(output_path, mode="w", encoding='utf-8') as f:
             json.dump(labelme_data, f, indent=2)
         self.logger.info(f"Создан JSON-файл: {output_path}")
         return output_path
@@ -417,7 +464,8 @@ class InferenceRunner:
         model (torch.nn.Module): обученная модель YOLOv11.
         img_size (int): размер изображения (изображение квадратное).
         data_dir (str): путь к директории с датасетом в файловой системе.
-        annotation_processor (AnnotationProcessor): экземпляр класса AnnotationProcessor для создания разметки к инференсу.
+        annotation_processor (AnnotationProcessor): экземпляр класса AnnotationProcessor
+            для создания разметки к инференсу.
     """
     def __init__(self, model: torch.nn.Module, img_size: int, data_dir: str,
                  annotation_processor: AnnotationProcessor) -> None:
@@ -430,56 +478,59 @@ class InferenceRunner:
 
     def run_inference(self, image_path: str) -> list:
         """
-        Метод run_inference производит инференс для одного изображения, хранящегося по указанному пути.
+        Метод run_inference производит инференс для одного изображения,
+        хранящегося по указанному пути.
         Parameters:
             image_path (str): путь к изображению для инференса.
         Returns:
-            results (ultralytics.YOLO.results): объект класса ultralytics.YOLO.results с результатами инференса.
+            results (ultralytics.YOLO.results): объект класса ultralytics.YOLO.results
+                с результатами инференса.
         """
         try:
             results = self.model.predict(image_path, imgsz=self.img_size, conf=0.5, iou=0.7)
             return results
 
-        except RuntimeError:
-            self.logger.error(f"Внутренняя ошибка модели! Превышено время ожидания")
-            raise RuntimeError(f"Внутренняя ошибка модели! Превышено время ожидания")
+        except RuntimeError as exc:
+            self.logger.error("Внутренняя ошибка модели! Превышено время ожидания")
+            raise RuntimeError("Внутренняя ошибка модели! Превышено время ожидания") from exc
 
-        except FileNotFoundError:
+        except FileNotFoundError as exc:
             self.logger.error(f"Файл {image_path} не найден")
-            raise FileNotFoundError(f"Файл {image_path} не найден")
+            raise FileNotFoundError(f"Файл {image_path} не найден") from exc
 
 
     def process_images(self) -> None:
         """
         Метод process_images() обрабатывает все изображения в указанной директории,
-        выполняя инференс для каждого изображения и передавая результаты в AnnotationProcessor.
+        выполняя инференс для каждого изображения и передавая результаты
+        в AnnotationProcessor.
         """
         if not os.path.isdir(self.data_dir):
             self.logger.error(f"{self.data_dir} не является директорией")
             raise NotADirectoryError(f"{self.data_dir} не является директорией")
 
-        else:
-            test_images = [os.path.join(self.data_dir, f) for f in os.listdir(self.data_dir) if
-                        f.endswith(('.jpg', '.png'))]
-            for image_path in test_images:
-                results = self.run_inference(image_path)
-                if results[0].masks is not None:
-                    masks = results[0].masks.data.cpu().numpy()
-                    labels = results[0].boxes.cls.cpu().numpy()
-                    self.annotation_processor.create_labelme_json(
-                        image_path=image_path,
-                        masks=masks,
-                        labels=labels,
-                        class_names=self.annotation_processor.class_names,
-                        output_dir=self.annotation_processor.output_dir
-                    )
-                else:
-                    self.logger.warning(f"Нет объектов в {image_path}")
+        test_images = [os.path.join(self.data_dir, f) for f in os.listdir(self.data_dir) if
+                    f.endswith(('.jpg', '.png'))]
+        for image_path in test_images:
+            results = self.run_inference(image_path)
+            if results[0].masks is not None:
+                masks = results[0].masks.data.cpu().numpy()
+                labels = results[0].boxes.cls.cpu().numpy()
+                self.annotation_processor.create_labelme_json(
+                    image_path=image_path,
+                    masks=masks,
+                    labels=labels,
+                    class_names=self.annotation_processor.class_names,
+                    output_dir=self.annotation_processor.output_dir
+                )
+            else:
+                self.logger.warning(f"Нет объектов в {image_path}")
 
 
 class Pipeline:
     """
-    Класс Pipeline предназначен для автоматизации процессов сбора, обработки и аугментации данных,
+    Класс Pipeline предназначен для автоматизации процессов сбора,
+    обработки и аугментации данных,
     обучения, валидации и сохранения моделей машинного обучения.
     Parameters:
         data_cfg (str): .yaml файл конфигурации датасета в формате YOLOv11.
@@ -523,9 +574,11 @@ class Pipeline:
         self.logger.info("Успешное сохранение")
 
 
-    def create_new_json_annotations(self, test_images_dir: str, annotations_output_dir: str) -> None:
+    def create_new_json_annotations(self, test_images_dir: str,
+                                    annotations_output_dir: str) -> None:
         """
-        Метод create_new_annotations() используется для создания разметки тестовых изображений с использованием предобученной модели.
+        Метод create_new_annotations() используется для создания разметки тестовых изображений
+        с использованием предобученной модели.
         Parameters:
             test_images_dir (str): директория с изображениями для инференса.
             annotations_output_dir (str): директория для сохранения файлов разметки.
@@ -545,7 +598,8 @@ class Pipeline:
         self.logger.info("Создание аннотаций завершено")
 
 
-    def convert_labelme_to_yolo(self, labelme_annotations_path: str, yolo_annotations_path: str) -> None:
+    def convert_labelme_to_yolo(self, labelme_annotations_path: str,
+                                yolo_annotations_path: str) -> None:
         """
         Метод convert_labelme_to_yolo() конвертирует аннотации изображений в формате .json LabelMe
         в формат YOLOv11 .txt
@@ -606,7 +660,7 @@ class Pipeline:
 
             with open(txt_path, 'w', encoding='utf-8') as f:
                 f.write("\n".join(yolo_lines))
+                self.logger.info(f"Сконвертирован {base_name}.txt")
 
-            self.logger.info(f"Сконвертирован {base_name}.txt")
         self.logger.info("Конвертация аннотаций завершена")
 
