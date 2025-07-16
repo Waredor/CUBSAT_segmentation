@@ -9,7 +9,7 @@ if __name__ == '__main__':
     output_path_img = "D:/Python projects/CUBSAT_Dataset_segmentation/Fine_tuning/images/test/"
     output_path_labels = "D:/Python projects/CUBSAT_Dataset_segmentation/Fine_tuning/labels/test/"
     yolo_convert_labels_path = "D:/Python projects/CUBSAT_Dataset_segmentation/Fine_tuning/labels/train/"
-    labelme_input_labels_path = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/test_output/label_me_json/"
+    labelme_input_labels_path = "D:/Python projects/CUBSAT_Dataset_segmentation/labels/json_labels/"
     model_path = "D:/Python projects/CUBSAT_segmentation/Model_cfg/yolo11n-seg_labeling.pt"
     model_output_path = "D:/Python projects/CUBSAT_segmentation/Model_cfg/yolo11n-seg_labeling.pt"
     class_names = ["FT", "Engine", "Solar Panel"]

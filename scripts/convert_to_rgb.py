@@ -3,7 +3,7 @@ from PIL import Image
 from tqdm import tqdm
 
 # Папки
-input_folder = r'C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/test_output/label_me_json/'
+input_folder = "D:/Python projects/CUBSAT_Dataset_segmentation/images/"
 output_folder = os.path.join(input_folder, 'rgb')
 
 # Создаем папку, если её нет
