@@ -6,9 +6,18 @@ import cv2
 import numpy as np
 import glob
 import yaml
+import logging
 import ultralytics
 from pathlib import Path
 from PIL import Image
+
+
+logging.basicConfig(
+    format='%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s] %(message)s',
+    level=logging.INFO,
+    filename='cubsat_log.txt',
+    filemode='w'
+)
 
 
 class ConfigManager:
@@ -31,6 +40,8 @@ class ConfigManager:
                          3: {'expected_type': str, 'is_file': True, 'is_dir': False, 'extension': ['.pt', '.yaml']},
                          4: {'expected_type': str, 'is_file': False, 'is_dir': True, 'extension': ['']}
                          }
+        self.logger = logging.getLogger(__name__)
+
 
     def _validate_path(self, el: str, is_file: bool, is_dir: bool, extensions: list) -> None:
         """
@@ -48,14 +59,17 @@ class ConfigManager:
         """
         if is_dir:
             if not os.path.isdir(el):
+                self.logger.error(f'{el} не является путем к директории')
                 raise NotADirectoryError(f'{el} не является путем к директории')
 
         elif is_file:
             if not os.path.isfile(el):
+                self.logger.error(f'{el} не является путем к файлу')
                 raise FileNotFoundError(f'{el} не является путем к файлу')
 
             else:
                 if not Path(el).suffix in extensions:
+                    self.logger.error(f'{el} имеет неверное расширение файла')
                     raise ValueError(f'{el} имеет неверное расширение файла')
 
 
@@ -66,7 +80,6 @@ class ConfigManager:
         с ожидаемыми типами данных, либо какие-то из пар ключ-значение отсутствуют - метод вызывает ошибку.
         Parameters:
             json_dict (dict): словарь с именами и значениями гиперпараметров.
-
         Raises:
             KeyError: если в файле нет требуемого ключа.
             ValueError: если значение, получаемое по ключу отрицательное или None.
@@ -84,31 +97,37 @@ class ConfigManager:
 
         for key in json_metadata.keys():
             if key not in json_dict.keys():
+                self.logger.error(f"в .json файле гиперпараметров модели нет ключа {key}")
                 raise KeyError(f"в .json файле гиперпараметров модели нет ключа {key}")
 
             elif json_dict[key] is None:
+                self.logger.error(f"Значение, получаемое из .json по ключу {key} None")
                 raise ValueError(f"Значение, получаемое из .json по ключу {key} None")
 
             elif type(json_dict[key]) not in json_metadata[key]:
+                self.logger.error(f"Тип значения, получаемого из .json по ключу {key}, не соответствует требуемому типу"
+                                f"(expected: {json_metadata[key]}, got: {type(json_dict[key])})")
                 raise TypeError(f"Тип значения, получаемого из .json по ключу {key}, не соответствует требуемому типу"
                                 f"(expected: {json_metadata[key]}, got: {type(json_dict[key])})")
 
             elif json_metadata[key] == [int] or json_metadata[key] == [float]:
                 if json_dict[key] < 0:
+                    self.logger.error(f"Значение, получаемое из .json файла по ключу {key} отрицательное")
                     raise ValueError(f"Значение, получаемое из .json файла по ключу {key} отрицательное")
 
             elif key == "device":
                     if json_dict[key] not in [0, "cpu"]:
+                        self.logger.error(f"неверное значение из .json, получаемое по ключу {key}"
+                                         f"expected: {[0, 'cpu']}, got: {json_dict[key]}")
                         raise ValueError(f"неверное значение из .json, получаемое по ключу {key}"
                                          f"expected: {[0, 'cpu']}, got: {json_dict[key]}")
+
 
     def _check_yaml_file(self, yaml_dict) -> None:
         """
         Вспомогательный метод _check_yaml_file() осуществляет проверку .yaml файла конфигурации датасета на корректность.
-
         Parameters:
             yaml_dict (dict): словарь, полученный при открытии .yaml файла через .yaml.safe_load().
-
         Raises:
             KeyError: если в файле нет требуемого ключа.
             ValueError: если значение, получаемое по ключу отрицательное, является пустой строкой или None.
@@ -124,62 +143,79 @@ class ConfigManager:
 
         for key in yaml_metadata.keys():
             if key not in yaml_dict.keys():
+                self.logger.error(f"в .yaml файле конфигурации датасета нет ключа {key}")
                 raise KeyError(f"в .yaml файле конфигурации датасета нет ключа {key}")
 
             elif yaml_dict[key] is None:
+                self.logger.error(f"Значение, получаемое из .yaml по ключу {key} None")
                 raise ValueError(f"Значение, получаемое из .yaml по ключу {key} None")
 
             elif type(yaml_dict[key]) != yaml_metadata[key]:
+                self.logger.error(f"Тип значения, получаемого из .yaml по ключу {key}, не соответствует требуемому типу"
+                                f"(expected: {yaml_metadata[key]}, got: {type(yaml_dict[key])})")
                 raise TypeError(f"Тип значения, получаемого из .yaml по ключу {key}, не соответствует требуемому типу"
                                 f"(expected: {yaml_metadata[key]}, got: {type(yaml_dict[key])})")
 
             elif type(yaml_dict[key]) == int:
                 if yaml_dict[key] < 0:
+                    self.logger.error(f"Значение, получаемое из .yaml файла по ключу {key} отрицательное")
                     raise ValueError(f"Значение, получаемое из .yaml файла по ключу {key} отрицательное")
 
             elif type(yaml_dict[key]) == list:
                 if len(set(yaml_dict[key])) != yaml_dict["nc"]:
+                    self.logger.error(f"Длина списка с именами классов, получаемого по ключу 'names'"
+                                     f"не соответствует указанному в .yaml файле количеству классов,"
+                                     f"либо имена классов дублируются")
                     raise ValueError(f"Длина списка с именами классов, получаемого по ключу 'names'"
                                      f"не соответствует указанному в .yaml файле количеству классов,"
                                      f"либо имена классов дублируются")
 
                 for el in yaml_dict[key]:
                     if type(el) != str:
+                        self.logger.error(f"Тип значения элемента списка {el}, получаемого по ключу {key}, не соответствует требуемому типу"
+                                f"(expected: {str}, got: {type(el)}")
                         raise TypeError(f"Тип значения элемента списка {el}, получаемого по ключу {key}, не соответствует требуемому типу"
                                 f"(expected: {str}, got: {type(el)}")
 
                     elif len(el) == 0:
+                        self.logger.error(f"Элемент {el} списка, получаемого по ключу {key} является пустой строкой")
                         raise ValueError(f"Элемент {el} списка, получаемого по ключу {key} является пустой строкой")
 
             elif key == 'train' or key == 'val':
                 full_path = os.path.join(self.params[2], yaml_dict[key])
-                if not os.path.exists(full_path): # тут возможно надо будет "объединить" путь по ключу
-                    # и полный путь до .yaml файла
+                if not os.path.exists(full_path):
+                    self.logger.error(f"Пути {full_path} не существует")
                     raise NotADirectoryError(f'Пути {full_path} не существует')
 
                 elif not os.path.isdir(full_path):
+                    self.logger.error(f"{full_path} не является директорией")
                     raise NotADirectoryError(f'{full_path} не является директорией')
 
 
     def validate_config(self) -> None:
         """
         Метод validate_config() осуществляет проверку переданных в класс переменных на наличие различных ошибок.
-
         Raises:
              ValueError: если тип переменной не соответствует целевому, либо None
         """
+        self.logger.info("Начало валидации")
         for idx, el in enumerate(self.params):
             if el is None:
-                raise ValueError(f'Переменная {el} имеет тип данных None.')
+                self.logger.error(f"Переменная {el} имеет тип данных None")
+                raise ValueError(f'Переменная {el} имеет тип данных None')
 
             elif type(el) != self.metadata[idx]['expected_type']:
-                    raise ValueError(f"Переменная {el} имеет неправильный тип данных"
-                                     f" (expected: {self.metadata[idx]['expected_type']}, got: {type(el)}).")
+                self.logger.error(f"Переменная {el} имеет неправильный тип данных"
+                                 f" (expected: {self.metadata[idx]['expected_type']}, got: {type(el)})")
+                raise ValueError(f"Переменная {el} имеет неправильный тип данных"
+                                 f" (expected: {self.metadata[idx]['expected_type']}, got: {type(el)})")
 
             else:
                 if type(el) == str:
                     self._validate_path(el, self.metadata[idx]['is_file'],
                                         self.metadata[idx]['is_dir'], self.metadata[idx]['extension'])
+
+        self.logger.info("Валидация завершена")
 
 
     def load_config(self) -> dict:
@@ -203,6 +239,7 @@ class ConfigManager:
                                 hyperparameters[key] = train_hyperparameters[key]
 
                     except json.JSONDecodeError:
+                        self.logger.error(f"Ошибка в парсинге .json файла {el}")
                         raise ValueError(f"Ошибка в парсинге .json файла {el}")
 
                 elif Path(el).suffix == '.yaml' and idx == 0: #указываем индекс, так как расширение .yaml может иметь и файл модели
@@ -214,7 +251,10 @@ class ConfigManager:
                             hyperparameters['class_names'] = data_dict['names']
 
                     except yaml.YAMLError:
+                        self.logger.error(f"Ошибка в парсинге .yaml файла {el}")
                         raise ValueError(f"Ошибка в парсинге .yaml файла {el}")
+
+                self.logger.info(f"Загружен файл конфигурации: {el}")
 
         return hyperparameters
 
@@ -222,7 +262,6 @@ class ConfigManager:
 class ModelTrainer:
     """
     Класс ModelTrainer отвечает за инициализацию и обучение модели YOLOv11.
-
     Parameters:
         model_cfg (str): путь к .yaml файлу конфигурации модели или .pt файлу предобученной модели.
         hyperparameters (dict): словарь с гиперпараметрами модели для обучения и путем к конфигурационному файлу датасета.
@@ -231,6 +270,7 @@ class ModelTrainer:
         self.model_cfg = model_cfg
         self.hyperparameters = hyperparameters
         self.model = ultralytics.YOLO(self.model_cfg)
+        self.logger = logging.getLogger(__name__)
 
 
     def _freeze_layers(self, num_layers_to_freeze: int) -> None:
@@ -246,7 +286,7 @@ class ModelTrainer:
             else:
                 break
             layer_count += 1
-        print(f"Заморожено первых {layer_count} слоев")
+        self.logger.info(f"Заморожено первых {layer_count} слоев")
 
 
     def train_model(self) -> torch.nn.Module:
@@ -255,6 +295,8 @@ class ModelTrainer:
         Returns:
             self.model (torch.nn.Module)
         """
+        self.logger.info(f"Начало обучения")
+        self.logger.info(f"Обучение модели с параметрами: {self.hyperparameters}")
         num_layers_to_freeze = self.hyperparameters['freeze_layers']
         self._freeze_layers(num_layers_to_freeze)
         data_dir = self.hyperparameters['data_path']
@@ -275,7 +317,7 @@ class ModelTrainer:
             patience=patience,
             device=device
         )
-
+        self.logger.info(f"Обучение завершено")
         return self.model
 
 
@@ -289,6 +331,7 @@ class AnnotationProcessor:
     def __init__(self, output_dir: str, class_names: list) -> None:
         self.output_dir = output_dir
         self.class_names = class_names
+        self.logger = logging.getLogger(__name__)
 
 
     def mask_to_polygons(self, mask: np.ndarray) -> list:
@@ -352,6 +395,7 @@ class AnnotationProcessor:
         os.makedirs(output_dir, exist_ok=True)
         with open(output_path, "w") as f:
             json.dump(labelme_data, f, indent=2)
+        self.logger.info(f"Создан JSON-файл: {output_path}")
         return output_path
 
 
@@ -370,6 +414,7 @@ class InferenceRunner:
         self.img_size = img_size
         self.data_dir = data_dir
         self.annotation_processor = annotation_processor
+        self.logger = logging.getLogger(__name__)
 
 
     def run_inference(self, image_path: str) -> list:
@@ -404,7 +449,7 @@ class InferenceRunner:
                     output_dir=self.annotation_processor.output_dir
                 )
             else:
-                print(f"Нет объектов в {image_path}")
+                self.logger.warning(f"Нет объектов в {image_path}")
 
 
 class Pipeline:
@@ -420,6 +465,8 @@ class Pipeline:
     """
     def __init__(self, data_cfg: str, model_cfg: str, model_hyperparameters: str, data_dir: str,
                  output_dir: str) -> None:
+        self.logger = logging.getLogger(__name__)
+        self.logger.info("Инициализация экземпляра класса Pipeline")
         self.config_manager = ConfigManager(
             data_cfg=data_cfg,
             model_cfg=model_cfg,
@@ -434,6 +481,7 @@ class Pipeline:
             hyperparameters=self.config
         )
         self.model = self.model_trainer.model
+        self.logger.info("Инициализация Pipeline выполнена успешно")
 
 
     def fine_tune_for_labeling(self, model_output_dir: str) -> None:
@@ -443,8 +491,11 @@ class Pipeline:
         Parameters:
             model_output_dir (str): путь к директории для сохранения модели.
         """
+        self.logger.info("Начато дообучение модели")
         self.model = self.model_trainer.train_model()
+        self.logger.info("Сохранение дообученной модели")
         self.model.save(model_output_dir)
+        self.logger.info("Успешное сохранение")
 
 
     def create_new_json_annotations(self, test_images_dir: str, annotations_output_dir: str) -> None:
@@ -454,6 +505,7 @@ class Pipeline:
             test_images_dir (str): директория с изображениями для инференса.
             annotations_output_dir (str): директория для сохранения файлов разметки.
         """
+        self.logger.info("Начато создание аннотаций")
         annotation_processor = AnnotationProcessor(
             class_names=self.config['class_names'],
             output_dir=annotations_output_dir
@@ -465,6 +517,7 @@ class Pipeline:
             annotation_processor=annotation_processor
         )
         inference_runner.process_images()
+        self.logger.info("Создание аннотаций завершено")
 
 
     def convert_labelme_to_yolo(self, labelme_annotations_path: str, yolo_annotations_path: str) -> None:
@@ -475,6 +528,7 @@ class Pipeline:
             labelme_annotations_path (str): путь к директории с аннотациями в формате .json LabelMe.
             yolo_annotations_path (str): путь к директории с аннотациями в формате .txt YOLOv11.
         """
+        self.logger.info("Начало конвертации аннотаций")
         class_map = {
             'FT': 0,
             'Engine': 1,
@@ -528,5 +582,6 @@ class Pipeline:
             with open(txt_path, 'w', encoding='utf-8') as f:
                 f.write("\n".join(yolo_lines))
 
-            print(f"Сконвертирован: {base_name}.txt")
+            self.logger.info(f"Сконвертирован {base_name}.txt")
+        self.logger.info("Конвертация аннотаций завершена")
 

@@ -1,0 +1,3 @@
+utils.py[LINE:469]# INFO     [2025-07-16 15:31:12,518] Инициализация экземпляра класса Pipeline
+utils.py[LINE:201]# INFO     [2025-07-16 15:31:12,518] Начало валидации
+utils.py[LINE:67]# ERROR    [2025-07-16 15:31:12,518] D:/Python projects/CUBSAT_Dataset_segmentation/Fine_tuning/dataset.yaml не является путем к файлу
