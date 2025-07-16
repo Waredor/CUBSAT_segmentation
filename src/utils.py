@@ -23,23 +23,33 @@ logging.basicConfig(
 
 class ConfigManager:
     """
-    Класс ConfigManager отвечает за загрузку и валидацию конфигурационных файлов и гиперпараметров модели.
+    Класс ConfigManager отвечает за загрузку и валидацию конфигурационных файлов
+    и гиперпараметров модели.
     Parameters:
-        data_cfg (str): путь до .yaml файла конфигурации датасета в формате совместимом с моделью YOLOv11.
-            Файл находится в корневой папке датасета. Также в корневой папке датасета находятся папки images/ и labels/.
-        model_hyperparameters (str): путь до .json файла с гиперпараметрами для обучения модели YOLOv11.
+        data_cfg (str): путь до .yaml файла конфигурации датасета
+            в формате совместимом с моделью YOLOv11.
+            Файл находится в корневой папке датасета.
+            Также в корневой папке датасета находятся папки images/ и labels/.
+        model_hyperparameters (str): путь до .json файла с гиперпараметрами
+            для обучения модели YOLOv11.
         data_dir (str): путь до корневой папки датасета.
-        model_cfg (str): путь до .yaml файла конфигурации модели, либо до .pt файла с предобученной моделью.
+        model_cfg (str): путь до .yaml файла конфигурации модели,
+            либо до .pt файла с предобученной моделью.
         output_dir (str): путь к директории для сохранения обученной модели.
     """
-    def __init__(self, data_cfg: str, model_hyperparameters: str, data_dir: str,
-                 model_cfg: str, output_dir: str) -> None:
+    def __init__(self, data_cfg: str, model_hyperparameters: str,
+                 data_dir: str, model_cfg: str, output_dir: str) -> None:
         self.params = [data_cfg, model_hyperparameters, data_dir, model_cfg, output_dir]
-        self.metadata = {0: {'expected_type': str, 'is_file': True, 'is_dir': False, 'extension': ['.yaml']},
-                         1: {'expected_type': str, 'is_file': True, 'is_dir': False, 'extension': ['.json']},
-                         2: {'expected_type': str, 'is_file': False, 'is_dir': True, 'extension': ['']},
-                         3: {'expected_type': str, 'is_file': True, 'is_dir': False, 'extension': ['.pt', '.yaml']},
-                         4: {'expected_type': str, 'is_file': False, 'is_dir': True, 'extension': ['']}
+        self.metadata = {0: {'expected_type': str, 'is_file': True,
+                             'is_dir': False, 'extension': ['.yaml']},
+                         1: {'expected_type': str, 'is_file': True,
+                             'is_dir': False, 'extension': ['.json']},
+                         2: {'expected_type': str, 'is_file': False,
+                             'is_dir': True, 'extension': ['']},
+                         3: {'expected_type': str, 'is_file': True,
+                             'is_dir': False, 'extension': ['.pt', '.yaml']},
+                         4: {'expected_type': str, 'is_file': False,
+                             'is_dir': True, 'extension': ['']}
                          }
         self.logger = logging.getLogger(__name__)
 
@@ -117,11 +127,11 @@ class ConfigManager:
                     raise ValueError(f"Значение, получаемое из .json файла по ключу {key} отрицательное")
 
             elif key == "device":
-                    if json_dict[key] not in [0, "cpu"]:
-                        self.logger.error(f"неверное значение из .json, получаемое по ключу {key}"
-                                         f"expected: {[0, 'cpu']}, got: {json_dict[key]}")
-                        raise ValueError(f"неверное значение из .json, получаемое по ключу {key}"
-                                         f"expected: {[0, 'cpu']}, got: {json_dict[key]}")
+                if json_dict[key] not in [0, "cpu"]:
+                    self.logger.error(f"неверное значение из .json, получаемое по ключу {key}"
+                                      f"expected: {[0, 'cpu']}, got: {json_dict[key]}")
+                    raise ValueError(f"неверное значение из .json, получаемое по ключу {key}"
+                                     f"expected: {[0, 'cpu']}, got: {json_dict[key]}")
 
 
     def _check_yaml_file(self, yaml_dict) -> None:
@@ -426,8 +436,17 @@ class InferenceRunner:
         Returns:
             results (ultralytics.YOLO.results): объект класса ultralytics.YOLO.results с результатами инференса.
         """
-        results = self.model.predict(image_path, imgsz=self.img_size, conf=0.5, iou=0.7)
-        return results
+        try:
+            results = self.model.predict(image_path, imgsz=self.img_size, conf=0.5, iou=0.7)
+            return results
+
+        except RuntimeError:
+            self.logger.error(f"Внутренняя ошибка модели! Превышено время ожидания")
+            raise RuntimeError(f"Внутренняя ошибка модели! Превышено время ожидания")
+
+        except FileNotFoundError:
+            self.logger.error(f"Файл {image_path} не найден")
+            raise FileNotFoundError(f"Файл {image_path} не найден")
 
 
     def process_images(self) -> None:
@@ -435,22 +454,27 @@ class InferenceRunner:
         Метод process_images() обрабатывает все изображения в указанной директории,
         выполняя инференс для каждого изображения и передавая результаты в AnnotationProcessor.
         """
-        test_images = [os.path.join(self.data_dir, f) for f in os.listdir(self.data_dir) if
-                       f.endswith(('.jpg', '.png'))]
-        for image_path in test_images:
-            results = self.run_inference(image_path)
-            if results[0].masks is not None:
-                masks = results[0].masks.data.cpu().numpy()
-                labels = results[0].boxes.cls.cpu().numpy()
-                self.annotation_processor.create_labelme_json(
-                    image_path=image_path,
-                    masks=masks,
-                    labels=labels,
-                    class_names=self.annotation_processor.class_names,
-                    output_dir=self.annotation_processor.output_dir
-                )
-            else:
-                self.logger.warning(f"Нет объектов в {image_path}")
+        if not os.path.isdir(self.data_dir):
+            self.logger.error(f"{self.data_dir} не является директорией")
+            raise NotADirectoryError(f"{self.data_dir} не является директорией")
+
+        else:
+            test_images = [os.path.join(self.data_dir, f) for f in os.listdir(self.data_dir) if
+                        f.endswith(('.jpg', '.png'))]
+            for image_path in test_images:
+                results = self.run_inference(image_path)
+                if results[0].masks is not None:
+                    masks = results[0].masks.data.cpu().numpy()
+                    labels = results[0].boxes.cls.cpu().numpy()
+                    self.annotation_processor.create_labelme_json(
+                        image_path=image_path,
+                        masks=masks,
+                        labels=labels,
+                        class_names=self.annotation_processor.class_names,
+                        output_dir=self.annotation_processor.output_dir
+                    )
+                else:
+                    self.logger.warning(f"Нет объектов в {image_path}")
 
 
 class Pipeline:
