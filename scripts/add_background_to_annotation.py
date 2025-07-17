@@ -33,6 +33,13 @@ logger.addHandler(rotating_file_handler)
 
 def add_background_polygon(json_path: str,
                            output_path=None) -> None:
+    """
+    Метод add_background_polygon() отвечает за создание
+    полигона фона для одного .json файла
+    Parameters:
+        json_path (str): путь к .json файлу с аннотациями
+        output_path: путь к выходному .json файлу
+    """
     with open(json_path, 'r') as f:
         data = json.load(f)
 
@@ -98,6 +105,13 @@ def add_background_polygon(json_path: str,
     logger.info(f"Обработан файл: {json_path}")
 
 def process_directory(input_dir: str, output_dir=None) -> None:
+    """
+    Метод process_directory() осуществляет создание аннотаций на основе
+    исходных, лежащих в указанной директории
+    Parameters:
+        input_dir (str): путь к директории с .json файлами аннотаций
+        output_dir: путь к выходной директории для сохранения .json файлов
+    """
     logger.info(f"Начало работы в директории {input_dir}")
     if output_dir and not os.path.exists(output_dir):
         os.makedirs(output_dir)
