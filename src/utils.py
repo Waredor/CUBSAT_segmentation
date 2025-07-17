@@ -109,9 +109,10 @@ class ConfigManager:
                     "batch": [int],
                     "lr0": [float],
                     "patience": [int],
-                    "device": [str, int], #заменить на int, если используется cuda
+                    "device": [str, int],
                     "optimizer": [str],
-                    "freeze_layers": [int]
+                    "freeze_layers": [int],
+                    "class_names": [dict]
                     }
 
         for key, value in json_metadata.items():
