@@ -124,8 +124,7 @@ class ConfigManager:
                          "patience": [int],
                          "device": [str, int],
                          "optimizer": [str],
-                         "freeze_layers": [int],
-                         "class_names": [dict]
+                         "freeze_layers": [int]
                          }
 
         for key, value in json_metadata.items():
@@ -631,7 +630,7 @@ class Pipeline:
             self.logger.error(f"{yolo_annotations_path} не является директорией")
             raise NotADirectoryError(f"{yolo_annotations_path} не является директорией")
 
-        class_map = self.config['class_names']
+        class_map = {name: idx for idx, name in enumerate(self.config['names'])}
 
         os.makedirs(yolo_annotations_path, exist_ok=True)
         json_files = glob.glob(os.path.join(labelme_annotations_path, "*.json"))
