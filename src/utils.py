@@ -11,7 +11,6 @@ import yaml
 import ultralytics
 from PIL import Image
 
-
 logging.basicConfig(
     format='%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s] %(message)s',
     level=logging.INFO,
@@ -37,6 +36,7 @@ class ConfigManager:
             либо до .pt файла с предобученной моделью.
         output_dir (str): путь к директории для сохранения обученной модели.
     """
+
     def __init__(self, data_cfg: str, model_hyperparameters: str,
                  data_dir: str, model_cfg: str, output_dir: str) -> None:
         self.params = [data_cfg, model_hyperparameters, data_dir, model_cfg, output_dir]
@@ -52,7 +52,6 @@ class ConfigManager:
                              'is_dir': True, 'extension': ['']}
                          }
         self.logger = logging.getLogger(__name__)
-
 
     def _validate_path(self, el: str, is_file: bool, is_dir: bool, extensions: list) -> None:
         """
@@ -88,7 +87,6 @@ class ConfigManager:
                 self.logger.error(f'{el} имеет неверное расширение файла')
                 raise ValueError(f'{el} имеет неверное расширение файла')
 
-
     def _check_json_file(self, json_dict) -> None:
         """
         Вспомогательный метод _check_json_file() осуществляет проверку .json файла
@@ -105,15 +103,15 @@ class ConfigManager:
                 не соответствует требуемому.
         """
         json_metadata = {"epochs": [int],
-                    "imgsz": [int],
-                    "batch": [int],
-                    "lr0": [float],
-                    "patience": [int],
-                    "device": [str, int],
-                    "optimizer": [str],
-                    "freeze_layers": [int],
-                    "class_names": [dict]
-                    }
+                         "imgsz": [int],
+                         "batch": [int],
+                         "lr0": [float],
+                         "patience": [int],
+                         "device": [str, int],
+                         "optimizer": [str],
+                         "freeze_layers": [int],
+                         "class_names": [dict]
+                         }
 
         for key, value in json_metadata.items():
             if key not in json_dict.keys():
@@ -127,7 +125,7 @@ class ConfigManager:
             if type(json_dict[key]) not in value:
                 self.logger.error(f"Тип значения, получаемого из .json по ключу {key}, "
                                   f"не соответствует требуемому типу"
-                                f"(expected: {value}, got: {type(json_dict[key])})")
+                                  f"(expected: {value}, got: {type(json_dict[key])})")
                 raise TypeError(f"Тип значения, получаемого из .json по ключу {key}, "
                                 f"не соответствует требуемому типу"
                                 f"(expected: {value}, got: {type(json_dict[key])})")
@@ -146,7 +144,6 @@ class ConfigManager:
                     raise ValueError(f"Неверное значение из .json, получаемое по ключу {key}"
                                      f"expected: {[0, 'cpu']}, got: {json_dict[key]}")
 
-
     def _check_yaml_file(self, yaml_dict) -> None:
         """
         Вспомогательный метод _check_yaml_file() осуществляет проверку .yaml файла
@@ -164,11 +161,11 @@ class ConfigManager:
                 не является путем к дирректории.
         """
         yaml_metadata = {"path": str,
-                    "train": str,
-                    "val": str,
-                    "nc": int,
-                    "names": list
-                    }
+                         "train": str,
+                         "val": str,
+                         "nc": int,
+                         "names": list
+                         }
 
         for key, value in yaml_metadata.items():
             if key not in yaml_dict.keys():
@@ -182,7 +179,7 @@ class ConfigManager:
             if not isinstance(yaml_dict[key], value):
                 self.logger.error(f"Тип значения, получаемого из .yaml по ключу {key}, "
                                   f"не соответствует требуемому типу"
-                                f"(expected: {value}, got: {type(yaml_dict[key])})")
+                                  f"(expected: {value}, got: {type(yaml_dict[key])})")
                 raise TypeError(f"Тип значения, получаемого из .yaml по ключу {key}, "
                                 f"не соответствует требуемому типу"
                                 f"(expected: {value}, got: {type(yaml_dict[key])})")
@@ -230,7 +227,6 @@ class ConfigManager:
                     self.logger.error(f"{full_path} не является директорией")
                     raise NotADirectoryError(f'{full_path} не является директорией')
 
-
     def validate_config(self) -> None:
         """
         Метод validate_config() осуществляет проверку переданных в класс переменных
@@ -246,7 +242,7 @@ class ConfigManager:
 
             if not isinstance(el, self.metadata[idx]['expected_type']):
                 self.logger.error(f"Переменная {el} имеет неправильный тип данных"
-                                 f" (expected: {self.metadata[idx]['expected_type']}, "
+                                  f" (expected: {self.metadata[idx]['expected_type']}, "
                                   f"got: {type(el)})")
                 raise ValueError(f"Переменная {el} имеет неправильный тип данных"
                                  f" (expected: {self.metadata[idx]['expected_type']}, "
@@ -261,7 +257,6 @@ class ConfigManager:
                 )
 
         self.logger.info("Валидация завершена")
-
 
     def load_config(self) -> dict:
         """
@@ -316,12 +311,12 @@ class ModelTrainer:
         hyperparameters (dict): словарь с гиперпараметрами модели для обучения
             и путем к конфигурационному файлу датасета.
     """
+
     def __init__(self, model_cfg: str, hyperparameters: dict) -> None:
         self.model_cfg = model_cfg
         self.hyperparameters = hyperparameters
         self.model = ultralytics.YOLO(self.model_cfg)
         self.logger = logging.getLogger(__name__)
-
 
     def freeze_layers(self, num_layers_to_freeze: int) -> None:
         """
@@ -337,7 +332,6 @@ class ModelTrainer:
                 break
             layer_count += 1
         self.logger.info(f"Заморожено первых {layer_count} слоев")
-
 
     def train_model(self) -> torch.nn.Module:
         """
@@ -379,11 +373,11 @@ class AnnotationProcessor:
         output_dir (str): директория для сохранения созданных аннотаций.
         class_names (list): список с именами используемых классов.
     """
+
     def __init__(self, output_dir: str, class_names: list) -> None:
         self.output_dir = output_dir
         self.class_names = class_names
         self.logger = logging.getLogger(__name__)
-
 
     def mask_to_polygons(self, mask: np.ndarray) -> list:
         """
@@ -402,7 +396,6 @@ class AnnotationProcessor:
                 polygons.append(polygon)
 
         return polygons
-
 
     def create_labelme_json(self, image_path: str, masks: np.ndarray, labels: np.ndarray,
                             class_names: list, output_dir: str) -> str:
@@ -467,13 +460,13 @@ class InferenceRunner:
         annotation_processor (AnnotationProcessor): экземпляр класса AnnotationProcessor
             для создания разметки к инференсу.
     """
+
     def __init__(self, model: torch.nn.Module, img_size: int,
                  annotation_processor: AnnotationProcessor) -> None:
         self.model = model
         self.img_size = img_size
         self.annotation_processor = annotation_processor
         self.logger = logging.getLogger(__name__)
-
 
     def run_inference(self, image_path: str) -> list:
         """
@@ -497,7 +490,6 @@ class InferenceRunner:
             self.logger.error(f"Файл {image_path} не найден")
             raise FileNotFoundError(f"Файл {image_path} не найден") from exc
 
-
     def process_images(self, test_images_dir: str) -> None:
         """
         Метод process_images() обрабатывает все изображения в указанной директории,
@@ -511,7 +503,7 @@ class InferenceRunner:
             raise NotADirectoryError(f"{test_images_dir} не является директорией")
 
         test_images = [os.path.join(test_images_dir, f) for f in os.listdir(test_images_dir) if
-                    f.endswith(('.jpg', '.png'))]
+                       f.endswith(('.jpg', '.png'))]
         for image_path in test_images:
             results = self.run_inference(image_path)
             if results[0].masks is not None:
@@ -540,6 +532,7 @@ class Pipeline:
         model_hyperparameters (str): путь к .json файлу с гиперпараметрами модели.
         output_dir (str): путь к директории сохранения обученной модели.
     """
+
     def __init__(self, data_cfg: str, model_cfg: str, model_hyperparameters: str, data_dir: str,
                  output_dir: str) -> None:
         self.logger = logging.getLogger(__name__)
@@ -560,7 +553,6 @@ class Pipeline:
         self.model = self.model_trainer.model
         self.logger.info("Инициализация Pipeline выполнена успешно")
 
-
     def fine_tune_for_labeling(self, model_output_dir: str) -> None:
         """
         Метод fine_tune_for_labeling() используется для дообучения под конкретную задачу модели,
@@ -573,7 +565,6 @@ class Pipeline:
         self.logger.info("Сохранение дообученной модели")
         self.model.save(model_output_dir)
         self.logger.info("Успешное сохранение")
-
 
     def create_new_json_annotations(self, test_images_dir: str,
                                     annotations_output_dir: str) -> None:
@@ -597,7 +588,6 @@ class Pipeline:
         inference_runner.process_images(test_images_dir)
         self.logger.info("Создание аннотаций завершено")
 
-
     def convert_labelme_to_yolo(self, labelme_annotations_path: str,
                                 yolo_annotations_path: str) -> None:
         """
@@ -606,6 +596,9 @@ class Pipeline:
         Parameters:
             labelme_annotations_path (str): путь к директории с аннотациями в формате .json LabelMe.
             yolo_annotations_path (str): путь к директории с аннотациями в формате .txt YOLOv11.
+        Raises:
+            NotADirectoryError: если путь не является директорией
+            FileNotFoundError: если файл по искомому пути не найден
         """
         if not os.path.isdir(labelme_annotations_path):
             self.logger.error(f"{labelme_annotations_path} не является директорией")
@@ -675,4 +668,3 @@ class Pipeline:
                 self.logger.info(f"Сконвертирован {base_name}.txt")
 
         self.logger.info("Конвертация аннотаций завершена")
-
