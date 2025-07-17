@@ -324,7 +324,7 @@ class ModelTrainer:
 
     def freeze_layers(self, num_layers_to_freeze: int) -> None:
         """
-        Вспомогательный метод _freeze_layers() осуществляет заморозку слоев в backbone.
+        Метод freeze_layers() осуществляет заморозку слоев в backbone.
         Parameters:
             num_layers_to_freeze (int): количество замораживаемых слоев начиная с входного.
         """
@@ -606,25 +606,37 @@ class Pipeline:
             labelme_annotations_path (str): путь к директории с аннотациями в формате .json LabelMe.
             yolo_annotations_path (str): путь к директории с аннотациями в формате .txt YOLOv11.
         """
-        self.logger.info("Начало конвертации аннотаций")
-        class_map = {
-            'FT': 0,
-            'Engine': 1,
-            'Solar Panel': 2
-        }
+        if not os.path.isdir(labelme_annotations_path):
+            self.logger.error(f"{labelme_annotations_path} не является директорией")
+            raise NotADirectoryError(f"{labelme_annotations_path} не является директорией")
+
+        if not os.path.isdir(yolo_annotations_path):
+            self.logger.error(f"{yolo_annotations_path} не является директорией")
+            raise NotADirectoryError(f"{yolo_annotations_path} не является директорией")
+
+        class_map = self.config['class_names']
 
         os.makedirs(yolo_annotations_path, exist_ok=True)
         json_files = glob.glob(os.path.join(labelme_annotations_path, "*.json"))
+        if len(json_files) == 0:
+            self.logger.warning(f"Аннотации не найдены в {labelme_annotations_path}")
+            raise FileNotFoundError(f"Аннотации не найдены в {labelme_annotations_path}")
 
+        self.logger.info("Начало конвертации аннотаций")
         for json_path in json_files:
-            with open(json_path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
+            try:
+                with open(json_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+
+            except json.decoder.JSONDecodeError:
+                self.logger.warning(f"Пустой файл {f}")
+                continue
 
             image_filename = data.get('imagePath')
             image_path = os.path.join(labelme_annotations_path, image_filename)
 
             if not os.path.exists(image_path):
-                print(f"Изображение не найдено: {image_path}")
+                self.logger.warning(f"Изображение не найдено: {image_path}")
                 continue
 
             with Image.open(image_path) as img:
@@ -636,11 +648,11 @@ class Pipeline:
                 points = shape.get('points', [])
 
                 if label not in class_map:
-                    print(f"Пропущен неизвестный класс: '{label}' в {json_path}")
+                    self.logger.warning(f"Пропущен неизвестный класс: '{label}' в {json_path}")
                     continue
 
                 if len(points) < 3:
-                    print(f"Пропущен объект с недостатком точек в {json_path}")
+                    self.logger.warning(f"Пропущен объект с недостатком точек в {json_path}")
                     continue
 
                 class_id = class_map[label]
