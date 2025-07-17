@@ -1,3 +1,4 @@
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 import os
 import logging
@@ -20,10 +21,17 @@ logging.basicConfig(
 )
 
 stream_handler = logging.StreamHandler()
+rotating_file_handler = RotatingFileHandler(
+    filename='cubsat_log.txt',
+    maxBytes=1048576,
+    backupCount=3
+)
 stream_handler.setLevel(logging.INFO)
+rotating_file_handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(filename)s[LINE:%(lineno)d]# %(levelname)-8s '
                               '[%(asctime)s] %(message)s')
 stream_handler.setFormatter(formatter)
+rotating_file_handler.setFormatter(formatter)
 
 class ConfigManager:
     """
@@ -58,6 +66,7 @@ class ConfigManager:
                          }
         self.logger = logging.getLogger(__name__)
         self.logger.addHandler(stream_handler)
+        self.logger.addHandler(rotating_file_handler)
 
     def _validate_path(self, el: str, is_file: bool, is_dir: bool, extensions: list) -> None:
         """
@@ -324,6 +333,7 @@ class ModelTrainer:
         self.model = ultralytics.YOLO(self.model_cfg)
         self.logger = logging.getLogger(__name__)
         self.logger.addHandler(stream_handler)
+        self.logger.addHandler(rotating_file_handler)
 
     def freeze_layers(self, num_layers_to_freeze: int) -> None:
         """
@@ -386,6 +396,7 @@ class AnnotationProcessor:
         self.class_names = class_names
         self.logger = logging.getLogger(__name__)
         self.logger.addHandler(stream_handler)
+        self.logger.addHandler(rotating_file_handler)
 
     def mask_to_polygons(self, mask: np.ndarray) -> list:
         """
@@ -476,6 +487,7 @@ class InferenceRunner:
         self.annotation_processor = annotation_processor
         self.logger = logging.getLogger(__name__)
         self.logger.addHandler(stream_handler)
+        self.logger.addHandler(rotating_file_handler)
 
     def run_inference(self, image_path: str) -> list:
         """
@@ -546,6 +558,7 @@ class Pipeline:
                  output_dir: str) -> None:
         self.logger = logging.getLogger(__name__)
         self.logger.addHandler(stream_handler)
+        self.logger.addHandler(rotating_file_handler)
         self.logger.info("Инициализация экземпляра класса Pipeline")
         self.config_manager = ConfigManager(
             data_cfg=data_cfg,
