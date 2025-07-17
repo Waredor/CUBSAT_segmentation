@@ -463,15 +463,13 @@ class InferenceRunner:
     Parameters:
         model (torch.nn.Module): обученная модель YOLOv11.
         img_size (int): размер изображения (изображение квадратное).
-        data_dir (str): путь к директории с датасетом в файловой системе.
         annotation_processor (AnnotationProcessor): экземпляр класса AnnotationProcessor
             для создания разметки к инференсу.
     """
-    def __init__(self, model: torch.nn.Module, img_size: int, data_dir: str,
+    def __init__(self, model: torch.nn.Module, img_size: int,
                  annotation_processor: AnnotationProcessor) -> None:
         self.model = model
         self.img_size = img_size
-        self.data_dir = data_dir
         self.annotation_processor = annotation_processor
         self.logger = logging.getLogger(__name__)
 
@@ -499,17 +497,19 @@ class InferenceRunner:
             raise FileNotFoundError(f"Файл {image_path} не найден") from exc
 
 
-    def process_images(self) -> None:
+    def process_images(self, test_images_dir: str) -> None:
         """
         Метод process_images() обрабатывает все изображения в указанной директории,
         выполняя инференс для каждого изображения и передавая результаты
         в AnnotationProcessor.
+        Parameters:
+            test_images_dir (str): Путь к директории с изображениями
         """
-        if not os.path.isdir(self.data_dir):
-            self.logger.error(f"{self.data_dir} не является директорией")
-            raise NotADirectoryError(f"{self.data_dir} не является директорией")
+        if not os.path.isdir(test_images_dir):
+            self.logger.error(f"{test_images_dir} не является директорией")
+            raise NotADirectoryError(f"{test_images_dir} не является директорией")
 
-        test_images = [os.path.join(self.data_dir, f) for f in os.listdir(self.data_dir) if
+        test_images = [os.path.join(test_images_dir, f) for f in os.listdir(test_images_dir) if
                     f.endswith(('.jpg', '.png'))]
         for image_path in test_images:
             results = self.run_inference(image_path)
@@ -591,10 +591,9 @@ class Pipeline:
         inference_runner = InferenceRunner(
             model=self.model,
             img_size=self.config['imgsz'],
-            data_dir=test_images_dir,
             annotation_processor=annotation_processor
         )
-        inference_runner.process_images()
+        inference_runner.process_images(test_images_dir)
         self.logger.info("Создание аннотаций завершено")
 
 
