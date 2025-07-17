@@ -19,6 +19,11 @@ logging.basicConfig(
     encoding='utf-8'
 )
 
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(filename)s[LINE:%(lineno)d]# %(levelname)-8s '
+                              '[%(asctime)s] %(message)s')
+stream_handler.setFormatter(formatter)
 
 class ConfigManager:
     """
@@ -52,6 +57,7 @@ class ConfigManager:
                              'is_dir': True, 'extension': ['']}
                          }
         self.logger = logging.getLogger(__name__)
+        self.logger.addHandler(stream_handler)
 
     def _validate_path(self, el: str, is_file: bool, is_dir: bool, extensions: list) -> None:
         """
@@ -317,6 +323,7 @@ class ModelTrainer:
         self.hyperparameters = hyperparameters
         self.model = ultralytics.YOLO(self.model_cfg)
         self.logger = logging.getLogger(__name__)
+        self.logger.addHandler(stream_handler)
 
     def freeze_layers(self, num_layers_to_freeze: int) -> None:
         """
@@ -378,6 +385,7 @@ class AnnotationProcessor:
         self.output_dir = output_dir
         self.class_names = class_names
         self.logger = logging.getLogger(__name__)
+        self.logger.addHandler(stream_handler)
 
     def mask_to_polygons(self, mask: np.ndarray) -> list:
         """
@@ -467,6 +475,7 @@ class InferenceRunner:
         self.img_size = img_size
         self.annotation_processor = annotation_processor
         self.logger = logging.getLogger(__name__)
+        self.logger.addHandler(stream_handler)
 
     def run_inference(self, image_path: str) -> list:
         """
@@ -536,6 +545,7 @@ class Pipeline:
     def __init__(self, data_cfg: str, model_cfg: str, model_hyperparameters: str, data_dir: str,
                  output_dir: str) -> None:
         self.logger = logging.getLogger(__name__)
+        self.logger.addHandler(stream_handler)
         self.logger.info("Инициализация экземпляра класса Pipeline")
         self.config_manager = ConfigManager(
             data_cfg=data_cfg,
