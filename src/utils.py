@@ -11,6 +11,7 @@ import numpy as np
 import yaml
 import ultralytics
 from PIL import Image
+from Tools.demo.spreadsheet import ljust
 
 logging.basicConfig(
     format='%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s] %(message)s',
@@ -630,7 +631,7 @@ class Pipeline:
             self.logger.error(f"{yolo_annotations_path} не является директорией")
             raise NotADirectoryError(f"{yolo_annotations_path} не является директорией")
 
-        class_map = {name: idx for idx, name in enumerate(self.config['names'])}
+        class_map = {name: idx for idx, name in enumerate(self.config['class_names'])}
 
         os.makedirs(yolo_annotations_path, exist_ok=True)
         json_files = glob.glob(os.path.join(labelme_annotations_path, "*.json"))

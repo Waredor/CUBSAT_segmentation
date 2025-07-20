@@ -1,3 +1,7 @@
-utils.py[LINE:545]# INFO     [2025-07-17 11:48:05,714] Инициализация экземпляра класса Pipeline
-utils.py[LINE:243]# INFO     [2025-07-17 11:48:05,714] Начало валидации
-utils.py[LINE:89]# ERROR    [2025-07-17 11:48:05,715] D:/Python projects/CUBSAT_Dataset_segmentation/Fine_tuning/dataset.yaml не является путем к файлу
+utils.py[LINE:562]# INFO     [2025-07-20 22:06:10,926] Инициализация экземпляра класса Pipeline
+utils.py[LINE:252]# INFO     [2025-07-20 22:06:10,927] Начало валидации
+utils.py[LINE:274]# INFO     [2025-07-20 22:06:10,927] Валидация завершена
+utils.py[LINE:315]# INFO     [2025-07-20 22:06:10,932] Загружен файл конфигурации: D:/Python projects/CUBSAT_Dataset_segmentation/Fine_tuning/dataset.yaml
+utils.py[LINE:315]# INFO     [2025-07-20 22:06:10,932] Загружен файл конфигурации: D:/Python projects/CUBSAT_segmentation/Model_cfg/model_cfg.json
+utils.py[LINE:315]# INFO     [2025-07-20 22:06:10,932] Загружен файл конфигурации: D:/Python projects/CUBSAT_segmentation/Model_cfg/yolo11n-seg_labeling.pt
+utils.py[LINE:577]# INFO     [2025-07-20 22:06:11,082] Инициализация Pipeline выполнена успешно

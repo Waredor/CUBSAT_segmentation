@@ -93,8 +93,8 @@ def yolo_to_labelme(yolo_file: str, image_path: str,
     logger.info(f"Успешно сконвертирован файл {output_json}")
 
 if __name__ == '__main__':
-    labels_path = 'C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/test_output/yolo_labels/'
-    output_path = 'C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/Datasets/test_output/new_json_labels/'
+    labels_path = 'D:/Python projects/CUBSAT_dataset_segmentation/labels/yolo_labels/'
+    output_path = 'D:/Python projects/CUBSAT_dataset_segmentation/labels/json_labels/'
     class_names = ["FT", "Engine", "Solar Panel"]
     logger.info("Начало работы")
     labels = [Path(os.path.join(labels_path, f)) for f in os.listdir(labels_path) if
