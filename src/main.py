@@ -25,13 +25,13 @@ if __name__ == '__main__':
     )
 
     #Run Pipeline
-    #labeling_pipeline.fine_tune_for_labeling(model_output_dir=model_output_path)
-    #labeling_pipeline.create_new_json_annotations(
-        #test_images_dir=output_path_img,
-        #annotations_output_dir=output_path_labels
-    #)
-
-    labeling_pipeline.convert_labelme_to_yolo(
-        labelme_annotations_path=labelme_input_labels_path,
-        yolo_annotations_path=yolo_convert_labels_path
+    labeling_pipeline.fine_tune_for_labeling(model_output_dir=model_output_path)
+    labeling_pipeline.create_new_json_annotations(
+        test_images_dir=output_path_img,
+        annotations_output_dir=output_path_labels
     )
+
+    #labeling_pipeline.convert_labelme_to_yolo(
+        #labelme_annotations_path=labelme_input_labels_path,
+        #yolo_annotations_path=yolo_convert_labels_path
+    #)
