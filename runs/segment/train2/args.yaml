@@ -1,6 +1,6 @@
 task: segment
 mode: train
-model: D:/Python projects/CUBSAT_segmentation/Model_cfg/yolo11n-seg_labeling.pt
+model: D:/Python projects/CUBSAT_segmentation/Model_cfg/yolo11n-seg_final_old.pt
 data: D:/Python projects/CUBSAT_Dataset_segmentation/Fine_tuning/dataset.yaml
 epochs: 30
 time: null

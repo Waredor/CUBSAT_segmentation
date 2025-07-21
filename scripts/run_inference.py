@@ -1,7 +1,34 @@
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 from PIL import Image, ImageDraw
 from ultralytics import YOLO
-import numpy as np
+
+logging.basicConfig(
+    format='%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s] %(message)s',
+    level=logging.INFO,
+    filename='inference_log.txt',
+    filemode='w',
+    encoding='utf-8'
+)
+
+stream_handler = logging.StreamHandler()
+rotating_file_handler = RotatingFileHandler(
+    filename='inference_log.txt',
+    maxBytes=1048576,
+    backupCount=3
+)
+stream_handler.setLevel(logging.INFO)
+rotating_file_handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(filename)s[LINE:%(lineno)d]# %(levelname)-8s '
+                              '[%(asctime)s] %(message)s')
+stream_handler.setFormatter(formatter)
+rotating_file_handler.setFormatter(formatter)
+
+logger = logging.getLogger(__name__)
+logger.addHandler(stream_handler)
+logger.addHandler(rotating_file_handler)
+
 
 # Настройки классов и цветов
 CLASS_NAMES = {0: "FT", 1: "Engine", 2: "Solar Panel", 3: "background"}
@@ -13,32 +40,37 @@ CLASS_COLORS = {
 }
 
 # Ручное указание путей
-image_path = "D:/Python projects/CUBSAT_segmentation/inference/1.jpg"
-model_path = "D:/Python projects/CUBSAT_segmentation/inference/yolo11n-seg_final.pt"
-output_path = "D:/Python projects/CUBSAT_segmentation/inference/output/1_pred.png"
+IMAGE_PATH = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/CUBSAT_segmentation/inference/1.jpg"
+MODEL_PATH = ("C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/CUBSAT_segmentation/inference"
+              "/yolo11n-seg_final.pt")
+OUTPUT_PATH = ("C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/CUBSAT_segmentation/inference/"
+               "output/1_pred.png")
 
-def get_yolo_predictions(image_path, model_path):
-    """Получает предсказания от модели YOLOv11."""
-    if not os.path.exists(image_path):
-        print(f"Изображение {image_path} не найдено.")
-        return None
-    if not os.path.exists(model_path):
-        print(f"Модель {model_path} не найдена.")
-        return None
+def get_yolo_predictions(image_dir: str, model_dir: str) -> list:
+    """
+    Метод get_yolo_predictions()
+    получает предсказания от модели YOLOv11.
+    Parameters:
+        image_dir (str): путь к изображению для инференса.
+        model_dir(str): путь к файлу .pt модели YOLOv11.
+    Returns:
+        annotations (dict): Словарь с предсказанными моделью масками и метками классов.
+    """
+    if not os.path.exists(image_dir):
+        logger.warning(f"Изображение {image_dir} не найдено.")
+
+    if not os.path.exists(model_dir):
+        logger.warning(f"Модель {model_dir} не найдена.")
 
     try:
-        # Загрузка модели YOLOv11
-        model = YOLO(model_path)
-        # Выполнение инференса
-        results = model.predict(image_path, conf=0.5)  # conf можно настроить
+        model = YOLO(model_dir)
+        results = model.predict(image_dir, conf=0.5)
         annotations = []
 
-        # Обработка результатов
         for result in results:
             if result.masks is not None:
                 for mask, cls in zip(result.masks.xy, result.boxes.cls):
                     class_id = int(cls)
-                    # Получение координат полигона маски
                     polygon = [(float(x), float(y)) for x, y in mask]
                     annotations.append({
                         "class_id": class_id,
@@ -47,25 +79,31 @@ def get_yolo_predictions(image_path, model_path):
 
         return annotations
     except Exception as e:
-        print(f"Ошибка при выполнении инференса: {e}")
-        return None
+        logger.error(f"Ошибка при выполнении инференса: {e}")
+        raise RuntimeError(f"Ошибка при выполнении инференса: {e}")
 
-def draw_masks(image_path, annotations, output_path):
-    """Отрисовывает маски на изображении."""
-    # Отладочный вывод
-    print(f"Проверка пути изображения: {image_path}")
-    print(f"Текущая рабочая директория: {os.getcwd()}")
 
-    # Проверка существования файла
-    if not os.path.exists(image_path):
-        print(f"Изображение {image_path} не найдено. Проверьте путь или права доступа.")
+def draw_masks(image_dir: str, annotations: list, output_dir: str):
+    """
+    Метод draw_masks()
+    отрисовывает полигоны на изображении.
+    Parameters:
+        image_dir (str): путь к изображению для инференса.
+        annotations (list): список с предсказанными моделью масками и метками классов.
+        output_dir (str): путь к выходной директории для сохранения изображения
+            с полигонами классов.
+    """
+    logger.info(f"Проверка пути изображения: {image_dir}")
+    logger.info(f"Текущая рабочая директория: {os.getcwd()}")
+
+    if not os.path.exists(image_dir):
+        logger.warning(f"Изображение {image_dir} не найдено. Проверьте путь или права доступа.")
         return
 
-    # Открытие изображения
     try:
-        img = Image.open(image_path).convert("RGBA")
+        img = Image.open(image_dir).convert("RGBA")
     except Exception as e:
-        print(f"Ошибка при открытии изображения {image_path}: {e}")
+        logger.error(f"Ошибка при открытии изображения {image_dir}: {e}")
         return
 
     # Создание прозрачного слоя для масок
@@ -74,46 +112,41 @@ def draw_masks(image_path, annotations, output_path):
 
     # Проверка наличия аннотаций
     if not annotations:
-        print(f"Нет предсказанных масок для {image_path}.")
-        img.save(output_path)
+        logger.warning(f"Нет предсказанных масок для {image_dir}.")
+        img.save(output_dir)
         return
 
-    # Отрисовка масок
     for ann in annotations:
         class_id = ann["class_id"]
         polygon = ann["polygon"]
-        color = CLASS_COLORS.get(class_id, (255, 255, 255))  # Белый по умолчанию
+        color = CLASS_COLORS.get(class_id, (255, 255, 255))
 
-        # Отрисовка полигона с заливкой
-        if polygon and len(polygon) >= 2:
+        if polygon and len(polygon) >= 2 and class_id != 3:
             draw.polygon(polygon, fill=color + (128,))
 
-    # Наложение маски на изображение
     result = Image.alpha_composite(img, mask_layer)
     result = result.convert("RGB")  # Конвертация в RGB для сохранения в PNG
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    result.save(output_path)
-    print(f"Изображение с масками сохранено: {output_path}")
+    os.makedirs(os.path.dirname(output_dir), exist_ok=True)
+    result.save(output_dir)
+    logger.info(f"Изображение с масками сохранено: {output_dir}")
 
 def main():
-    # Установка рабочей директории
-    os.chdir(os.path.dirname(image_path) or os.getcwd())
+    os.chdir(os.path.dirname(IMAGE_PATH) or os.getcwd())
 
-    # Проверка существования файлов
-    if not os.path.exists(image_path):
-        print(f"Изображение {image_path} не найдено. Проверьте путь или права доступа.")
-        return
-    if not os.path.exists(model_path):
-        print(f"Модель {model_path} не найдена.")
-        return
+    if not os.path.exists(IMAGE_PATH):
+        logger.error(f"Изображение {IMAGE_PATH} не найдено. Проверьте путь или права доступа.")
+        raise FileNotFoundError(f"Изображение {IMAGE_PATH} не найдено. "
+                                f"Проверьте путь или права доступа.")
 
-    # Получение предсказаний от YOLOv11
-    annotations = get_yolo_predictions(image_path, model_path)
+    if not os.path.exists(MODEL_PATH):
+        logger.error(f"Модель {MODEL_PATH} не найдена.")
+        raise FileNotFoundError(f"Модель {MODEL_PATH} не найдена.")
+
+    annotations = get_yolo_predictions(IMAGE_PATH, MODEL_PATH)
     if annotations is None:
-        return
+        raise ValueError("Список с предсказаниями модели пуст.")
 
-    # Отрисовка масок
-    draw_masks(image_path, annotations, output_path)
+    draw_masks(IMAGE_PATH, annotations, OUTPUT_PATH)
 
 if __name__ == "__main__":
     main()
