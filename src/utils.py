@@ -11,7 +11,6 @@ import numpy as np
 import yaml
 import ultralytics
 from PIL import Image
-from Tools.demo.spreadsheet import ljust
 
 logging.basicConfig(
     format='%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s] %(message)s',

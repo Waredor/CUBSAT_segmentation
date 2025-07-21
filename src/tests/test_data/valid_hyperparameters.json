@@ -1,0 +1,1 @@
+{"epochs": 10, "imgsz": 640, "batch": 16, "lr0": 0.01, "optimizer": "Adam", "patience": 5, "device": "cpu", "freeze_layers": 10}
