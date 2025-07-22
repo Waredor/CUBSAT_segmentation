@@ -2,8 +2,7 @@ import unittest
 import os
 
 from unittest.mock import patch, MagicMock
-from src.utils import ConfigManager
-
+from src.utils import ConfigManager, ModelTrainer
 
 current_file = os.path.abspath(__file__)
 current_dir = os.path.dirname(current_file)
@@ -20,6 +19,8 @@ class TestConfigManager(unittest.TestCase):
         self.model_cfg = str(project_root_path) + '\\src\\tests\\test_data\\model.pt'
         self.valid_dataset = (str(project_root_path) +
                               '\\src\\tests\\test_data\\valid_dataset.yaml')
+        self.valid_hyperparameters = (str(project_root_path) +
+                                      '\\src\\tests\\test_data\\valid_hyperparameters.json')
         self.invalid_dataset_key_error = (str(project_root_path) +
                                           '\\src\\tests\\test_data\\invalid_dataset_key_error.yaml')
         self.invalid_dataset_key_none = (str(project_root_path) +
@@ -27,8 +28,6 @@ class TestConfigManager(unittest.TestCase):
         self.invalid_dataset_key_not_a_directory = (str(project_root_path) +
                                                     '\\src\\tests\\test_data\\'
                                                     'invalid_dataset_key_not_a_directory.yaml')
-        self.valid_hyperparameters = (str(project_root_path) +
-                                      '\\src\\tests\\test_data\\valid_hyperparameters.json')
         self.invalid_hyperparameters = (str(project_root_path) +
                                         '\\src\\tests\\test_data\\invalid_hyperparameters.json')
         self.invalid_json_to_parse = (str(project_root_path) +
@@ -298,3 +297,43 @@ class TestConfigManager(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             config_manager.load_config()
+
+
+class TestModelTrainer(unittest.TestCase):
+    def setUp(self):
+        self.temp_dir = str(project_root_path) + '\\src\\tests\\test_data\\'
+        self.model_cfg = str(project_root_path) + '\\src\\tests\\test_data\\model.pt'
+        self.valid_dataset = (str(project_root_path) +
+                              '\\src\\tests\\test_data\\valid_dataset.yaml')
+        self.valid_hyperparameters = (str(project_root_path) +
+                                      '\\src\\tests\\test_data\\valid_hyperparameters.json')
+
+    @patch('logging.getLogger')
+    def test_freeze_layers_success(self, mock_get_logger):
+        """
+        Этот тест проверяет работу метода ModelTrainer.freeze_layers()
+        при валидных конфигурационных файлах и параметрах модели
+        """
+        config_manager = ConfigManager(
+            data_cfg=self.valid_dataset,
+            model_hyperparameters=self.valid_hyperparameters,
+            data_dir=self.temp_dir,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir,
+        )
+        hyperparameters = config_manager.load_config()
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
+        model_trainer = ModelTrainer(
+            model_cfg=self.model_cfg,
+            hyperparameters=hyperparameters,
+        )
+        model_trainer.freeze_layers(
+            num_layers_to_freeze=hyperparameters["freeze_layers"]
+        )
+        layer_count = 0
+        for param in model_trainer.model.model.parameters():
+            if layer_count < hyperparameters["freeze_layers"]:
+                self.assertFalse(param.requires_grad)
+            layer_count += 1
+        self.assertEqual(mock_logger.info.call_count, 1)
