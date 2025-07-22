@@ -1,10 +1,5 @@
 import unittest
-import sys
 import os
-import yaml
-import json
-import cv2
-import numpy as np
 
 from unittest.mock import patch, MagicMock
 from src.utils import ConfigManager
@@ -19,14 +14,28 @@ while not os.path.exists(os.path.join(current_dir, '.venv')):
 
 project_root_path = os.path.abspath(current_dir)
 
-VALID_DATASET = str(project_root_path) + '\\src\\tests\\test_data\\valid_dataset.yaml'
-INVALID_DATASET = str(project_root_path) + '\\src\\tests\\test_data\\invalid_dataset.yaml'
-VALID_HYPERPARAMETERS = str(project_root_path) + '\\src\\tests\\test_data\\valid_hyperparameters.json'
-INVALID_HYPERPARAMETERS = str(project_root_path) + '\\src\\tests\\test_data\\invalid_hyperparameters.json'
-TEMP_DIR = str(project_root_path) + '\\src\\tests\\test_data\\'
-MODEL_CFG = str(project_root_path) + '\\src\\tests\\test_data\\model.pt'
-
 class TestConfigManager(unittest.TestCase):
+    def setUp(self):
+        self.temp_dir = str(project_root_path) + '\\src\\tests\\test_data\\'
+        self.model_cfg = str(project_root_path) + '\\src\\tests\\test_data\\model.pt'
+        self.valid_dataset = (str(project_root_path) +
+                              '\\src\\tests\\test_data\\valid_dataset.yaml')
+        self.invalid_dataset_key_error = (str(project_root_path) +
+                                          '\\src\\tests\\test_data\\invalid_dataset_key_error.yaml')
+        self.invalid_dataset_key_none = (str(project_root_path) +
+                                         '\\src\\tests\\test_data\\invalid_dataset_key_none.yaml')
+        self.invalid_dataset_key_not_a_directory = (str(project_root_path) +
+                                                    '\\src\\tests\\test_data\\'
+                                                    'invalid_dataset_key_not_a_directory.yaml')
+        self.valid_hyperparameters = (str(project_root_path) +
+                                      '\\src\\tests\\test_data\\valid_hyperparameters.json')
+        self.invalid_hyperparameters = (str(project_root_path) +
+                                        '\\src\\tests\\test_data\\invalid_hyperparameters.json')
+        self.invalid_json_to_parse = (str(project_root_path) +
+                                      '\\src\\tests\\test_data\\invalid_json_to_parse.json')
+        self.invalid_yaml_to_parse = (str(project_root_path) +
+                                      '\\src\\tests\\test_data\\invalid_yaml_to_parse.yaml')
+
     @patch('logging.getLogger')
     def test_validate_config_success(self, mock_get_logger):
         """
@@ -36,11 +45,11 @@ class TestConfigManager(unittest.TestCase):
         mock_logger = MagicMock()
         mock_get_logger.return_value = mock_logger
         config_manager = ConfigManager(
-            data_cfg=VALID_DATASET,
-            model_hyperparameters=VALID_HYPERPARAMETERS,
-            data_dir=TEMP_DIR,
-            model_cfg=MODEL_CFG,
-            output_dir=TEMP_DIR,
+            data_cfg=self.valid_dataset,
+            model_hyperparameters=self.valid_hyperparameters,
+            data_dir=self.temp_dir,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir,
         )
         config_manager.validate_config()
         self.assertEqual(mock_logger.info.call_count, 2)
@@ -48,3 +57,244 @@ class TestConfigManager(unittest.TestCase):
         self.assertEqual(calls[0], "Начало валидации")
         self.assertEqual(calls[1], "Валидация завершена")
 
+    @patch('logging.getLogger')
+    def test_validate_config_none_data_cfg(self, mock_get_logger):
+        """
+        Этот тест проверяет работу метода ConfigManager.validate_config()
+        с аргументом data_cfg=None
+        """
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
+        config_manager = ConfigManager(
+            data_cfg=None,
+            model_hyperparameters=self.valid_hyperparameters,
+            data_dir=self.temp_dir,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir,
+        )
+
+        with self.assertRaises(ValueError) as cm:
+            config_manager.validate_config()
+
+        self.assertEqual(str(cm.exception), "Переменная data_cfg имеет тип данных None")
+
+    @patch('logging.getLogger')
+    def test_validate_config_invalid_filepath_data_cfg(self, mock_get_logger):
+        """
+        Этот тест проверяет работу метода ConfigManager.validate_config()
+        с неправильным путем в аргументе data_cfg
+        """
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
+        config_manager = ConfigManager(
+            data_cfg='path\\false_path.yaml',
+            model_hyperparameters=self.valid_hyperparameters,
+            data_dir=self.temp_dir,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir,
+        )
+
+        with self.assertRaises(FileNotFoundError) as cm:
+            config_manager.validate_config()
+
+        self.assertEqual(str(cm.exception), "path\\false_path.yaml не является путем к файлу")
+
+    @patch('logging.getLogger')
+    def test_validate_config_invalid_filetype_data_cfg(self, mock_get_logger):
+        """
+        Этот тест проверяет работу метода ConfigManager.validate_config()
+        с неправильным расширением файла в аргументе data_cfg
+        """
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
+        filepath = str(project_root_path) + '\\src\\tests\\test_data\\valid_dataset.txt'
+        config_manager = ConfigManager(
+            data_cfg=filepath,
+            model_hyperparameters=self.valid_hyperparameters,
+            data_dir=self.temp_dir,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir,
+        )
+
+        with self.assertRaises(ValueError) as cm:
+            config_manager.validate_config()
+
+        self.assertEqual(str(cm.exception), f"{filepath} имеет неверное расширение файла")
+
+    @patch('logging.getLogger')
+    def test_validate_config_incorrect_type_data_dir(self, mock_get_logger):
+        """
+        Этот тест проверяет работу метода ConfigManager.validate_config()
+        с аргументом type(data_dir)=int
+        """
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
+        config_manager = ConfigManager(
+            data_cfg=self.valid_dataset,
+            model_hyperparameters=self.valid_hyperparameters,
+            data_dir=5,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir,
+        )
+
+        with self.assertRaises(ValueError) as cm:
+            config_manager.validate_config()
+
+        self.assertEqual(str(cm.exception), f"Переменная data_dir имеет неправильный "
+                                  f"тип данных"
+                                  f" (expected: <class 'str'>, "
+                                  f"got: <class 'int'>)")
+
+    @patch('logging.getLogger')
+    def test_load_config_success(self, mock_get_logger):
+        """
+        Этот тест проверяет работу метода ConfigManager.load_config()
+        с валидными конфигурационными файлами и путями к директориям
+        """
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
+        config_manager = ConfigManager(
+            data_cfg=self.valid_dataset,
+            model_hyperparameters=self.valid_hyperparameters,
+            data_dir=self.temp_dir,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir,
+        )
+        metadata = {
+            "epochs": [int],
+            "imgsz": [int],
+            "batch": [int],
+            "lr0": [float],
+            "patience": [int],
+            "device": [str, int],
+            "optimizer": [str],
+            "freeze_layers": [int],
+            "data_path": [str],
+            "class_names":[dict],
+            "output_dir": [str]
+        }
+        metadata_len = len(metadata.keys())
+        hyperparams = config_manager.load_config()
+        self.assertEqual(mock_logger.info.call_count, 5)
+        self.assertEqual(type(hyperparams), dict)
+        self.assertEqual(len(hyperparams.keys()), metadata_len)
+        self.assertIn("epochs", hyperparams.keys())
+        self.assertIn("imgsz", hyperparams.keys())
+        self.assertIn("batch", hyperparams.keys())
+        self.assertIn("lr0", hyperparams.keys())
+        self.assertIn("patience", hyperparams.keys())
+        self.assertIn("device", hyperparams.keys())
+        self.assertIn("optimizer", hyperparams.keys())
+        self.assertIn("freeze_layers", hyperparams.keys())
+        self.assertIn("data_path", hyperparams.keys())
+        self.assertIn("class_names", hyperparams.keys())
+        self.assertIn("output_dir", hyperparams.keys())
+
+    @patch('logging.getLogger')
+    def test_load_config_dataset_key_error(self, mock_get_logger):
+        """
+        Этот тест проверяет работу метода ConfigManager.load_config()
+        с отсутсвующим ключом в конфигурационном .yaml файле датасета
+        """
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
+        config_manager = ConfigManager(
+            data_cfg=self.invalid_dataset_key_error,
+            model_hyperparameters=self.valid_hyperparameters,
+            data_dir=self.temp_dir,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir,
+        )
+        with self.assertRaises(KeyError):
+            config_manager.load_config()
+
+    @patch('logging.getLogger')
+    def test_load_config_dataset_key_not_a_directory(self, mock_get_logger):
+        """
+        Этот тест проверяет работу метода ConfigManager.load_config()
+        со значением, получаемым по ключу директории, в конфигурационном .yaml файле датасета
+        и не являющимся директорией
+        """
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
+        config_manager = ConfigManager(
+            data_cfg=self.invalid_dataset_key_not_a_directory,
+            model_hyperparameters=self.valid_hyperparameters,
+            data_dir=self.temp_dir,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir,
+        )
+        with self.assertRaises(NotADirectoryError):
+            config_manager.load_config()
+
+    @patch('logging.getLogger')
+    def test_load_config_dataset_key_none(self, mock_get_logger):
+        """
+        Этот тест проверяет работу метода ConfigManager.load_config()
+        со значением None, получаемым по ключу, в конфигурационном .yaml файле датасета
+        """
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
+        config_manager = ConfigManager(
+            data_cfg=self.invalid_dataset_key_none,
+            model_hyperparameters=self.valid_hyperparameters,
+            data_dir=self.temp_dir,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir,
+        )
+        with self.assertRaises(ValueError):
+            config_manager.load_config()
+
+    @patch('logging.getLogger')
+    def test_load_config_hyperparameters_key_error(self, mock_get_logger):
+        """
+        Этот тест проверяет работу метода ConfigManager.load_config()
+        со значением неверного типа, получаемым по ключу, в конфигурационном .json файле модели
+        """
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
+        config_manager = ConfigManager(
+            data_cfg=self.valid_dataset,
+            model_hyperparameters=self.invalid_hyperparameters,
+            data_dir=self.temp_dir,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir,
+        )
+        with self.assertRaises(TypeError):
+            config_manager.load_config()
+
+    @patch('logging.getLogger')
+    def test_load_config_hyperparameters_json_error(self, mock_get_logger):
+        """
+        Этот тест проверяет работу метода ConfigManager.load_config()
+        с ошибкой в структуре конфигурационного .json файла модели
+        """
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
+        config_manager = ConfigManager(
+            data_cfg=self.valid_dataset,
+            model_hyperparameters=self.invalid_json_to_parse,
+            data_dir=self.temp_dir,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir,
+        )
+        with self.assertRaises(ValueError):
+            config_manager.load_config()
+
+    @patch('logging.getLogger')
+    def test_load_config_hyperparameters_yaml_error(self, mock_get_logger):
+        """
+        Этот тест проверяет работу метода ConfigManager.load_config()
+        с ошибкой в структуре конфигурационного .yaml файла датасета
+        """
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
+        config_manager = ConfigManager(
+            data_cfg=self.invalid_yaml_to_parse,
+            model_hyperparameters=self.valid_hyperparameters,
+            data_dir=self.temp_dir,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir,
+        )
+        with self.assertRaises(ValueError):
+            config_manager.load_config()

@@ -1,0 +1,5 @@
+path: \path\to\dataset
+train: images\train
+val: images\val
+nc:
+names: ['FT', 'Engine', 'Solar Panel', 'background']

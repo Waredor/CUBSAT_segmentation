@@ -1,0 +1,5 @@
+path: \path\to\dataset
+train: images\train
+val: \false_dir
+nc: 4
+names: ['FT', 'Engine', 'Solar Panel', 'background']

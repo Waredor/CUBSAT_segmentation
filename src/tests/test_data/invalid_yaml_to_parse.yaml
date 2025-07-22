@@ -1,4 +1,5 @@
 path: /path/to/dataset
-train: images/train
+  train: images/train
 val: images/val
+nc: 4
 names: ['FT', 'Engine', 'Solar Panel', 'background']

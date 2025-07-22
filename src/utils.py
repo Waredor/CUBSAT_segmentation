@@ -54,16 +54,16 @@ class ConfigManager:
     def __init__(self, data_cfg: str, model_hyperparameters: str,
                  data_dir: str, model_cfg: str, output_dir: str) -> None:
         self.params = [data_cfg, model_hyperparameters, data_dir, model_cfg, output_dir]
-        self.metadata = {0: {'expected_type': str, 'is_file': True,
-                             'is_dir': False, 'extension': ['.yaml']},
-                         1: {'expected_type': str, 'is_file': True,
-                             'is_dir': False, 'extension': ['.json']},
-                         2: {'expected_type': str, 'is_file': False,
-                             'is_dir': True, 'extension': ['']},
-                         3: {'expected_type': str, 'is_file': True,
-                             'is_dir': False, 'extension': ['.pt', '.yaml']},
-                         4: {'expected_type': str, 'is_file': False,
-                             'is_dir': True, 'extension': ['']}
+        self.metadata = {0: {'name': 'data_cfg', 'expected_type': str,
+                             'is_file': True, 'is_dir': False, 'extension': ['.yaml']},
+                         1: {'name': 'model_hyperparameters', 'expected_type': str,
+                             'is_file': True, 'is_dir': False, 'extension': ['.json']},
+                         2: {'name': 'data_dir', 'expected_type': str,
+                             'is_file': False, 'is_dir': True, 'extension': ['']},
+                         3: {'name': 'model_cfg', 'expected_type': str,
+                             'is_file': True, 'is_dir': False, 'extension': ['.pt', '.yaml']},
+                         4: {'name': 'output_dir', 'expected_type': str,
+                             'is_file': False, 'is_dir': True, 'extension': ['']}
                          }
         self.logger = logging.getLogger(__name__)
         self.logger.addHandler(stream_handler)
@@ -193,8 +193,8 @@ class ConfigManager:
 
             if not isinstance(yaml_dict[key], value):
                 self.logger.error(f"Тип значения, получаемого из .yaml по ключу {key}, "
-                                  f"не соответствует требуемому типу"
-                                  f"(expected: {value}, got: {type(yaml_dict[key])})")
+                                f"не соответствует требуемому типу"
+                                f"(expected: {value}, got: {type(yaml_dict[key])})")
                 raise TypeError(f"Тип значения, получаемого из .yaml по ключу {key}, "
                                 f"не соответствует требуемому типу"
                                 f"(expected: {value}, got: {type(yaml_dict[key])})")
@@ -252,14 +252,16 @@ class ConfigManager:
         self.logger.info("Начало валидации")
         for idx, el in enumerate(self.params):
             if el is None:
-                self.logger.error(f"Переменная {el} имеет тип данных None")
-                raise ValueError(f'Переменная {el} имеет тип данных None')
+                self.logger.error(f"Переменная {self.metadata[idx]['name']} имеет тип данных None")
+                raise ValueError(f"Переменная {self.metadata[idx]['name']} имеет тип данных None")
 
             if not isinstance(el, self.metadata[idx]['expected_type']):
-                self.logger.error(f"Переменная {el} имеет неправильный тип данных"
+                self.logger.error(f"Переменная {self.metadata[idx]['name']} имеет неправильный "
+                                  f"тип данных"
                                   f" (expected: {self.metadata[idx]['expected_type']}, "
                                   f"got: {type(el)})")
-                raise ValueError(f"Переменная {el} имеет неправильный тип данных"
+                raise ValueError(f"Переменная {self.metadata[idx]['name']} имеет неправильный "
+                                 f"тип данных"
                                  f" (expected: {self.metadata[idx]['expected_type']}, "
                                  f"got: {type(el)})")
 

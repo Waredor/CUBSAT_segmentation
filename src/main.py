@@ -13,11 +13,12 @@ if __name__ == '__main__':
     project_root_path = os.path.abspath(current_dir)
 
     # Путь к корневой папке с датасетом (изменить на свой)
-    DATA_ROOT_PATH = "D:\\Python projects\\CUBSAT_Dataset_segmentation\\Fine_tuning"
+    DATA_ROOT_PATH = str(project_root_path) + "\\src\\tests\\test_data"
+    #DATA_ROOT_PATH = "D:\\Python projects\\CUBSAT_Dataset_segmentation\\Fine_tuning"
 
     # Hyperparameters and configs
     MODEL_CFG = str(project_root_path) + "\\Model_cfg\\model_cfg.json"      # параметры модели для обучения
-    DATA_CFG = DATA_ROOT_PATH + "\\dataset.yaml"      # конфигурация датасета
+    DATA_CFG = DATA_ROOT_PATH + "\\valid_dataset.yaml"      # конфигурация датасета
     MODEL_PATH = str(project_root_path) + "\\Model_cfg\\yolo11n-seg_labeling.pt"        # файл с предобученной моделью
     OUTPUT_DIR = str(project_root_path) + "\\Model_cfg\\"
 

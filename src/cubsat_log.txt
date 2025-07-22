@@ -1,3 +1,11 @@
-utils.py[LINE:566]# INFO     [2025-07-22 09:33:18,656] Инициализация экземпляра класса Pipeline
-utils.py[LINE:252]# INFO     [2025-07-22 09:33:18,657] Начало валидации
-utils.py[LINE:99]# ERROR    [2025-07-22 09:33:18,657] D:\Python projects\CUBSAT_Dataset_segmentation\Fine_tuning\dataset.yaml не является путем к файлу
+utils.py[LINE:568]# INFO     [2025-07-22 11:48:13,338] Инициализация экземпляра класса Pipeline
+utils.py[LINE:252]# INFO     [2025-07-22 11:48:13,338] Начало валидации
+utils.py[LINE:276]# INFO     [2025-07-22 11:48:13,339] Валидация завершена
+utils.py[LINE:317]# INFO     [2025-07-22 11:48:13,340] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_dataset.yaml
+utils.py[LINE:317]# INFO     [2025-07-22 11:48:13,342] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\Model_cfg\model_cfg.json
+utils.py[LINE:317]# INFO     [2025-07-22 11:48:13,342] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\Model_cfg\yolo11n-seg_labeling.pt
+utils.py[LINE:583]# INFO     [2025-07-22 11:48:13,791] Инициализация Pipeline выполнена успешно
+utils.py[LINE:592]# INFO     [2025-07-22 11:48:13,792] Начато дообучение модели
+utils.py[LINE:365]# INFO     [2025-07-22 11:48:13,792] Начало обучения
+utils.py[LINE:366]# INFO     [2025-07-22 11:48:13,792] Обучение модели с параметрами: {'data_path': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\valid_dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel', 'background'], 'epochs': 30, 'imgsz': 1024, 'batch': 4, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\Model_cfg\\'}
+utils.py[LINE:357]# INFO     [2025-07-22 11:48:13,793] Заморожено первых 10 слоев
