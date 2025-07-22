@@ -13,12 +13,11 @@ if __name__ == '__main__':
     project_root_path = os.path.abspath(current_dir)
 
     # Путь к корневой папке с датасетом (изменить на свой)
-    DATA_ROOT_PATH = str(project_root_path) + "\\src\\tests\\test_data"
-    #DATA_ROOT_PATH = "D:\\Python projects\\CUBSAT_Dataset_segmentation\\Fine_tuning"
+    DATA_ROOT_PATH = "D:\\Python projects\\CUBSAT_Dataset_segmentation\\Fine_tuning"
 
     # Hyperparameters and configs
     MODEL_CFG = str(project_root_path) + "\\Model_cfg\\model_cfg.json"      # параметры модели для обучения
-    DATA_CFG = DATA_ROOT_PATH + "\\valid_dataset.yaml"      # конфигурация датасета
+    DATA_CFG = DATA_ROOT_PATH + "\\dataset.yaml"      # конфигурация датасета
     MODEL_PATH = str(project_root_path) + "\\Model_cfg\\yolo11n-seg_labeling.pt"        # файл с предобученной моделью
     OUTPUT_DIR = str(project_root_path) + "\\Model_cfg\\"
 
@@ -26,7 +25,7 @@ if __name__ == '__main__':
     OUTPUT_PATH_IMG = DATA_ROOT_PATH + "\\images\\test"
     OUTPUT_PATH_LABELS = DATA_ROOT_PATH + "\\labels\\test"
     YOLO_CONVERT_LABELS_PATH = DATA_ROOT_PATH + "\\labels\\train"
-    LABELME_INPUT_LABELS_PATH = DATA_ROOT_PATH + "\\labels\\json_labels\\"
+    LABELME_INPUT_LABELS_PATH = "D:\\Python projects\\CUBSAT_Dataset_segmentation" + "\\labels\\json_labels\\"
 
     # Pipeline init
     labeling_pipeline = Pipeline(
@@ -45,6 +44,6 @@ if __name__ == '__main__':
     )
 
     #labeling_pipeline.convert_labelme_to_yolo(
-        #labelme_annotations_path=labelme_input_labels_path,
-        #yolo_annotations_path=yolo_convert_labels_path
+        #labelme_annotations_path=LABELME_INPUT_LABELS_PATH,
+        #yolo_annotations_path=YOLO_CONVERT_LABELS_PATH
     #)

@@ -95,7 +95,7 @@ def yolo_to_labelme(yolo_file: str, image_dir: str,
 if __name__ == '__main__':
     LABELS_PATH = 'D:/Python projects/CUBSAT_dataset_segmentation/labels/yolo_labels/'
     OUTPUT_PATH = 'D:/Python projects/CUBSAT_dataset_segmentation/labels/json_labels/'
-    CLASS_NAMES = ["FT", "Engine", "Solar Panel"]
+    CLASS_NAMES = ["FT", "Engine", "Solar Panel", "background"]
     logger.info("Начало работы")
     labels = [Path(os.path.join(LABELS_PATH, f)) for f in os.listdir(LABELS_PATH) if
                    f.endswith('.txt')]
