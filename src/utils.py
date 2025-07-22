@@ -1,5 +1,3 @@
-from logging.handlers import RotatingFileHandler
-from pathlib import Path
 import os
 import logging
 import glob
@@ -10,6 +8,9 @@ import cv2
 import numpy as np
 import yaml
 import ultralytics
+
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
 from PIL import Image
 
 logging.basicConfig(
