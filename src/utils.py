@@ -314,6 +314,10 @@ class ConfigManager:
 
                 self.logger.info(f"Загружен файл конфигурации: {el}")
 
+            if self.metadata[idx]['is_dir'] is True:
+                if idx == 4:
+                    hyperparameters['output_dir'] = self.params[4]
+
         return hyperparameters
 
 
@@ -576,17 +580,17 @@ class Pipeline:
         self.model = self.model_trainer.model
         self.logger.info("Инициализация Pipeline выполнена успешно")
 
-    def fine_tune_for_labeling(self, model_output_dir: str) -> None:
+    def fine_tune_for_labeling(self, model_filename: str) -> None:
         """
         Метод fine_tune_for_labeling() используется для дообучения под конкретную задачу модели,
         предобученной на больших данных и ее сохранения в указанной директории.
         Parameters:
-            model_output_dir (str): путь к директории для сохранения модели.
+            model_filename (str): имя файла обученной модели с расширением .pt.
         """
         self.logger.info("Начато дообучение модели")
         self.model = self.model_trainer.train_model()
         self.logger.info("Сохранение дообученной модели")
-        self.model.save(model_output_dir)
+        self.model.save(self.config['output_dir'] + model_filename)
         self.logger.info("Успешное сохранение")
 
     def create_new_json_annotations(self, test_images_dir: str,
