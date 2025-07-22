@@ -140,10 +140,10 @@ class TestConfigManager(unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             config_manager.validate_config()
 
-        self.assertEqual(str(cm.exception), f"Переменная data_dir имеет неправильный "
-                                  f"тип данных"
-                                  f" (expected: <class 'str'>, "
-                                  f"got: <class 'int'>)")
+        self.assertEqual(str(cm.exception), "Переменная data_dir имеет неправильный "
+                                  "тип данных"
+                                  " (expected: <class 'str'>, "
+                                  "got: <class 'int'>)")
 
     @patch('logging.getLogger')
     def test_load_config_success(self, mock_get_logger):
