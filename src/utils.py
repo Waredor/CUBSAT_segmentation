@@ -3,10 +3,10 @@ import logging
 import glob
 import base64
 import json
+import yaml
 import torch
 import cv2
 import numpy as np
-import yaml
 import ultralytics
 
 from logging.handlers import RotatingFileHandler
@@ -356,11 +356,11 @@ class ModelTrainer:
             layer_count += 1
         self.logger.info(f"Заморожено первых {layer_count} слоев")
 
-    def train_model(self) -> torch.nn.Module:
+    def train_model(self) -> ultralytics.models.yolo.model.YOLO:
         """
         Метод train_model выполняет обучение модели YOLOv11.
         Returns:
-            self.model (torch.nn.Module)
+            self.model (ultralytics.models.yolo.model.YOLO)
         """
         self.logger.info("Начало обучения")
         self.logger.info(f"Обучение модели с параметрами: {self.hyperparameters}")
