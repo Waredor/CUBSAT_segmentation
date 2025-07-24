@@ -1,5 +1,10 @@
+import logging
 import unittest
 import os
+
+import torch.nn
+import ultralytics
+import yaml
 
 from unittest.mock import patch, MagicMock
 from src.utils import ConfigManager, ModelTrainer
@@ -13,12 +18,21 @@ while not os.path.exists(os.path.join(current_dir, '.venv')):
 
 project_root_path = os.path.abspath(current_dir)
 
+
+
 class TestConfigManager(unittest.TestCase):
     def setUp(self):
         self.temp_dir = str(project_root_path) + '\\src\\tests\\test_data\\'
         self.model_cfg = str(project_root_path) + '\\src\\tests\\test_data\\model.pt'
         self.valid_dataset = (str(project_root_path) +
                               '\\src\\tests\\test_data\\valid_dataset.yaml')
+        with open (file=self.valid_dataset, mode='r', encoding='utf-8') as f:
+            dataset_yaml_data = yaml.safe_load(f)
+
+        dataset_yaml_data['path'] = self.temp_dir
+        with open (file=self.valid_dataset, mode='w', encoding='utf-8') as f:
+            yaml.safe_dump(dataset_yaml_data, f, encoding='utf-8')
+
         self.valid_hyperparameters = (str(project_root_path) +
                                       '\\src\\tests\\test_data\\valid_hyperparameters.json')
         self.invalid_dataset_key_error = (str(project_root_path) +
@@ -337,3 +351,30 @@ class TestModelTrainer(unittest.TestCase):
                 self.assertFalse(param.requires_grad)
             layer_count += 1
         self.assertEqual(mock_logger.info.call_count, 1)
+
+    @patch('logging.getLogger')
+    def test_train_model_success(self, mock_get_logger):
+        """
+        Этот тест проверяет работу метода ModelTrainer.train_.model()
+        при валидных конфигурационных файлах и параметрах модели
+        """
+        config_manager = ConfigManager(
+            data_cfg=self.valid_dataset,
+            model_hyperparameters=self.valid_hyperparameters,
+            data_dir=self.temp_dir,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir,
+        )
+        hyperparameters = config_manager.load_config()
+        mock_logger = MagicMock()
+        mock_logger.level = logging.DEBUG
+        mock_get_logger.return_value = mock_logger
+        model_trainer = ModelTrainer(
+            model_cfg=self.model_cfg,
+            hyperparameters=hyperparameters,
+        )
+        model_trainer.train_model()
+        self.assertEqual(mock_logger.info.call_count, 5)
+        calls = [call[0][0] for call in mock_logger.info.call_args_list]
+        self.assertEqual(calls[0], "Начало обучения")
+        self.assertEqual(calls[4], "Обучение завершено")
