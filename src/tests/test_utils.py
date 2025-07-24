@@ -352,7 +352,8 @@ class TestModelTrainer(unittest.TestCase):
             layer_count += 1
         self.assertEqual(mock_logger.info.call_count, 1)
 
-    def test_train_model_success(self):
+    @patch('src.utils.logging.getLogger')
+    def test_train_model_success(self, mock_get_logger):
         logger = logging.getLogger('test_logger')
         logger.setLevel(logging.DEBUG)
         log_output = StringIO()
@@ -360,33 +361,25 @@ class TestModelTrainer(unittest.TestCase):
         formatter = logging.Formatter('%(levelname)s - %(message)s')
         handler.setFormatter(formatter)
         logger.addHandler(handler)
+        config_manager = ConfigManager(
+            data_cfg=self.valid_dataset,
+            model_hyperparameters=self.valid_hyperparameters,
+            data_dir=self.temp_dir,
+            model_cfg=self.model_cfg,
+            output_dir=self.temp_dir
+        )
+        hyperparameters = config_manager.load_config()
+        mock_logger = MagicMock()
+        mock_logger.level = logging.DEBUG
+        mock_get_logger.return_value = mock_logger
+        model_trainer = ModelTrainer(
+            model_cfg=self.model_cfg,
+            hyperparameters=hyperparameters
+        )
+        model = model_trainer.train_model()
 
-        with patch('src.utils.logging.getLogger', return_value=logger):
-            config_manager = ConfigManager(
-                data_cfg=self.valid_dataset,
-                model_hyperparameters=self.valid_hyperparameters,
-                data_dir=self.temp_dir,
-                model_cfg=self.model_cfg,
-                output_dir=self.temp_dir
-            )
-            hyperparameters = config_manager.load_config()
-            model_trainer = ModelTrainer(
-                model_cfg=self.model_cfg,
-                hyperparameters=hyperparameters
-            )
-            model = model_trainer.train_model()
-            self.assertIsInstance(model, YOLO)
-
-        handler.flush()
-        logger.removeHandler(handler)
-        log_content = log_output.getvalue().splitlines()
-        info_logs = [line.split(' - ')[1] for line in log_content
-                     if line.startswith('INFO')
-                     and "Loaded configuration file" not in line
-                     and "compile_threads set to 1 for win32" not in line
-                     and "Starting validation" not in line
-                     and "Validation completed" not in line]
-        self.assertEqual(len(info_logs), 4)
-        self.assertEqual(info_logs[0], "Starting training")
-        self.assertEqual(info_logs[3], "Training completed")
-        log_output.close()
+        self.assertIsInstance(model, YOLO)
+        self.assertEqual(mock_logger.info.call_count, 5)
+        calls = [call[0][0] for call in mock_logger.info.call_args_list]
+        self.assertEqual(calls[0], "Starting training")
+        self.assertEqual(calls[4], "Training completed")
