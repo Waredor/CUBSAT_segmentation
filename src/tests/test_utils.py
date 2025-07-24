@@ -16,7 +16,7 @@ def get_project_root():
                 os.path.exists(os.path.join(current_dir, 'requirements.txt'))):
             return os.path.abspath(current_dir)
         current_dir = os.path.dirname(current_dir)
-    raise FileNotFoundError("Корень проекта не найден (не найдены src или requirements.txt)")
+    raise FileNotFoundError("Project root not found (src or requirements.txt not found)")
 
 project_root_path = get_project_root()
 
@@ -63,7 +63,7 @@ class TestConfigManager(unittest.TestCase):
         )
         self.invalid_hyperparameters = os.path.join(
             project_root_path,
-            'src\\tests\\test_data\\valid_hyperparameters.json'
+            'src\\tests\\test_data\\invalid_hyperparameters.json'
         )
         self.invalid_json_to_parse = os.path.join(
             project_root_path,
@@ -88,8 +88,8 @@ class TestConfigManager(unittest.TestCase):
         config_manager.validate_config()
         self.assertEqual(mock_logger.info.call_count, 2)
         calls = [call[0][0] for call in mock_logger.info.call_args_list]
-        self.assertEqual(calls[0], "Начало валидации")
-        self.assertEqual(calls[1], "Валидация завершена")
+        self.assertEqual(calls[0], "Starting validation")
+        self.assertEqual(calls[1], "Validation completed")
 
     @patch('src.utils.logging.getLogger')
     def test_validate_config_none_data_cfg(self, mock_get_logger):
@@ -106,7 +106,7 @@ class TestConfigManager(unittest.TestCase):
             config_manager.validate_config()
         self.assertEqual(
             first=str(cm.exception),
-            second="Переменная data_cfg имеет тип данных None"
+            second="Parameter data_cfg is None"
         )
 
     @patch('src.utils.logging.getLogger')
@@ -124,7 +124,7 @@ class TestConfigManager(unittest.TestCase):
             config_manager.validate_config()
         self.assertEqual(
             first=str(cm.exception),
-            second=os.path.join("path", "false_path.yaml") + " не является путем к файлу"
+            second=os.path.join("path", "false_path.yaml") + " is not a path to file"
         )
 
     @patch('src.utils.logging.getLogger')
@@ -149,7 +149,7 @@ class TestConfigManager(unittest.TestCase):
             config_manager.validate_config()
         self.assertEqual(
             first=str(cm.exception),
-            second="{filepath} имеет неверное расширение файла"
+            second=f"{filepath} has invalid file extension"
         )
 
     @patch('src.utils.logging.getLogger')
@@ -167,7 +167,7 @@ class TestConfigManager(unittest.TestCase):
             config_manager.validate_config()
         self.assertEqual(
             first=str(cm.exception),
-            second="Переменная data_dir имеет неправильный тип данных "
+            second="Parameter data_dir has incorrect type "
             "(expected: <class 'str'>, got: <class 'int'>)"
         )
 
@@ -237,7 +237,7 @@ class TestConfigManager(unittest.TestCase):
             model_cfg=self.model_cfg,
             output_dir=self.temp_dir
         )
-        with self.assertRaises(NotADirectoryError):
+        with self.assertRaises(FileNotFoundError):
             config_manager.load_config()
 
     @patch('src.utils.logging.getLogger')
@@ -382,12 +382,11 @@ class TestModelTrainer(unittest.TestCase):
         log_content = log_output.getvalue().splitlines()
         info_logs = [line.split(' - ')[1] for line in log_content
                      if line.startswith('INFO')
-                     and "Загружен файл конфигурации" not in line
+                     and "Loaded configuration file" not in line
                      and "compile_threads set to 1 for win32" not in line
-                     and "Начало валидации" not in line
-                     and "Валидация завершена" not in line]
-        print("Все сообщения лога (INFO):", info_logs)
+                     and "Starting validation" not in line
+                     and "Validation completed" not in line]
         self.assertEqual(len(info_logs), 4)
-        self.assertEqual(info_logs[0], "Начало обучения")
-        self.assertEqual(info_logs[3], "Обучение завершено")
+        self.assertEqual(info_logs[0], "Starting training")
+        self.assertEqual(info_logs[3], "Training completed")
         log_output.close()

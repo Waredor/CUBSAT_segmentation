@@ -1,0 +1,197 @@
+utils.py[LINE:252]# INFO     [2025-07-24 14:57:14,545] Начало валидации
+utils.py[LINE:276]# INFO     [2025-07-24 14:57:14,546] Валидация завершена
+utils.py[LINE:317]# INFO     [2025-07-24 14:57:14,547] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_dataset.yaml
+utils.py[LINE:317]# INFO     [2025-07-24 14:57:14,548] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_hyperparameters.json
+utils.py[LINE:317]# INFO     [2025-07-24 14:57:14,548] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\model.pt
+utils.py[LINE:365]# INFO     [2025-07-24 14:57:14,600] Начало обучения
+utils.py[LINE:366]# INFO     [2025-07-24 14:57:14,601] Обучение модели с параметрами: {'data_path': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\valid_dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel', 'background'], 'epochs': 10, 'imgsz': 640, 'batch': 16, 'lr0': 0.01, 'optimizer': 'Adam', 'patience': 5, 'device': 'cpu', 'freeze_layers': 10, 'output_dir': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\'}
+utils.py[LINE:357]# INFO     [2025-07-24 14:57:14,601] Заморожено первых 10 слоев
+config.py[LINE:702]# INFO     [2025-07-24 14:57:18,522] compile_threads set to 1 for win32
+utils.py[LINE:387]# INFO     [2025-07-24 14:57:33,988] Обучение завершено
+remote_cache.py[LINE:417]# INFO     [2025-07-24 14:57:34,552] Cache Metrics: None
+
+eval_frame.py[LINE:475]# INFO     [2025-07-24 14:57:34,555] TorchDynamo attempted to trace the following frames: [
+
+]
+utils.py[LINE:765]# INFO     [2025-07-24 14:57:34,557] TorchDynamo compilation metrics:
+Function, Runtimes (s)
+utils.py[LINE:252]# INFO     [2025-07-24 14:58:29,446] Начало валидации
+utils.py[LINE:276]# INFO     [2025-07-24 14:58:29,447] Валидация завершена
+utils.py[LINE:317]# INFO     [2025-07-24 14:58:29,448] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_dataset.yaml
+utils.py[LINE:317]# INFO     [2025-07-24 14:58:29,449] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_hyperparameters.json
+utils.py[LINE:317]# INFO     [2025-07-24 14:58:29,449] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\model.pt
+utils.py[LINE:365]# INFO     [2025-07-24 14:58:29,502] Начало обучения
+utils.py[LINE:366]# INFO     [2025-07-24 14:58:29,502] Обучение модели с параметрами: {'data_path': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\valid_dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel', 'background'], 'epochs': 10, 'imgsz': 640, 'batch': 16, 'lr0': 0.01, 'optimizer': 'Adam', 'patience': 5, 'device': 'cpu', 'freeze_layers': 10, 'output_dir': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\'}
+utils.py[LINE:357]# INFO     [2025-07-24 14:58:29,503] Заморожено первых 10 слоев
+config.py[LINE:702]# INFO     [2025-07-24 14:58:33,280] compile_threads set to 1 for win32
+utils.py[LINE:387]# INFO     [2025-07-24 14:58:49,528] Обучение завершено
+remote_cache.py[LINE:417]# INFO     [2025-07-24 14:58:50,165] Cache Metrics: None
+
+eval_frame.py[LINE:475]# INFO     [2025-07-24 14:58:50,169] TorchDynamo attempted to trace the following frames: [
+
+]
+utils.py[LINE:765]# INFO     [2025-07-24 14:58:50,172] TorchDynamo compilation metrics:
+Function, Runtimes (s)
+utils.py[LINE:252]# INFO     [2025-07-24 15:06:06,830] Начало валидации
+utils.py[LINE:276]# INFO     [2025-07-24 15:06:06,831] Валидация завершена
+utils.py[LINE:317]# INFO     [2025-07-24 15:06:06,833] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_dataset.yaml
+utils.py[LINE:317]# INFO     [2025-07-24 15:06:06,834] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_hyperparameters.json
+utils.py[LINE:317]# INFO     [2025-07-24 15:06:06,835] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\model.pt
+utils.py[LINE:365]# INFO     [2025-07-24 15:06:06,927] Начало обучения
+utils.py[LINE:366]# INFO     [2025-07-24 15:06:06,928] Обучение модели с параметрами: {'data_path': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\valid_dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel', 'background'], 'epochs': 10, 'imgsz': 640, 'batch': 16, 'lr0': 0.01, 'optimizer': 'Adam', 'patience': 5, 'device': 'cpu', 'freeze_layers': 10, 'output_dir': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\'}
+utils.py[LINE:357]# INFO     [2025-07-24 15:06:06,928] Заморожено первых 10 слоев
+config.py[LINE:702]# INFO     [2025-07-24 15:06:10,243] compile_threads set to 1 for win32
+utils.py[LINE:387]# INFO     [2025-07-24 15:06:26,965] Обучение завершено
+remote_cache.py[LINE:417]# INFO     [2025-07-24 15:06:27,533] Cache Metrics: None
+
+eval_frame.py[LINE:475]# INFO     [2025-07-24 15:06:27,536] TorchDynamo attempted to trace the following frames: [
+
+]
+utils.py[LINE:765]# INFO     [2025-07-24 15:06:27,539] TorchDynamo compilation metrics:
+Function, Runtimes (s)
+utils.py[LINE:252]# INFO     [2025-07-24 15:07:26,287] Начало валидации
+utils.py[LINE:276]# INFO     [2025-07-24 15:07:26,288] Валидация завершена
+utils.py[LINE:317]# INFO     [2025-07-24 15:07:26,289] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_dataset.yaml
+utils.py[LINE:317]# INFO     [2025-07-24 15:07:26,290] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_hyperparameters.json
+utils.py[LINE:317]# INFO     [2025-07-24 15:07:26,291] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\model.pt
+utils.py[LINE:365]# INFO     [2025-07-24 15:07:26,343] Начало обучения
+utils.py[LINE:366]# INFO     [2025-07-24 15:07:26,344] Обучение модели с параметрами: {'data_path': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\valid_dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel', 'background'], 'epochs': 1, 'imgsz': 640, 'batch': 1, 'lr0': 0.01, 'optimizer': 'Adam', 'patience': 5, 'device': 'cpu', 'freeze_layers': 10, 'output_dir': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\'}
+utils.py[LINE:357]# INFO     [2025-07-24 15:07:26,344] Заморожено первых 10 слоев
+config.py[LINE:702]# INFO     [2025-07-24 15:07:29,691] compile_threads set to 1 for win32
+utils.py[LINE:387]# INFO     [2025-07-24 15:07:40,353] Обучение завершено
+remote_cache.py[LINE:417]# INFO     [2025-07-24 15:07:40,888] Cache Metrics: None
+
+eval_frame.py[LINE:475]# INFO     [2025-07-24 15:07:40,891] TorchDynamo attempted to trace the following frames: [
+
+]
+utils.py[LINE:765]# INFO     [2025-07-24 15:07:40,893] TorchDynamo compilation metrics:
+Function, Runtimes (s)
+utils.py[LINE:252]# INFO     [2025-07-24 15:09:28,108] Начало валидации
+utils.py[LINE:276]# INFO     [2025-07-24 15:09:28,109] Валидация завершена
+utils.py[LINE:317]# INFO     [2025-07-24 15:09:28,111] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_dataset.yaml
+utils.py[LINE:317]# INFO     [2025-07-24 15:09:28,112] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_hyperparameters.json
+utils.py[LINE:317]# INFO     [2025-07-24 15:09:28,112] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\model.pt
+utils.py[LINE:365]# INFO     [2025-07-24 15:09:28,168] Начало обучения
+utils.py[LINE:366]# INFO     [2025-07-24 15:09:28,168] Обучение модели с параметрами: {'data_path': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\valid_dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel', 'background'], 'epochs': 1, 'imgsz': 640, 'batch': 1, 'lr0': 0.01, 'optimizer': 'Adam', 'patience': 5, 'device': 'cpu', 'freeze_layers': 10, 'output_dir': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\'}
+utils.py[LINE:357]# INFO     [2025-07-24 15:09:28,169] Заморожено первых 10 слоев
+config.py[LINE:702]# INFO     [2025-07-24 15:09:31,252] compile_threads set to 1 for win32
+utils.py[LINE:387]# INFO     [2025-07-24 15:09:42,715] Обучение завершено
+remote_cache.py[LINE:417]# INFO     [2025-07-24 15:09:43,284] Cache Metrics: None
+
+eval_frame.py[LINE:475]# INFO     [2025-07-24 15:09:43,286] TorchDynamo attempted to trace the following frames: [
+
+]
+utils.py[LINE:765]# INFO     [2025-07-24 15:09:43,289] TorchDynamo compilation metrics:
+Function, Runtimes (s)
+utils.py[LINE:252]# INFO     [2025-07-24 15:58:33,628] Начало валидации
+utils.py[LINE:276]# INFO     [2025-07-24 15:58:33,629] Валидация завершена
+utils.py[LINE:317]# INFO     [2025-07-24 15:58:33,631] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_dataset.yaml
+utils.py[LINE:317]# INFO     [2025-07-24 15:58:33,632] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_hyperparameters.json
+utils.py[LINE:317]# INFO     [2025-07-24 15:58:33,632] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\model.pt
+utils.py[LINE:365]# INFO     [2025-07-24 15:58:33,689] Начало обучения
+utils.py[LINE:366]# INFO     [2025-07-24 15:58:33,689] Обучение модели с параметрами: {'data_path': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\valid_dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 1, 'imgsz': 640, 'batch': 1, 'lr0': 0.01, 'optimizer': 'Adam', 'patience': 5, 'device': 'cpu', 'freeze_layers': 10, 'output_dir': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data'}
+utils.py[LINE:357]# INFO     [2025-07-24 15:58:33,690] Заморожено первых 10 слоев
+config.py[LINE:702]# INFO     [2025-07-24 15:58:37,354] compile_threads set to 1 for win32
+utils.py[LINE:387]# INFO     [2025-07-24 15:58:51,391] Обучение завершено
+remote_cache.py[LINE:417]# INFO     [2025-07-24 15:58:51,960] Cache Metrics: None
+
+eval_frame.py[LINE:475]# INFO     [2025-07-24 15:58:51,964] TorchDynamo attempted to trace the following frames: [
+
+]
+utils.py[LINE:765]# INFO     [2025-07-24 15:58:51,967] TorchDynamo compilation metrics:
+Function, Runtimes (s)
+utils.py[LINE:252]# INFO     [2025-07-24 15:59:57,108] Начало валидации
+utils.py[LINE:276]# INFO     [2025-07-24 15:59:57,109] Валидация завершена
+utils.py[LINE:317]# INFO     [2025-07-24 15:59:57,110] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_dataset.yaml
+utils.py[LINE:317]# INFO     [2025-07-24 15:59:57,111] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_hyperparameters.json
+utils.py[LINE:317]# INFO     [2025-07-24 15:59:57,112] Загружен файл конфигурации: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\model.pt
+utils.py[LINE:365]# INFO     [2025-07-24 15:59:57,165] Начало обучения
+utils.py[LINE:366]# INFO     [2025-07-24 15:59:57,165] Обучение модели с параметрами: {'data_path': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\valid_dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 1, 'imgsz': 640, 'batch': 1, 'lr0': 0.01, 'optimizer': 'Adam', 'patience': 5, 'device': 'cpu', 'freeze_layers': 10, 'output_dir': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data'}
+utils.py[LINE:357]# INFO     [2025-07-24 15:59:57,166] Заморожено первых 10 слоев
+config.py[LINE:702]# INFO     [2025-07-24 16:00:00,453] compile_threads set to 1 for win32
+utils.py[LINE:387]# INFO     [2025-07-24 16:00:12,167] Обучение завершено
+remote_cache.py[LINE:417]# INFO     [2025-07-24 16:00:12,749] Cache Metrics: None
+
+eval_frame.py[LINE:475]# INFO     [2025-07-24 16:00:12,751] TorchDynamo attempted to trace the following frames: [
+
+]
+utils.py[LINE:765]# INFO     [2025-07-24 16:00:12,754] TorchDynamo compilation metrics:
+Function, Runtimes (s)
+utils.py[LINE:243]# INFO     [2025-07-24 18:18:21,842] Starting validation
+utils.py[LINE:263]# INFO     [2025-07-24 18:18:21,843] Validation completed
+utils.py[LINE:304]# INFO     [2025-07-24 18:18:21,845] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_dataset.yaml
+utils.py[LINE:304]# INFO     [2025-07-24 18:18:21,846] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_hyperparameters.json
+utils.py[LINE:304]# INFO     [2025-07-24 18:18:21,846] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\model.pt
+utils.py[LINE:352]# INFO     [2025-07-24 18:18:21,903] Starting training
+utils.py[LINE:353]# INFO     [2025-07-24 18:18:21,903] Training model with parameters: {'data_path': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\valid_dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 1, 'imgsz': 640, 'batch': 1, 'lr0': 0.01, 'optimizer': 'Adam', 'patience': 5, 'device': 'cpu', 'freeze_layers': 10, 'output_dir': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data'}
+utils.py[LINE:344]# INFO     [2025-07-24 18:18:21,904] Froze first 10 layers
+config.py[LINE:702]# INFO     [2025-07-24 18:18:26,756] compile_threads set to 1 for win32
+utils.py[LINE:374]# INFO     [2025-07-24 18:18:40,182] Training completed
+remote_cache.py[LINE:417]# INFO     [2025-07-24 18:18:40,768] Cache Metrics: None
+
+eval_frame.py[LINE:475]# INFO     [2025-07-24 18:18:40,795] TorchDynamo attempted to trace the following frames: [
+
+]
+utils.py[LINE:765]# INFO     [2025-07-24 18:18:40,798] TorchDynamo compilation metrics:
+Function, Runtimes (s)
+utils.py[LINE:243]# INFO     [2025-07-24 18:22:07,066] Starting validation
+utils.py[LINE:263]# INFO     [2025-07-24 18:22:07,067] Validation completed
+utils.py[LINE:304]# INFO     [2025-07-24 18:22:07,071] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_dataset.yaml
+utils.py[LINE:304]# INFO     [2025-07-24 18:22:07,072] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_hyperparameters.json
+utils.py[LINE:304]# INFO     [2025-07-24 18:22:07,073] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\model.pt
+utils.py[LINE:352]# INFO     [2025-07-24 18:22:07,204] Starting training
+utils.py[LINE:353]# INFO     [2025-07-24 18:22:07,204] Training model with parameters: {'data_path': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\valid_dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 1, 'imgsz': 640, 'batch': 1, 'lr0': 0.01, 'optimizer': 'Adam', 'patience': 5, 'device': 'cpu', 'freeze_layers': 10, 'output_dir': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data'}
+utils.py[LINE:344]# INFO     [2025-07-24 18:22:07,205] Froze first 10 layers
+config.py[LINE:702]# INFO     [2025-07-24 18:22:12,697] compile_threads set to 1 for win32
+utils.py[LINE:374]# INFO     [2025-07-24 18:22:35,481] Training completed
+remote_cache.py[LINE:417]# INFO     [2025-07-24 18:22:36,354] Cache Metrics: None
+
+eval_frame.py[LINE:475]# INFO     [2025-07-24 18:22:36,357] TorchDynamo attempted to trace the following frames: [
+
+]
+utils.py[LINE:765]# INFO     [2025-07-24 18:22:36,360] TorchDynamo compilation metrics:
+Function, Runtimes (s)
+utils.py[LINE:243]# INFO     [2025-07-24 18:31:11,968] Starting validation
+utils.py[LINE:263]# INFO     [2025-07-24 18:31:11,969] Validation completed
+utils.py[LINE:304]# INFO     [2025-07-24 18:31:11,971] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_dataset.yaml
+utils.py[LINE:304]# INFO     [2025-07-24 18:31:11,972] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_hyperparameters.json
+utils.py[LINE:304]# INFO     [2025-07-24 18:31:11,973] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\model.pt
+utils.py[LINE:352]# INFO     [2025-07-24 18:31:12,142] Starting training
+utils.py[LINE:353]# INFO     [2025-07-24 18:31:12,143] Training model with parameters: {'data_path': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\valid_dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 1, 'imgsz': 640, 'batch': 1, 'lr0': 0.01, 'optimizer': 'Adam', 'patience': 5, 'device': 'cpu', 'freeze_layers': 10, 'output_dir': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data'}
+utils.py[LINE:344]# INFO     [2025-07-24 18:31:12,144] Froze first 10 layers
+config.py[LINE:702]# INFO     [2025-07-24 18:31:16,263] compile_threads set to 1 for win32
+utils.py[LINE:374]# INFO     [2025-07-24 18:31:35,160] Training completed
+remote_cache.py[LINE:417]# INFO     [2025-07-24 18:31:35,903] Cache Metrics: None
+
+eval_frame.py[LINE:475]# INFO     [2025-07-24 18:31:35,905] TorchDynamo attempted to trace the following frames: [
+
+]
+utils.py[LINE:765]# INFO     [2025-07-24 18:31:35,907] TorchDynamo compilation metrics:
+Function, Runtimes (s)
+utils.py[LINE:243]# INFO     [2025-07-24 18:32:37,428] Starting validation
+utils.py[LINE:263]# INFO     [2025-07-24 18:32:37,429] Validation completed
+utils.py[LINE:304]# INFO     [2025-07-24 18:32:37,431] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_dataset.yaml
+utils.py[LINE:304]# INFO     [2025-07-24 18:32:37,432] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_hyperparameters.json
+utils.py[LINE:304]# INFO     [2025-07-24 18:32:37,437] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\model.pt
+utils.py[LINE:352]# INFO     [2025-07-24 18:32:37,560] Starting training
+utils.py[LINE:353]# INFO     [2025-07-24 18:32:37,561] Training model with parameters: {'data_path': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\valid_dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 1, 'imgsz': 640, 'batch': 1, 'lr0': 0.01, 'optimizer': 'Adam', 'patience': 5, 'device': 'cpu', 'freeze_layers': 10, 'output_dir': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data'}
+utils.py[LINE:344]# INFO     [2025-07-24 18:32:37,562] Froze first 10 layers
+config.py[LINE:702]# INFO     [2025-07-24 18:32:42,408] compile_threads set to 1 for win32
+utils.py[LINE:374]# INFO     [2025-07-24 18:33:07,093] Training completed
+utils.py[LINE:243]# INFO     [2025-07-24 18:35:05,230] Starting validation
+utils.py[LINE:263]# INFO     [2025-07-24 18:35:05,231] Validation completed
+utils.py[LINE:304]# INFO     [2025-07-24 18:35:05,233] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_dataset.yaml
+utils.py[LINE:304]# INFO     [2025-07-24 18:35:05,236] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\valid_hyperparameters.json
+utils.py[LINE:304]# INFO     [2025-07-24 18:35:05,238] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\src\tests\test_data\model.pt
+utils.py[LINE:352]# INFO     [2025-07-24 18:35:05,395] Starting training
+utils.py[LINE:353]# INFO     [2025-07-24 18:35:05,396] Training model with parameters: {'data_path': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data\\valid_dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 1, 'imgsz': 640, 'batch': 1, 'lr0': 0.01, 'optimizer': 'Adam', 'patience': 5, 'device': 'cpu', 'freeze_layers': 10, 'output_dir': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\src\\tests\\test_data'}
+utils.py[LINE:344]# INFO     [2025-07-24 18:35:05,397] Froze first 10 layers
+config.py[LINE:702]# INFO     [2025-07-24 18:35:10,397] compile_threads set to 1 for win32
+utils.py[LINE:374]# INFO     [2025-07-24 18:35:29,074] Training completed
+remote_cache.py[LINE:417]# INFO     [2025-07-24 18:35:29,857] Cache Metrics: None
+
+eval_frame.py[LINE:475]# INFO     [2025-07-24 18:35:29,859] TorchDynamo attempted to trace the following frames: [
+
+]
+utils.py[LINE:765]# INFO     [2025-07-24 18:35:29,861] TorchDynamo compilation metrics:
+Function, Runtimes (s)

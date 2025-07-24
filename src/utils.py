@@ -95,8 +95,8 @@ class ConfigManager:
 
         elif is_file:
             if not os.path.isfile(el):
-                self.logger.error(f'{el} is not a file')
-                raise FileNotFoundError(f'{el} is not a file')
+                self.logger.error(f'{el} is not a path to file')
+                raise FileNotFoundError(f'{el} is not a path to file')
 
             if not Path(el).suffix in extensions:
                 self.logger.error(f'{el} has invalid file extension')
