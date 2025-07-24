@@ -5,5 +5,3 @@ numpy~=2.2.6
 pillow~=11.3.0
 tqdm~=4.67.1
 PyYAML~=6.0.2
-pytest~=8.4.1
-shapely~=2.1.1
