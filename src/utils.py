@@ -29,8 +29,7 @@ rotating_file_handler = RotatingFileHandler(
 )
 stream_handler.setLevel(logging.INFO)
 rotating_file_handler.setLevel(logging.INFO)
-formatter = logging.Formatter('%(filename)s[LINE:%(lineno)d]# %(levelname)-8s '
-                              '[%(asctime)s] %(message)s')
+formatter = logging.Formatter('%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s] %(message)s')
 stream_handler.setFormatter(formatter)
 rotating_file_handler.setFormatter(formatter)
 
@@ -91,17 +90,17 @@ class ConfigManager:
         """
         if is_dir:
             if not os.path.isdir(el):
-                self.logger.error(f'{el} не является путем к директории')
-                raise NotADirectoryError(f'{el} не является путем к директории')
+                self.logger.error(f'{el} is not a directory')
+                raise NotADirectoryError(f'{el} is not a directory')
 
         elif is_file:
             if not os.path.isfile(el):
-                self.logger.error(f'{el} не является путем к файлу')
-                raise FileNotFoundError(f'{el} не является путем к файлу')
+                self.logger.error(f'{el} is not a file')
+                raise FileNotFoundError(f'{el} is not a file')
 
             if not Path(el).suffix in extensions:
-                self.logger.error(f'{el} имеет неверное расширение файла')
-                raise ValueError(f'{el} имеет неверное расширение файла')
+                self.logger.error(f'{el} has invalid file extension')
+                raise ValueError(f'{el} has invalid file extension')
 
     def _check_json_file(self, json_dict) -> None:
         """
@@ -130,34 +129,30 @@ class ConfigManager:
 
         for key, value in json_metadata.items():
             if key not in json_dict.keys():
-                self.logger.error(f"в .json файле гиперпараметров модели нет ключа {key}")
-                raise KeyError(f"в .json файле гиперпараметров модели нет ключа {key}")
+                self.logger.error(f"Key {key} not found in hyperparameters JSON file")
+                raise KeyError(f"Key {key} not found in hyperparameters JSON file")
 
             if json_dict[key] is None:
-                self.logger.error(f"Значение, получаемое из .json по ключу {key} None")
-                raise ValueError(f"Значение, получаемое из .json по ключу {key} None")
+                self.logger.error(f"Value for key {key} in JSON is None")
+                raise ValueError(f"Value for key {key} in JSON is None")
 
             if type(json_dict[key]) not in value:
-                self.logger.error(f"Тип значения, получаемого из .json по ключу {key}, "
-                                  f"не соответствует требуемому типу"
+                self.logger.error(f"Type of value for key {key} in JSON does not match required type "
                                   f"(expected: {value}, got: {type(json_dict[key])})")
-                raise TypeError(f"Тип значения, получаемого из .json по ключу {key}, "
-                                f"не соответствует требуемому типу"
+                raise TypeError(f"Type of value for key {key} in JSON does not match required type "
                                 f"(expected: {value}, got: {type(json_dict[key])})")
 
             if value in ([int], [float]):
                 if json_dict[key] < 0:
-                    self.logger.error(f"Значение, получаемое из .json файла "
-                                      f"по ключу {key} отрицательное")
-                    raise ValueError(f"Значение, получаемое из .json файла "
-                                     f"по ключу {key} отрицательное")
+                    self.logger.error(f"Value for key {key} in JSON file is negative")
+                    raise ValueError(f"Value for key {key} in JSON file is negative")
 
             if key == "device":
                 if json_dict[key] not in [0, "cpu"]:
-                    self.logger.error(f"Неверное значение из .json, получаемое по ключу {key}"
-                                      f"expected: {[0, 'cpu']}, got: {json_dict[key]}")
-                    raise ValueError(f"Неверное значение из .json, получаемое по ключу {key}"
-                                     f"expected: {[0, 'cpu']}, got: {json_dict[key]}")
+                    self.logger.error(f"Invalid value for key {key} in JSON "
+                                      f"(expected: {[0, 'cpu']}, got: {json_dict[key]})")
+                    raise ValueError(f"Invalid value for key {key} in JSON "
+                                     f"(expected: {[0, 'cpu']}, got: {json_dict[key]})")
 
     def _check_yaml_file(self, yaml_dict) -> None:
         """
@@ -184,63 +179,59 @@ class ConfigManager:
 
         for key, value in yaml_metadata.items():
             if key not in yaml_dict.keys():
-                self.logger.error(f"в .yaml файле конфигурации датасета нет ключа {key}")
-                raise KeyError(f"в .yaml файле конфигурации датасета нет ключа {key}")
+                self.logger.error(f"Key {key} not found in dataset YAML file")
+                raise KeyError(f"Key {key} not found in dataset YAML file")
 
             if yaml_dict[key] is None:
-                self.logger.error(f"Значение, получаемое из .yaml по ключу {key} None")
-                raise ValueError(f"Значение, получаемое из .yaml по ключу {key} None")
+                self.logger.error(f"Value for key {key} in YAML is None")
+                raise ValueError(f"Value for key {key} in YAML is None")
 
             if not isinstance(yaml_dict[key], value):
-                self.logger.error(f"Тип значения, получаемого из .yaml по ключу {key}, "
-                                f"не соответствует требуемому типу"
-                                f"(expected: {value}, got: {type(yaml_dict[key])})")
-                raise TypeError(f"Тип значения, получаемого из .yaml по ключу {key}, "
-                                f"не соответствует требуемому типу"
+                self.logger.error(f"Type of value for key {key} in YAML does not match required type "
+                                  f"(expected: {value}, got: {type(yaml_dict[key])})")
+                raise TypeError(f"Type of value for key {key} in YAML does not match required type "
                                 f"(expected: {value}, got: {type(yaml_dict[key])})")
 
             if isinstance(yaml_dict[key], int):
                 if yaml_dict[key] < 0:
-                    self.logger.error(f"Значение, получаемое из .yaml файла "
-                                      f"по ключу {key} отрицательное")
-                    raise ValueError(f"Значение, получаемое из .yaml файла "
-                                     f"по ключу {key} отрицательное")
+                    self.logger.error(f"Value for key {key} in YAML file is negative")
+                    raise ValueError(f"Value for key {key} in YAML file is negative")
 
             if isinstance(yaml_dict[key], list):
                 if len(set(yaml_dict[key])) != yaml_dict["nc"]:
-                    self.logger.error("Длина списка с именами классов, получаемого по ключу "
-                                      "'names' не соответствует указанному в .yaml файле "
-                                      "количеству классов, либо имена классов дублируются")
-                    raise ValueError("Длина списка с именами классов, получаемого по ключу "
-                                     "'names' не соответствует указанному в .yaml файле "
-                                     "количеству классов, либо имена классов дублируются")
+                    self.logger.error("Length of class names list for key "
+                                      "'names' does not match "
+                                      "the number of classes specified in YAML, "
+                                      "or class names are duplicated")
+                    raise ValueError("Length of class names list for key "
+                                     "'names' does not match "
+                                     "the number of classes specified in YAML, "
+                                     "or class names are duplicated")
 
                 for el in yaml_dict[key]:
                     if not isinstance(el, str):
-                        self.logger.error(f"Тип значения элемента списка {el}, "
-                                          f"получаемого по ключу {key}, не соответствует "
-                                          f"требуемому типу (expected: {str}, "
-                                          f"got: {type(el)}")
-                        raise TypeError(f"Тип значения элемента списка {el}, "
-                                        f"получаемого по ключу {key}, не соответствует "
-                                        f"требуемому типу "
-                                        f"(expected: {str}, got: {type(el)}")
+                        self.logger.error(f"Type of list element {el} "
+                                          f"for key {key} does not match required type "
+                                          f"(expected: {str}, got: {type(el)})")
+                        raise TypeError(f"Type of list element {el} "
+                                        f"for key {key} does not match required type "
+                                        f"(expected: {str}, got: {type(el)})")
 
                     if len(el) == 0:
-                        self.logger.error(f"Элемент {el} списка, получаемого по ключу {key} "
-                                          f"является пустой строкой")
-                        raise ValueError(f"Элемент {el} списка, получаемого по ключу {key} "
-                                         f"является пустой строкой")
+                        self.logger.error(f"List element {el} for key {key} "
+                                          f"is an empty string")
+                        raise ValueError(f"List element {el} for key {key} "
+                                         f"is an empty string")
 
             elif key in ('train', 'val'):
                 full_path = os.path.join(self.params[2], yaml_dict[key])
                 if not os.path.exists(full_path):
-                    self.logger.error(f"Пути {full_path} не существует")
-                    raise NotADirectoryError(f'Пути {full_path} не существует')
+                    self.logger.error(f"{full_path} is not exists")
+                    raise FileNotFoundError(f"{full_path} is not exists")
 
                 if not os.path.isdir(full_path):
-                    self.logger.error(f"{full_path} не является директорией")
-                    raise NotADirectoryError(f'{full_path} не является директорией')
+                    self.logger.error(f"{full_path} is not a directory")
+                    raise NotADirectoryError(f"{full_path} is not a directory")
 
     def validate_config(self) -> None:
         """
@@ -249,21 +240,17 @@ class ConfigManager:
         Raises:
              ValueError: если тип переменной не соответствует целевому, либо None
         """
-        self.logger.info("Начало валидации")
+        self.logger.info("Starting validation")
         for idx, el in enumerate(self.params):
             if el is None:
-                self.logger.error(f"Переменная {self.metadata[idx]['name']} имеет тип данных None")
-                raise ValueError(f"Переменная {self.metadata[idx]['name']} имеет тип данных None")
+                self.logger.error(f"Parameter {self.metadata[idx]['name']} is None")
+                raise ValueError(f"Parameter {self.metadata[idx]['name']} is None")
 
             if not isinstance(el, self.metadata[idx]['expected_type']):
-                self.logger.error(f"Переменная {self.metadata[idx]['name']} имеет неправильный "
-                                  f"тип данных"
-                                  f" (expected: {self.metadata[idx]['expected_type']}, "
-                                  f"got: {type(el)})")
-                raise ValueError(f"Переменная {self.metadata[idx]['name']} имеет неправильный "
-                                 f"тип данных"
-                                 f" (expected: {self.metadata[idx]['expected_type']}, "
-                                 f"got: {type(el)})")
+                self.logger.error(f"Parameter {self.metadata[idx]['name']} has incorrect type "
+                                  f"(expected: {self.metadata[idx]['expected_type']}, got: {type(el)})")
+                raise ValueError(f"Parameter {self.metadata[idx]['name']} has incorrect type "
+                                 f"(expected: {self.metadata[idx]['expected_type']}, got: {type(el)})")
 
             if isinstance(el, str):
                 self._validate_path(
@@ -273,7 +260,7 @@ class ConfigManager:
                     self.metadata[idx]['extension']
                 )
 
-        self.logger.info("Валидация завершена")
+        self.logger.info("Validation completed")
 
     def load_config(self) -> dict:
         """
@@ -298,8 +285,8 @@ class ConfigManager:
                                 hyperparameters[key] = train_hyperparameters[key]
 
                     except json.JSONDecodeError as exc:
-                        self.logger.error(f"Ошибка в парсинге .json файла {el}")
-                        raise ValueError(f"Ошибка в парсинге .json файла {el}") from exc
+                        self.logger.error(f"Error parsing JSON file {el}")
+                        raise ValueError(f"Error parsing JSON file {el}") from exc
 
                 # указываем индекс, так как расширение .yaml может иметь и файл модели
                 elif Path(el).suffix == '.yaml' and idx == 0:
@@ -311,10 +298,10 @@ class ConfigManager:
                             hyperparameters['class_names'] = data_dict['names']
 
                     except yaml.YAMLError as exc:
-                        self.logger.error(f"Ошибка в парсинге .yaml файла {el}")
-                        raise ValueError(f"Ошибка в парсинге .yaml файла {el}") from exc
+                        self.logger.error(f"Error parsing YAML file {el}")
+                        raise ValueError(f"Error parsing YAML file {el}") from exc
 
-                self.logger.info(f"Загружен файл конфигурации: {el}")
+                self.logger.info(f"Loaded configuration file: {el}")
 
             if self.metadata[idx]['is_dir'] is True:
                 if idx == 4:
@@ -354,7 +341,7 @@ class ModelTrainer:
             else:
                 break
             layer_count += 1
-        self.logger.info(f"Заморожено первых {layer_count} слоев")
+        self.logger.info(f"Froze first {layer_count} layers")
 
     def train_model(self) -> ultralytics.models.yolo.model.YOLO:
         """
@@ -362,8 +349,8 @@ class ModelTrainer:
         Returns:
             self.model (ultralytics.models.yolo.model.YOLO)
         """
-        self.logger.info("Начало обучения")
-        self.logger.info(f"Обучение модели с параметрами: {self.hyperparameters}")
+        self.logger.info("Starting training")
+        self.logger.info(f"Training model with parameters: {self.hyperparameters}")
         num_layers_to_freeze = self.hyperparameters['freeze_layers']
         self.freeze_layers(num_layers_to_freeze)
         data_dir = self.hyperparameters['data_path']
@@ -384,7 +371,7 @@ class ModelTrainer:
             patience=patience,
             device=device
         )
-        self.logger.info("Обучение завершено")
+        self.logger.info("Training completed")
         return self.model
 
 
