@@ -380,7 +380,8 @@ class TestModelTrainer(unittest.TestCase):
                 model_cfg=self.model_cfg,
                 hyperparameters=hyperparameters,
             )
-            model_trainer.train_model()
+            model = model_trainer.train_model()
+            self.assertEqual(model.__class__, ultralytics.models.yolo.model.YOLO)
 
         handler.flush()
         logger.removeHandler(handler)
