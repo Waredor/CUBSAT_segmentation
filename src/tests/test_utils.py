@@ -6,6 +6,7 @@ import torch.nn
 import ultralytics
 import yaml
 
+from io import StringIO
 from unittest.mock import patch, MagicMock
 from src.utils import ConfigManager, ModelTrainer
 
@@ -352,29 +353,48 @@ class TestModelTrainer(unittest.TestCase):
             layer_count += 1
         self.assertEqual(mock_logger.info.call_count, 1)
 
-    @patch('logging.getLogger')
-    def test_train_model_success(self, mock_get_logger):
+    def test_train_model_success(self):
         """
-        Этот тест проверяет работу метода ModelTrainer.train_.model()
+        Этот тест проверяет работу метода ModelTrainer.train_model()
         при валидных конфигурационных файлах и параметрах модели
         """
-        config_manager = ConfigManager(
-            data_cfg=self.valid_dataset,
-            model_hyperparameters=self.valid_hyperparameters,
-            data_dir=self.temp_dir,
-            model_cfg=self.model_cfg,
-            output_dir=self.temp_dir,
-        )
-        hyperparameters = config_manager.load_config()
-        mock_logger = MagicMock()
-        mock_logger.level = logging.DEBUG
-        mock_get_logger.return_value = mock_logger
-        model_trainer = ModelTrainer(
-            model_cfg=self.model_cfg,
-            hyperparameters=hyperparameters,
-        )
-        model_trainer.train_model()
-        self.assertEqual(mock_logger.info.call_count, 5)
-        calls = [call[0][0] for call in mock_logger.info.call_args_list]
-        self.assertEqual(calls[0], "Начало обучения")
-        self.assertEqual(calls[4], "Обучение завершено")
+        logger = logging.getLogger('test_logger')
+        logger.setLevel(logging.DEBUG)
+        log_output = StringIO()
+        handler = logging.StreamHandler(log_output)
+        formatter = logging.Formatter('%(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
+        with patch('src.utils.logging.getLogger', return_value=logger):
+            config_manager = ConfigManager(
+                data_cfg=self.valid_dataset,
+                model_hyperparameters=self.valid_hyperparameters,
+                data_dir=self.temp_dir,
+                model_cfg=self.model_cfg,
+                output_dir=self.temp_dir,
+            )
+            hyperparameters = config_manager.load_config()
+
+            model_trainer = ModelTrainer(
+                model_cfg=self.model_cfg,
+                hyperparameters=hyperparameters,
+            )
+            model_trainer.train_model()
+
+        handler.flush()
+        logger.removeHandler(handler)
+        log_content = log_output.getvalue().splitlines()
+
+        info_logs = [line.split(' - ')[1] for line in log_content
+                     if line.startswith('INFO')
+                     and "Загружен файл конфигурации" not in line
+                     and "compile_threads set to 1 for win32" not in line
+                     and "Начало валидации" not in line
+                     and "Валидация завершена" not in line]
+
+        self.assertEqual(len(info_logs), 4)
+        self.assertEqual(info_logs[0], "Начало обучения")
+        self.assertEqual(info_logs[3], "Обучение завершено")
+
+        log_output.close()
