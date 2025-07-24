@@ -1,5 +1,5 @@
 ultralytics~=8.3.162
-torch~=2.7.1+cu126
+torch~=2.7.1
 opencv-python~=4.12.0.88
 numpy~=2.2.6
 pillow~=11.3.0
