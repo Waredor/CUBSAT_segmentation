@@ -31,13 +31,33 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+      shell: cmd
 
     - name: Set console encoding to UTF-8
       run: |
         chcp 65001
       shell: cmd
 
+    - name: Debug directory structure
+      run: |
+        echo Current directory:
+        cd
+        echo List of files in src/tests:
+        dir src\tests
+      shell: cmd
+
+    - name: Check Python version
+      run: |
+        python --version
+      shell: cmd
+
+    - name: Set PYTHONPATH
+      run: |
+        set PYTHONPATH=%PYTHONPATH%;%CD%\src
+        echo PYTHONPATH=%PYTHONPATH%
+      shell: cmd
+
     - name: Run tests
       run: |
-        python -m unittest discover -s src/tests -p 'test_*.py'
+        python -m unittest discover -s src/tests -p "test_*.py" -v
       shell: cmd
