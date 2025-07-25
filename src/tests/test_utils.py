@@ -2,10 +2,9 @@ import logging
 import unittest
 import os
 import yaml
+import json
 import numpy as np
-import cv2
 
-from io import StringIO
 from unittest.mock import patch, MagicMock
 from ultralytics.models.yolo.model import YOLO
 from src.utils import ConfigManager, ModelTrainer, AnnotationProcessor
@@ -331,6 +330,10 @@ class TestModelTrainer(unittest.TestCase):
 
     @patch('src.utils.logging.getLogger')
     def test_freeze_layers_success(self, mock_get_logger):
+        """
+        Тест test_freeze_layers_success проверяет работоспособность метода
+        ModelTrainer.freeze_layers() с валидными входными данными
+        """
         config_manager = ConfigManager(
             data_cfg=self.valid_dataset,
             model_hyperparameters=self.valid_hyperparameters,
@@ -357,6 +360,10 @@ class TestModelTrainer(unittest.TestCase):
 
     @patch('src.utils.logging.getLogger')
     def test_train_model_success(self, mock_get_logger):
+        """
+        Тест test_train_model_success проверяет правильность работы метода
+        ModelTrainer.train_model() при валидных входных данных
+        """
         config_manager = ConfigManager(
             data_cfg=self.valid_dataset,
             model_hyperparameters=self.valid_hyperparameters,
@@ -443,3 +450,65 @@ class TestAnnotationProcessor(unittest.TestCase):
         polygons = annotation_processor.mask_to_polygons(masks)
         self.assertEqual(type(polygons), list)
         self.assertEqual(len(polygons), 0)
+
+    @patch('src.utils.logging.getLogger')
+    def test_create_labelme_json_success(self, mock_get_logger):
+        image_path = self.temp_dir + "\\images\\val\\0026.jpg"
+        class_names = ['FT']
+        height, width = 640, 640
+        num_instances = 3
+
+        masks = np.zeros((num_instances, height, width), dtype=np.uint8)
+
+        for i in range(num_instances):
+            center_x = np.random.randint(100, width - 100)
+            center_y = np.random.randint(100, height - 100)
+            axis_x = np.random.randint(50, 150)
+            axis_y = np.random.randint(50, 150)
+
+            y, x = np.ogrid[:height, :width]
+            distance = ((x - center_x) / axis_x) ** 2 + ((y - center_y) / axis_y) ** 2
+            masks[i][distance <= 1] = 1
+
+        for i in range(1, num_instances):
+            for j in range(i):
+                overlap = masks[i] & masks[j]
+                masks[i][overlap == 1] = 0
+
+        num_objects = np.random.randint(1, 11)
+        class_index = 0
+
+        labels = np.full(num_objects, class_index, dtype=np.int64)
+
+        mock_logger = MagicMock()
+        mock_logger.level = logging.INFO
+        mock_get_logger.return_value = mock_logger
+        annotation_processor = AnnotationProcessor(
+            class_names=class_names,
+            output_dir=self.temp_dir
+        )
+        annotation_processor.create_labelme_json(
+            image_path=image_path,
+            masks=masks,
+            labels=labels,
+            class_names=class_names,
+            output_dir=self.temp_dir
+        )
+        calls = [call[0][0] for call in mock_logger.info.call_args_list]
+        file_dir = self.temp_dir + '\\0026.json'
+        self.assertTrue(os.path.exists(file_dir))
+        self.assertEqual(calls[-1], f"Создан JSON-файл: {file_dir}")
+        with open(file_dir, mode="w", encoding='utf-8') as f:
+            json_annotations = json.load(f)
+            for key, value in json_annotations.items():
+                if key == "version" or key == "imagePath" or key == "imageData":
+                    self.assertEqual(type(value), str)
+
+                elif key == "flags":
+                    self.assertEqual(type(value), dict)
+
+                elif key == "imageHeight" or key == "imageWidth":
+                    self.assertEqual(type(value), int)
+
+                elif key == "shapes":
+                    self.assertEqual(type(value), list)
