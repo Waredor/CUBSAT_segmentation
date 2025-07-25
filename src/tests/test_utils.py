@@ -487,7 +487,7 @@ class TestAnnotationProcessor(unittest.TestCase):
             class_names=class_names,
             output_dir=self.temp_dir
         )
-        annotation_processor.create_labelme_json(
+        output_path = annotation_processor.create_labelme_json(
             image_path=image_path,
             masks=masks,
             labels=labels,
@@ -497,18 +497,33 @@ class TestAnnotationProcessor(unittest.TestCase):
         calls = [call[0][0] for call in mock_logger.info.call_args_list]
         file_dir = self.temp_dir + '\\0026.json'
         self.assertTrue(os.path.exists(file_dir))
+        self.assertEqual(type(output_path), str)
         self.assertEqual(calls[-1], f"Создан JSON-файл: {file_dir}")
-        with open(file_dir, mode="w", encoding='utf-8') as f:
+        with open(file_dir, mode="r", encoding='utf-8') as f:
             json_annotations = json.load(f)
-            for key, value in json_annotations.items():
-                if key == "version" or key == "imagePath" or key == "imageData":
+
+        for key, value in json_annotations.items():
+            if key == "version" or key == "imagePath" or key == "imageData":
+                self.assertEqual(type(value), str)
+
+            elif key == "flags":
+                self.assertEqual(type(value), dict)
+
+            elif key == "imageHeight" or key == "imageWidth":
+                self.assertEqual(type(value), int)
+
+            elif key == "shapes":
+                self.assertEqual(type(value), list)
+
+        for shape in json_annotations["shapes"]:
+            self.assertEqual(type(shape), dict)
+
+            for key, value in shape.items():
+                if key == "label" or key == "shape_type":
                     self.assertEqual(type(value), str)
+
+                elif key == "points":
+                    self.assertEqual(type(value), list)
 
                 elif key == "flags":
                     self.assertEqual(type(value), dict)
-
-                elif key == "imageHeight" or key == "imageWidth":
-                    self.assertEqual(type(value), int)
-
-                elif key == "shapes":
-                    self.assertEqual(type(value), list)
