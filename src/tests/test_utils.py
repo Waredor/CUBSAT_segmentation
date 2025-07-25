@@ -13,12 +13,7 @@ from src.utils import ConfigManager, ModelTrainer, AnnotationProcessor
 def get_project_root():
     current_file = os.path.abspath(__file__)
     current_dir = os.path.dirname(current_file)
-    while current_dir != os.path.dirname(current_dir):
-        if (os.path.exists(os.path.join(current_dir, 'src')) or
-                os.path.exists(os.path.join(current_dir, 'requirements.txt'))):
-            return os.path.abspath(current_dir)
-        current_dir = os.path.dirname(current_dir)
-    raise FileNotFoundError("Project root not found (src or requirements.txt not found)")
+    return os.path.abspath(os.path.join(current_dir, '..', '..'))
 
 project_root_path = get_project_root()
 
@@ -498,7 +493,7 @@ class TestAnnotationProcessor(unittest.TestCase):
         file_dir = self.temp_dir + '\\0026.json'
         self.assertTrue(os.path.exists(file_dir))
         self.assertEqual(type(output_path), str)
-        self.assertEqual(calls[-1], f"Создан JSON-файл: {file_dir}")
+        self.assertEqual(calls[-1], f"Created JSON-file: {file_dir}")
         with open(file_dir, mode="r", encoding='utf-8') as f:
             json_annotations = json.load(f)
 
