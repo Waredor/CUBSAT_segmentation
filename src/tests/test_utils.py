@@ -492,7 +492,7 @@ class TestAnnotationProcessor(unittest.TestCase):
             masks=masks,
             labels=labels,
             class_names=class_names,
-            output_dir=self.temp_dir
+            output_dir=annotation_processor.output_dir
         )
         calls = [call[0][0] for call in mock_logger.info.call_args_list]
         file_dir = self.temp_dir + '\\0026.json'
@@ -527,3 +527,159 @@ class TestAnnotationProcessor(unittest.TestCase):
 
                 elif key == "flags":
                     self.assertEqual(type(value), dict)
+
+    @patch('src.utils.setup_logger')
+    def test_create_labelme_json_error_empty_masks(self, mock_setup_logger):
+        mock_setup_logger.return_value = logging.getLogger('test_logger')
+        image_path = self.temp_dir + "\\images\\val\\0026.jpg"
+        class_names = ['FT']
+
+        masks = np.array([])
+
+        num_objects = np.random.randint(1, 11)
+        class_index = 0
+
+        labels = np.full(num_objects, class_index, dtype=np.int64)
+
+        annotation_processor = AnnotationProcessor(
+            class_names=class_names,
+            output_dir=self.temp_dir
+        )
+
+        with self.assertRaises(ValueError):
+            annotation_processor.create_labelme_json(
+                image_path=image_path,
+                masks=masks,
+                labels=labels,
+                class_names=class_names,
+                output_dir=annotation_processor.output_dir
+            )
+
+    @patch('src.utils.setup_logger')
+    def test_create_labelme_json_error_empty_labels(self, mock_setup_logger):
+        mock_setup_logger.return_value = logging.getLogger('test_logger')
+        image_path = self.temp_dir + "\\images\\val\\0026.jpg"
+        class_names = ['FT']
+        height, width = 640, 640
+        num_instances = 3
+
+        masks = np.zeros((num_instances, height, width), dtype=np.uint8)
+
+        for i in range(num_instances):
+            center_x = np.random.randint(100, width - 100)
+            center_y = np.random.randint(100, height - 100)
+            axis_x = np.random.randint(50, 150)
+            axis_y = np.random.randint(50, 150)
+
+            y, x = np.ogrid[:height, :width]
+            distance = ((x - center_x) / axis_x) ** 2 + ((y - center_y) / axis_y) ** 2
+            masks[i][distance <= 1] = 1
+
+        for i in range(1, num_instances):
+            for j in range(i):
+                overlap = masks[i] & masks[j]
+                masks[i][overlap == 1] = 0
+
+        labels = np.array([])
+
+        annotation_processor = AnnotationProcessor(
+            class_names=class_names,
+            output_dir=self.temp_dir
+        )
+
+        with self.assertRaises(ValueError):
+            annotation_processor.create_labelme_json(
+                image_path=image_path,
+                masks=masks,
+                labels=labels,
+                class_names=class_names,
+                output_dir=annotation_processor.output_dir
+            )
+
+    @patch('src.utils.setup_logger')
+    def test_create_labelme_json_error_incorrect_output_dir(self, mock_setup_logger):
+        mock_setup_logger.return_value = logging.getLogger('test_logger')
+        image_path = self.temp_dir + "\\images\\val\\0026.jpg"
+        class_names = ['FT']
+        height, width = 640, 640
+        num_instances = 3
+
+        masks = np.zeros((num_instances, height, width), dtype=np.uint8)
+
+        for i in range(num_instances):
+            center_x = np.random.randint(100, width - 100)
+            center_y = np.random.randint(100, height - 100)
+            axis_x = np.random.randint(50, 150)
+            axis_y = np.random.randint(50, 150)
+
+            y, x = np.ogrid[:height, :width]
+            distance = ((x - center_x) / axis_x) ** 2 + ((y - center_y) / axis_y) ** 2
+            masks[i][distance <= 1] = 1
+
+        for i in range(1, num_instances):
+            for j in range(i):
+                overlap = masks[i] & masks[j]
+                masks[i][overlap == 1] = 0
+
+        num_objects = np.random.randint(1, 11)
+        class_index = 0
+
+        labels = np.full(num_objects, class_index, dtype=np.int64)
+
+        annotation_processor = AnnotationProcessor(
+            class_names=class_names,
+            output_dir="\\wrong_dir\\no_dir"
+        )
+
+        with self.assertRaises(NotADirectoryError):
+            annotation_processor.create_labelme_json(
+                image_path=image_path,
+                masks=masks,
+                labels=labels,
+                class_names=class_names,
+                output_dir=annotation_processor.output_dir
+            )
+
+    @patch('src.utils.setup_logger')
+    def test_create_labelme_json_error_incorrect_image_path(self, mock_setup_logger):
+        mock_setup_logger.return_value = logging.getLogger('test_logger')
+        wrong_image_path = self.temp_dir + "\\images\\val\\0022.jpg"
+        class_names = ['FT']
+        height, width = 640, 640
+        num_instances = 3
+
+        masks = np.zeros((num_instances, height, width), dtype=np.uint8)
+
+        for i in range(num_instances):
+            center_x = np.random.randint(100, width - 100)
+            center_y = np.random.randint(100, height - 100)
+            axis_x = np.random.randint(50, 150)
+            axis_y = np.random.randint(50, 150)
+
+            y, x = np.ogrid[:height, :width]
+            distance = ((x - center_x) / axis_x) ** 2 + ((y - center_y) / axis_y) ** 2
+            masks[i][distance <= 1] = 1
+
+        for i in range(1, num_instances):
+            for j in range(i):
+                overlap = masks[i] & masks[j]
+                masks[i][overlap == 1] = 0
+
+        num_objects = np.random.randint(1, 11)
+        class_index = 0
+
+        labels = np.full(num_objects, class_index, dtype=np.int64)
+
+        annotation_processor = AnnotationProcessor(
+            class_names=class_names,
+            output_dir=self.temp_dir
+        )
+
+        with self.assertRaises(FileNotFoundError):
+            annotation_processor.create_labelme_json(
+                image_path=wrong_image_path,
+                masks=masks,
+                labels=labels,
+                class_names=class_names,
+                output_dir=annotation_processor.output_dir
+            )

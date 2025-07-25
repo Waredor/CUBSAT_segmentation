@@ -13,25 +13,32 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from PIL import Image
 
-logging.basicConfig(
-    format='%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s] %(message)s',
-    level=logging.INFO,
-    filename='cubsat_log.txt',
-    filemode='w',
-    encoding='utf-8'
-)
 
-stream_handler = logging.StreamHandler()
-rotating_file_handler = RotatingFileHandler(
-    filename='cubsat_log.txt',
-    maxBytes=1048576,
-    backupCount=3
-)
-stream_handler.setLevel(logging.INFO)
-rotating_file_handler.setLevel(logging.INFO)
-formatter = logging.Formatter('%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s] %(message)s')
-stream_handler.setFormatter(formatter)
-rotating_file_handler.setFormatter(formatter)
+LOG_FILE = "src/cubsat_log.txt"
+LOGGER_NAME = "utils_logger"
+
+def setup_logger(use_file_handler: bool = True) -> logging.Logger:
+    logger = logging.getLogger(LOGGER_NAME)
+
+    if not logger.handlers:
+        logger.setLevel(logging.INFO)
+
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(logging.INFO)
+
+        formatter = logging.Formatter('%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s] %(message)s')
+        stream_handler.setFormatter(formatter)
+        logger.addHandler(stream_handler)
+
+        if use_file_handler:
+            os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
+            file_handler = RotatingFileHandler(LOG_FILE, maxBytes=1048576, backupCount=3)
+            file_handler.setLevel(logging.INFO)
+            file_handler.setFormatter(formatter)
+            logger.addHandler(file_handler)
+
+    return logger
+
 
 class ConfigManager:
     """
@@ -64,9 +71,7 @@ class ConfigManager:
                          4: {'name': 'output_dir', 'expected_type': str,
                              'is_file': False, 'is_dir': True, 'extension': ['']}
                          }
-        self.logger = logging.getLogger(__name__)
-        self.logger.addHandler(stream_handler)
-        self.logger.addHandler(rotating_file_handler)
+        self.logger = setup_logger()
 
     def _validate_path(self, el: str, is_file: bool, is_dir: bool, extensions: list) -> None:
         """
@@ -324,9 +329,7 @@ class ModelTrainer:
         self.model_cfg = model_cfg
         self.hyperparameters = hyperparameters
         self.model = ultralytics.YOLO(self.model_cfg)
-        self.logger = logging.getLogger(__name__)
-        self.logger.addHandler(stream_handler)
-        self.logger.addHandler(rotating_file_handler)
+        self.logger = setup_logger()
 
     def freeze_layers(self, num_layers_to_freeze: int) -> None:
         """
@@ -387,9 +390,7 @@ class AnnotationProcessor:
     def __init__(self, output_dir: str, class_names: list) -> None:
         self.output_dir = output_dir
         self.class_names = class_names
-        self.logger = logging.getLogger(__name__)
-        self.logger.addHandler(stream_handler)
-        self.logger.addHandler(rotating_file_handler)
+        self.logger = setup_logger()
 
     def mask_to_polygons(self, mask: np.ndarray) -> list:
         """
@@ -433,7 +434,7 @@ class AnnotationProcessor:
             output_dir (str): выходная директория для сохранения .json аннотаций
                 к изображениям.
         """
-        if not os.path.isdir(output_dir):
+        if not os.path.exists(output_dir):
             self.logger.error(f"Incorrect directory {output_dir}")
             raise NotADirectoryError(f"Incorrect directory {output_dir}")
 
@@ -504,9 +505,7 @@ class InferenceRunner:
         self.model = model
         self.img_size = img_size
         self.annotation_processor = annotation_processor
-        self.logger = logging.getLogger(__name__)
-        self.logger.addHandler(stream_handler)
-        self.logger.addHandler(rotating_file_handler)
+        self.logger = setup_logger()
 
     def run_inference(self, image_path: str) -> list:
         """
@@ -575,9 +574,7 @@ class Pipeline:
 
     def __init__(self, data_cfg: str, model_cfg: str, model_hyperparameters: str, data_dir: str,
                  output_dir: str) -> None:
-        self.logger = logging.getLogger(__name__)
-        self.logger.addHandler(stream_handler)
-        self.logger.addHandler(rotating_file_handler)
+        self.logger = setup_logger()
         self.logger.info("Инициализация экземпляра класса Pipeline")
         self.config_manager = ConfigManager(
             data_cfg=data_cfg,
