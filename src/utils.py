@@ -433,6 +433,22 @@ class AnnotationProcessor:
             output_dir (str): выходная директория для сохранения .json аннотаций
                 к изображениям.
         """
+        if not os.path.isdir(output_dir):
+            self.logger.error(f"Incorrect directory {output_dir}")
+            raise NotADirectoryError(f"Incorrect directory {output_dir}")
+
+        if not os.path.isfile(image_path):
+            self.logger.error(f"{image_path} is not a path to a file")
+            raise FileNotFoundError(f"{image_path} is not a path to a file")
+
+        if np.size(masks) == 0:
+            self.logger.error(f"{masks} is an empty array")
+            raise ValueError(f"{masks} is an empty array")
+
+        if np.size(labels) == 0:
+            self.logger.error(f"{labels} is an empty array")
+            raise ValueError(f"{labels} is an empty array")
+
         image_name = Path(image_path).name
         image = cv2.imread(image_path)
         height, width = image.shape[:2]
