@@ -400,12 +400,22 @@ class AnnotationProcessor:
         Returns:
             polygons (list): список полигонов объектов.
         """
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         polygons = []
-        for contour in contours:
-            if len(contour) >= 3:
-                polygon = contour.squeeze().tolist()
-                polygons.append(polygon)
+        if mask.ndim == 3:
+            for i in range(mask.shape[0]):
+                single_mask = mask[i].astype(np.uint8)
+                contours, _ = cv2.findContours(single_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                for contour in contours:
+                    if len(contour) >= 3:
+                        polygon = contour.squeeze().tolist()
+                        polygons.append(polygon)
+        else:
+            single_mask = mask.astype(np.uint8)
+            contours, _ = cv2.findContours(single_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            for contour in contours:
+                if len(contour) >= 3:
+                    polygon = contour.squeeze().tolist()
+                    polygons.append(polygon)
 
         return polygons
 
