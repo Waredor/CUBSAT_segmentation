@@ -14,7 +14,7 @@ from pathlib import Path
 from PIL import Image
 
 
-LOG_FILE = "src/cubsat_log.txt"
+LOG_FILE = "\\cubsat_log.txt"
 LOGGER_NAME = "utils_logger"
 
 def setup_logger(use_file_handler: bool = True) -> logging.Logger:
