@@ -9,3 +9,14 @@ utils.py[LINE:602]# INFO     [2025-07-25 20:18:13,357] Начато дообучение модели
 utils.py[LINE:355]# INFO     [2025-07-25 20:18:13,357] Starting training
 utils.py[LINE:356]# INFO     [2025-07-25 20:18:13,357] Training model with parameters: {'data_path': 'D:\\Python projects\\CUBSAT_Dataset_segmentation\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 4, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'D:\\Python projects\\CUBSAT_segmentation\\Model_cfg\\'}
 utils.py[LINE:347]# INFO     [2025-07-25 20:18:13,357] Froze first 10 layers
+utils.py[LINE:578]# INFO     [2025-07-25 20:20:24,494] Инициализация экземпляра класса Pipeline
+utils.py[LINE:248]# INFO     [2025-07-25 20:20:24,494] Starting validation
+utils.py[LINE:268]# INFO     [2025-07-25 20:20:24,496] Validation completed
+utils.py[LINE:309]# INFO     [2025-07-25 20:20:24,496] Loaded configuration file: D:\Python projects\CUBSAT_Dataset_segmentation\Fine_tuning\dataset.yaml
+utils.py[LINE:309]# INFO     [2025-07-25 20:20:24,497] Loaded configuration file: D:\Python projects\CUBSAT_segmentation\Model_cfg\model_cfg.json
+utils.py[LINE:309]# INFO     [2025-07-25 20:20:24,497] Loaded configuration file: D:\Python projects\CUBSAT_segmentation\Model_cfg\yolo11n-seg_labeling.pt
+utils.py[LINE:593]# INFO     [2025-07-25 20:20:24,591] Инициализация Pipeline выполнена успешно
+utils.py[LINE:602]# INFO     [2025-07-25 20:20:24,591] Начато дообучение модели
+utils.py[LINE:355]# INFO     [2025-07-25 20:20:24,592] Starting training
+utils.py[LINE:356]# INFO     [2025-07-25 20:20:24,592] Training model with parameters: {'data_path': 'D:\\Python projects\\CUBSAT_Dataset_segmentation\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 4, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'D:\\Python projects\\CUBSAT_segmentation\\Model_cfg\\'}
+utils.py[LINE:347]# INFO     [2025-07-25 20:20:24,592] Froze first 10 layers

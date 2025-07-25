@@ -486,7 +486,7 @@ class AnnotationProcessor:
         os.makedirs(output_dir, exist_ok=True)
         with open(output_path, mode="w", encoding='utf-8') as f:
             json.dump(labelme_data, f, indent=2)
-        self.logger.info(f"Создан JSON-файл: {output_path}")
+        self.logger.info(f"Created JSON-file: {output_path}")
         return output_path
 
 
@@ -522,12 +522,12 @@ class InferenceRunner:
             return results
 
         except RuntimeError as exc:
-            self.logger.error("Внутренняя ошибка модели! Превышено время ожидания")
-            raise RuntimeError("Внутренняя ошибка модели! Превышено время ожидания") from exc
+            self.logger.error("Internal model error! Runtime error")
+            raise RuntimeError("Internal model error! Runtime error") from exc
 
         except FileNotFoundError as exc:
-            self.logger.error(f"Файл {image_path} не найден")
-            raise FileNotFoundError(f"Файл {image_path} не найден") from exc
+            self.logger.error(f"File {image_path} doesn't found")
+            raise FileNotFoundError(f"File {image_path} doesn't found") from exc
 
     def process_images(self, test_images_dir: str) -> None:
         """
@@ -538,8 +538,8 @@ class InferenceRunner:
             test_images_dir (str): Путь к директории с изображениями
         """
         if not os.path.isdir(test_images_dir):
-            self.logger.error(f"{test_images_dir} не является директорией")
-            raise NotADirectoryError(f"{test_images_dir} не является директорией")
+            self.logger.error(f"{test_images_dir} is not a directory")
+            raise NotADirectoryError(f"{test_images_dir} is not a directory")
 
         test_images = [os.path.join(test_images_dir, f) for f in os.listdir(test_images_dir) if
                        f.endswith(('.jpg', '.png'))]
@@ -556,7 +556,7 @@ class InferenceRunner:
                     output_dir=self.annotation_processor.output_dir
                 )
             else:
-                self.logger.warning(f"Нет объектов в {image_path}")
+                self.logger.warning(f"No objects in {image_path}")
 
 
 class Pipeline:
@@ -575,7 +575,7 @@ class Pipeline:
     def __init__(self, data_cfg: str, model_cfg: str, model_hyperparameters: str, data_dir: str,
                  output_dir: str) -> None:
         self.logger = setup_logger()
-        self.logger.info("Инициализация экземпляра класса Pipeline")
+        self.logger.info("Pipeline init")
         self.config_manager = ConfigManager(
             data_cfg=data_cfg,
             model_cfg=model_cfg,
@@ -590,7 +590,7 @@ class Pipeline:
             hyperparameters=self.config
         )
         self.model = self.model_trainer.model
-        self.logger.info("Инициализация Pipeline выполнена успешно")
+        self.logger.info("Pipeline init successfully")
 
     def fine_tune_for_labeling(self, model_filename: str) -> None:
         """
@@ -599,11 +599,11 @@ class Pipeline:
         Parameters:
             model_filename (str): имя файла обученной модели с расширением .pt.
         """
-        self.logger.info("Начато дообучение модели")
+        self.logger.info("Starting fine-tuning")
         self.model = self.model_trainer.train_model()
-        self.logger.info("Сохранение дообученной модели")
+        self.logger.info("Saving fine-tuned model")
         self.model.save(self.config['output_dir'] + model_filename)
-        self.logger.info("Успешное сохранение")
+        self.logger.info("Successfully saved")
 
     def create_new_json_annotations(self, test_images_dir: str,
                                     annotations_output_dir: str) -> None:
@@ -614,7 +614,7 @@ class Pipeline:
             test_images_dir (str): директория с изображениями для инференса.
             annotations_output_dir (str): директория для сохранения файлов разметки.
         """
-        self.logger.info("Начато создание аннотаций")
+        self.logger.info("Starting creating annotations")
         annotation_processor = AnnotationProcessor(
             class_names=self.config['class_names'],
             output_dir=annotations_output_dir
@@ -625,7 +625,7 @@ class Pipeline:
             annotation_processor=annotation_processor
         )
         inference_runner.process_images(test_images_dir)
-        self.logger.info("Создание аннотаций завершено")
+        self.logger.info("Creating annotations finished")
 
     def convert_labelme_to_yolo(self, labelme_annotations_path: str,
                                 yolo_annotations_path: str) -> None:
@@ -640,36 +640,36 @@ class Pipeline:
             FileNotFoundError: если файл по искомому пути не найден
         """
         if not os.path.isdir(labelme_annotations_path):
-            self.logger.error(f"{labelme_annotations_path} не является директорией")
-            raise NotADirectoryError(f"{labelme_annotations_path} не является директорией")
+            self.logger.error(f"{labelme_annotations_path} is not a directory")
+            raise NotADirectoryError(f"{labelme_annotations_path} is not a directory")
 
         if not os.path.isdir(yolo_annotations_path):
-            self.logger.error(f"{yolo_annotations_path} не является директорией")
-            raise NotADirectoryError(f"{yolo_annotations_path} не является директорией")
+            self.logger.error(f"{yolo_annotations_path} is not a directory")
+            raise NotADirectoryError(f"{yolo_annotations_path} is not a directory")
 
         class_map = {name: idx for idx, name in enumerate(self.config['class_names'])}
 
         os.makedirs(yolo_annotations_path, exist_ok=True)
         json_files = glob.glob(os.path.join(labelme_annotations_path, "*.json"))
         if len(json_files) == 0:
-            self.logger.warning(f"Аннотации не найдены в {labelme_annotations_path}")
-            raise FileNotFoundError(f"Аннотации не найдены в {labelme_annotations_path}")
+            self.logger.warning(f"There are no annotations in {labelme_annotations_path}")
+            raise FileNotFoundError(f"There are no annotations in {labelme_annotations_path}")
 
-        self.logger.info("Начало конвертации аннотаций")
+        self.logger.info("Starting annotations convertation")
         for json_path in json_files:
             try:
                 with open(json_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
 
             except json.decoder.JSONDecodeError:
-                self.logger.warning(f"Пустой файл {f}")
+                self.logger.warning(f"Empty file {f}")
                 continue
 
             image_filename = data.get('imagePath')
             image_path = os.path.join(labelme_annotations_path, image_filename)
 
             if not os.path.exists(image_path):
-                self.logger.warning(f"Изображение не найдено: {image_path}")
+                self.logger.warning(f"There are no images in: {image_path}")
                 continue
 
             with Image.open(image_path) as img:
@@ -681,11 +681,11 @@ class Pipeline:
                 points = shape.get('points', [])
 
                 if label not in class_map:
-                    self.logger.warning(f"Пропущен неизвестный класс: '{label}' в {json_path}")
+                    self.logger.warning(f"Skipped class: '{label}' в {json_path}")
                     continue
 
                 if len(points) < 3:
-                    self.logger.warning(f"Пропущен объект с недостатком точек в {json_path}")
+                    self.logger.warning(f"Skipped object with a few points {json_path}")
                     continue
 
                 class_id = class_map[label]
@@ -704,6 +704,6 @@ class Pipeline:
 
             with open(txt_path, 'w', encoding='utf-8') as f:
                 f.write("\n".join(yolo_lines))
-                self.logger.info(f"Сконвертирован {base_name}.txt")
+                self.logger.info(f"Converted {base_name}.txt")
 
-        self.logger.info("Конвертация аннотаций завершена")
+        self.logger.info("Annotations convertation is finished")
