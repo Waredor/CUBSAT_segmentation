@@ -2,11 +2,14 @@ import logging
 import unittest
 import os
 import yaml
+import numpy as np
+import cv2
 
 from io import StringIO
 from unittest.mock import patch, MagicMock
 from ultralytics.models.yolo.model import YOLO
-from src.utils import ConfigManager, ModelTrainer
+from src.utils import ConfigManager, ModelTrainer, AnnotationProcessor
+
 
 def get_project_root():
     current_file = os.path.abspath(__file__)
@@ -381,3 +384,62 @@ class TestModelTrainer(unittest.TestCase):
         calls = [call[0][0] for call in mock_logger.info.call_args_list]
         self.assertEqual(calls[0], "Starting training")
         self.assertEqual(calls[-1], "Training completed")
+
+
+class TestAnnotationProcessor(unittest.TestCase):
+    def setUp(self):
+        self.temp_dir = os.path.join(
+            project_root_path,
+            'src\\tests\\test_data'
+        )
+
+    def test_mask_to_polygons_success(self):
+        """
+        Тест test_mask_to_polygons_success проверяет работу метода
+        AnnotationProcessor.mask_to_polygons() с корректными входными данными
+        """
+        height, width = 640, 640
+        num_instances = 3
+
+        masks = np.zeros((num_instances, height, width), dtype=np.uint8)
+
+        for i in range(num_instances):
+            center_x = np.random.randint(100, width - 100)
+            center_y = np.random.randint(100, height - 100)
+            axis_x = np.random.randint(50, 150)
+            axis_y = np.random.randint(50, 150)
+
+            y, x = np.ogrid[:height, :width]
+            distance = ((x - center_x) / axis_x) ** 2 + ((y - center_y) / axis_y) ** 2
+            masks[i][distance <= 1] = 1
+
+        for i in range(1, num_instances):
+            for j in range(i):
+                overlap = masks[i] & masks[j]
+                masks[i][overlap == 1] = 0
+
+        class_names = ['FT']
+        annotation_processor = AnnotationProcessor(
+            class_names=class_names,
+            output_dir=self.temp_dir
+        )
+        polygons = annotation_processor.mask_to_polygons(masks)
+        self.assertEqual(type(polygons), list)
+        self.assertNotEqual(len(polygons), 0)
+        for polygon in polygons:
+            self.assertTrue(len(polygon) >= 3)
+
+    def test_mask_to_polygons_empty_masks(self):
+        """
+        Тест test_mask_to_polygons_empty_masks проверяет работу метода
+        AnnotationProcessor.mask_to_polygons() с пустыми масками на входе
+        """
+        masks = np.array([])
+        class_names = ['FT']
+        annotation_processor = AnnotationProcessor(
+            class_names=class_names,
+            output_dir=self.temp_dir
+        )
+        polygons = annotation_processor.mask_to_polygons(masks)
+        self.assertEqual(type(polygons), list)
+        self.assertEqual(len(polygons), 0)
