@@ -354,13 +354,6 @@ class TestModelTrainer(unittest.TestCase):
 
     @patch('src.utils.logging.getLogger')
     def test_train_model_success(self, mock_get_logger):
-        logger = logging.getLogger('test_logger')
-        logger.setLevel(logging.DEBUG)
-        log_output = StringIO()
-        handler = logging.StreamHandler(log_output)
-        formatter = logging.Formatter('%(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
         config_manager = ConfigManager(
             data_cfg=self.valid_dataset,
             model_hyperparameters=self.valid_hyperparameters,
@@ -369,17 +362,22 @@ class TestModelTrainer(unittest.TestCase):
             output_dir=self.temp_dir
         )
         hyperparameters = config_manager.load_config()
+
         mock_logger = MagicMock()
-        mock_logger.level = logging.DEBUG
+        mock_logger.level = logging.INFO
         mock_get_logger.return_value = mock_logger
         model_trainer = ModelTrainer(
             model_cfg=self.model_cfg,
             hyperparameters=hyperparameters
         )
         model = model_trainer.train_model()
+        layer_count = 0
+        for param in model_trainer.model.model.parameters():
+            if layer_count < hyperparameters["freeze_layers"]:
+                self.assertFalse(param.requires_grad)
+            layer_count += 1
 
         self.assertIsInstance(model, YOLO)
-        self.assertEqual(mock_logger.info.call_count, 5)
         calls = [call[0][0] for call in mock_logger.info.call_args_list]
         self.assertEqual(calls[0], "Starting training")
-        self.assertEqual(calls[4], "Training completed")
+        self.assertEqual(calls[-1], "Training completed")

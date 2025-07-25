@@ -1,2 +1,3 @@
-run_inference.py[LINE:79]# INFO     [2025-07-21 09:23:24,465] Проверка пути изображения: C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/CUBSAT_segmentation/inference/1.jpg
-run_inference.py[LINE:80]# INFO     [2025-07-21 09:23:24,466] Текущая рабочая директория: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\inference
+run_inference.py[LINE:96]# INFO     [2025-07-24 23:49:19,075] Проверка пути изображения: C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/CUBSAT_segmentation/inference/4.jpg
+run_inference.py[LINE:97]# INFO     [2025-07-24 23:49:19,076] Текущая рабочая директория: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\inference
+run_inference.py[LINE:131]# INFO     [2025-07-24 23:49:19,161] Изображение с масками сохранено: C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/CUBSAT_segmentation/inference/output/4_pred.png

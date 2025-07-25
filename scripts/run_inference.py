@@ -5,11 +5,11 @@ from PIL import Image, ImageDraw
 from ultralytics import YOLO
 
 # Ручное указание путей
-IMAGE_PATH = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/CUBSAT_segmentation/inference/1.jpg"
+IMAGE_PATH = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/CUBSAT_segmentation/inference/4.jpg"
 MODEL_PATH = ("C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/CUBSAT_segmentation/inference"
               "/yolo11n-seg_final.pt")
 OUTPUT_PATH = ("C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/CUBSAT_segmentation/inference/"
-               "output/1_pred.png")
+               "output/4_pred.png")
 
 logging.basicConfig(
     format='%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s] %(message)s',
