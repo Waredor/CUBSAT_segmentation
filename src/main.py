@@ -18,7 +18,7 @@ if __name__ == '__main__':
     # Hyperparameters and configs
     MODEL_CFG = str(project_root_path) + "\\Model_cfg\\model_cfg.json"      # параметры модели для обучения
     DATA_CFG = DATA_ROOT_PATH + "\\dataset.yaml"      # конфигурация датасета
-    MODEL_PATH = str(project_root_path) + "\\Model_cfg\\yolo11n-seg_labeling.pt"        # файл с предобученной моделью
+    MODEL_PATH = str(project_root_path) + "\\Model_cfg\\yolo11n-seg.pt"        # файл с предобученной моделью
     OUTPUT_DIR = str(project_root_path) + "\\Model_cfg\\"
 
     #Эти пути нужно изменить на свои
