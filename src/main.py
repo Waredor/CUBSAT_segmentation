@@ -16,10 +16,10 @@ if __name__ == '__main__':
     DATA_ROOT_PATH = "D:\\Python projects\\CUBSAT_Dataset_segmentation\\Fine_tuning"
 
     # Hyperparameters and configs
-    MODEL_CFG = str(project_root_path) + "\\Model_cfg\\model_cfg.json"      # параметры модели для обучения
+    MODEL_CFG = str(project_root_path) + "\\configs\\model_cfg.json"      # параметры модели для обучения
     DATA_CFG = DATA_ROOT_PATH + "\\dataset.yaml"      # конфигурация датасета
-    MODEL_PATH = str(project_root_path) + "\\Model_cfg\\yolo11n-seg.pt"        # файл с предобученной моделью
-    OUTPUT_DIR = str(project_root_path) + "\\Model_cfg\\"
+    MODEL_PATH = str(project_root_path) + "\\configs\\yolo11n-seg.pt"        # файл с предобученной моделью
+    OUTPUT_DIR = str(project_root_path) + "\\configs\\"
 
     #Эти пути нужно изменить на свои
     OUTPUT_PATH_IMG = DATA_ROOT_PATH + "\\images\\test"

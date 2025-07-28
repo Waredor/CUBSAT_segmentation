@@ -1,4 +1,0 @@
-utils.py[LINE:555]# INFO     [2025-07-24 18:33:22,824] Инициализация экземпляра класса Pipeline
-utils.py[LINE:243]# INFO     [2025-07-24 18:33:22,824] Starting validation
-utils.py[LINE:263]# INFO     [2025-07-24 18:33:22,825] Validation completed
-utils.py[LINE:229]# ERROR    [2025-07-24 18:33:22,827] C:\false_dir is not exists

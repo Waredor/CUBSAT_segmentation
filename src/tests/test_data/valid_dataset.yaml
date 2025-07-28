@@ -1,8 +1,0 @@
-names:
-- FT
-- Engine
-- Solar Panel
-nc: 3
-path: D:\Python projects\CUBSAT_segmentation\src\tests\test_data
-train: images/train
-val: images/val

@@ -1,0 +1,13 @@
+utils.py[LINE:555]# INFO     [2025-07-24 18:33:22,824] Инициализация экземпляра класса Pipeline
+utils.py[LINE:243]# INFO     [2025-07-24 18:33:22,824] Starting validation
+utils.py[LINE:263]# INFO     [2025-07-24 18:33:22,825] Validation completed
+utils.py[LINE:229]# ERROR    [2025-07-24 18:33:22,827] C:\false_dir is not exists
+config_manager.py[LINE:224]# INFO     [2025-07-28 11:56:50,588] Starting validation
+config_manager.py[LINE:244]# INFO     [2025-07-28 11:56:50,589] Validation completed
+config_manager.py[LINE:285]# INFO     [2025-07-28 11:56:50,590] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:285]# INFO     [2025-07-28 11:56:50,591] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:285]# INFO     [2025-07-28 11:56:50,591] Loaded configuration file: C:\Users\Екатерина\Desktop\ML ЦНИХМ\Проекты\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:43]# INFO     [2025-07-28 11:56:50,922] Starting training
+model_trainer.py[LINE:44]# INFO     [2025-07-28 11:56:50,923] Training model with parameters: {'data_path': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel', 'background'], 'epochs': 30, 'imgsz': 1024, 'batch': 4, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:35]# INFO     [2025-07-28 11:56:50,923] Froze first 10 layers
+model_trainer.py[LINE:61]# INFO     [2025-07-28 11:56:50,923] Cuda is not available, training on CPU

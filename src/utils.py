@@ -14,11 +14,13 @@ from pathlib import Path
 from PIL import Image
 
 
-LOG_FILE = "\\cubsat_log.txt"
-LOGGER_NAME = "utils_logger"
+def get_project_root():
+    current_file = os.path.abspath(__file__)
+    current_dir = os.path.dirname(current_file)
+    return os.path.abspath(os.path.join(current_dir, '..', '..'))
 
 def setup_logger(use_file_handler: bool = True) -> logging.Logger:
-    logger = logging.getLogger(LOGGER_NAME)
+    logger = logging.getLogger(CUBSAT_LOGGER_NAME)
 
     if not logger.handlers:
         logger.setLevel(logging.INFO)
@@ -31,13 +33,19 @@ def setup_logger(use_file_handler: bool = True) -> logging.Logger:
         logger.addHandler(stream_handler)
 
         if use_file_handler:
-            os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
-            file_handler = RotatingFileHandler(LOG_FILE, maxBytes=1048576, backupCount=3)
+            os.makedirs(os.path.dirname(CUBSAT_LOG_FILE), exist_ok=True)
+            file_handler = RotatingFileHandler(CUBSAT_LOG_FILE, maxBytes=1048576, backupCount=3)
             file_handler.setLevel(logging.INFO)
             file_handler.setFormatter(formatter)
             logger.addHandler(file_handler)
 
     return logger
+
+project_root_path = get_project_root()
+
+CUBSAT_LOG_FILE = os.path.join(project_root_path, "logs", "cubsat_log.txt")
+CUBSAT_LOGGER_NAME = "utils_logger"
+LOGGER = setup_logger()
 
 
 class ConfigManager:
@@ -55,10 +63,12 @@ class ConfigManager:
         model_cfg (str): путь до .yaml файла конфигурации модели,
             либо до .pt файла с предобученной моделью.
         output_dir (str): путь к директории для сохранения обученной модели.
+        logger (logging.Logger): объект логгера.
     """
 
     def __init__(self, data_cfg: str, model_hyperparameters: str,
-                 data_dir: str, model_cfg: str, output_dir: str) -> None:
+                 data_dir: str, model_cfg: str, output_dir: str,
+                 logger=LOGGER) -> None:
         self.params = [data_cfg, model_hyperparameters, data_dir, model_cfg, output_dir]
         self.metadata = {0: {'name': 'data_cfg', 'expected_type': str,
                              'is_file': True, 'is_dir': False, 'extension': ['.yaml']},
@@ -71,7 +81,7 @@ class ConfigManager:
                          4: {'name': 'output_dir', 'expected_type': str,
                              'is_file': False, 'is_dir': True, 'extension': ['']}
                          }
-        self.logger = setup_logger()
+        self.logger = logger
 
     def _validate_path(self, el: str, is_file: bool, is_dir: bool, extensions: list) -> None:
         """
@@ -323,13 +333,14 @@ class ModelTrainer:
             или .pt файлу предобученной модели.
         hyperparameters (dict): словарь с гиперпараметрами модели для обучения
             и путем к конфигурационному файлу датасета.
+        logger (logging.Logger): объект логгера.
     """
 
-    def __init__(self, model_cfg: str, hyperparameters: dict) -> None:
+    def __init__(self, model_cfg: str, hyperparameters: dict, logger=LOGGER) -> None:
         self.model_cfg = model_cfg
         self.hyperparameters = hyperparameters
         self.model = ultralytics.YOLO(self.model_cfg)
-        self.logger = setup_logger()
+        self.logger = logger
 
     def freeze_layers(self, num_layers_to_freeze: int) -> None:
         """
@@ -385,12 +396,13 @@ class AnnotationProcessor:
     Parameters:
         output_dir (str): директория для сохранения созданных аннотаций.
         class_names (list): список с именами используемых классов.
+        logger (logging.Logger): объект логгера.
     """
 
-    def __init__(self, output_dir: str, class_names: list) -> None:
+    def __init__(self, output_dir: str, class_names: list, logger=LOGGER) -> None:
         self.output_dir = output_dir
         self.class_names = class_names
-        self.logger = setup_logger()
+        self.logger = logger
 
     def mask_to_polygons(self, mask: np.ndarray) -> list:
         """
@@ -489,144 +501,6 @@ class AnnotationProcessor:
         self.logger.info(f"Created JSON-file: {output_path}")
         return output_path
 
-
-class InferenceRunner:
-    """
-    Класс InferenceRunner осуществляет инференс на тестовых изображениях.
-    Parameters:
-        model (torch.nn.Module): обученная модель YOLOv11.
-        img_size (int): размер изображения (изображение квадратное).
-        annotation_processor (AnnotationProcessor): экземпляр класса AnnotationProcessor
-            для создания разметки к инференсу.
-    """
-
-    def __init__(self, model: torch.nn.Module, img_size: int,
-                 annotation_processor: AnnotationProcessor) -> None:
-        self.model = model
-        self.img_size = img_size
-        self.annotation_processor = annotation_processor
-        self.logger = setup_logger()
-
-    def run_inference(self, image_path: str) -> list:
-        """
-        Метод run_inference производит инференс для одного изображения,
-        хранящегося по указанному пути.
-        Parameters:
-            image_path (str): путь к изображению для инференса.
-        Returns:
-            results (ultralytics.YOLO.results): объект класса ultralytics.YOLO.results
-                с результатами инференса.
-        """
-        try:
-            results = self.model.predict(image_path, imgsz=self.img_size, conf=0.5, iou=0.7)
-            return results
-
-        except RuntimeError as exc:
-            self.logger.error("Internal model error! Runtime error")
-            raise RuntimeError("Internal model error! Runtime error") from exc
-
-        except FileNotFoundError as exc:
-            self.logger.error(f"File {image_path} doesn't found")
-            raise FileNotFoundError(f"File {image_path} doesn't found") from exc
-
-    def process_images(self, test_images_dir: str) -> None:
-        """
-        Метод process_images() обрабатывает все изображения в указанной директории,
-        выполняя инференс для каждого изображения и передавая результаты
-        в AnnotationProcessor.
-        Parameters:
-            test_images_dir (str): Путь к директории с изображениями
-        """
-        if not os.path.isdir(test_images_dir):
-            self.logger.error(f"{test_images_dir} is not a directory")
-            raise NotADirectoryError(f"{test_images_dir} is not a directory")
-
-        test_images = [os.path.join(test_images_dir, f) for f in os.listdir(test_images_dir) if
-                       f.endswith(('.jpg', '.png'))]
-        for image_path in test_images:
-            results = self.run_inference(image_path)
-            if results[0].masks is not None:
-                masks = results[0].masks.data.cpu().numpy()
-                labels = results[0].boxes.cls.cpu().numpy()
-                self.annotation_processor.create_labelme_json(
-                    image_path=image_path,
-                    masks=masks,
-                    labels=labels,
-                    class_names=self.annotation_processor.class_names,
-                    output_dir=self.annotation_processor.output_dir
-                )
-            else:
-                self.logger.warning(f"No objects in {image_path}")
-
-
-class Pipeline:
-    """
-    Класс Pipeline предназначен для автоматизации процессов сбора,
-    обработки и аугментации данных,
-    обучения, валидации и сохранения моделей машинного обучения.
-    Parameters:
-        data_cfg (str): .yaml файл конфигурации датасета в формате YOLOv11.
-        data_dir (str): путь к директории с датасетом в файловой системе.
-        model_cfg (str): путь к .pt файлу предобученной модели YOLOv11 в файловой системе.
-        model_hyperparameters (str): путь к .json файлу с гиперпараметрами модели.
-        output_dir (str): путь к директории сохранения обученной модели.
-    """
-
-    def __init__(self, data_cfg: str, model_cfg: str, model_hyperparameters: str, data_dir: str,
-                 output_dir: str) -> None:
-        self.logger = setup_logger()
-        self.logger.info("Pipeline init")
-        self.config_manager = ConfigManager(
-            data_cfg=data_cfg,
-            model_cfg=model_cfg,
-            model_hyperparameters=model_hyperparameters,
-            data_dir=data_dir,
-            output_dir=output_dir
-        )
-        self.config = self.config_manager.load_config()
-        self.data_dir = data_dir
-        self.model_trainer = ModelTrainer(
-            model_cfg=model_cfg,
-            hyperparameters=self.config
-        )
-        self.model = self.model_trainer.model
-        self.logger.info("Pipeline init successfully")
-
-    def fine_tune_for_labeling(self, model_filename: str) -> None:
-        """
-        Метод fine_tune_for_labeling() используется для дообучения под конкретную задачу модели,
-        предобученной на больших данных и ее сохранения в указанной директории.
-        Parameters:
-            model_filename (str): имя файла обученной модели с расширением .pt.
-        """
-        self.logger.info("Starting fine-tuning")
-        self.model = self.model_trainer.train_model()
-        self.logger.info("Saving fine-tuned model")
-        self.model.save(self.config['output_dir'] + model_filename)
-        self.logger.info("Successfully saved")
-
-    def create_new_json_annotations(self, test_images_dir: str,
-                                    annotations_output_dir: str) -> None:
-        """
-        Метод create_new_annotations() используется для создания разметки тестовых изображений
-        с использованием предобученной модели.
-        Parameters:
-            test_images_dir (str): директория с изображениями для инференса.
-            annotations_output_dir (str): директория для сохранения файлов разметки.
-        """
-        self.logger.info("Starting creating annotations")
-        annotation_processor = AnnotationProcessor(
-            class_names=self.config['class_names'],
-            output_dir=annotations_output_dir
-        )
-        inference_runner = InferenceRunner(
-            model=self.model,
-            img_size=self.config['imgsz'],
-            annotation_processor=annotation_processor
-        )
-        inference_runner.process_images(test_images_dir)
-        self.logger.info("Creating annotations finished")
-
     def convert_labelme_to_yolo(self, labelme_annotations_path: str,
                                 yolo_annotations_path: str) -> None:
         """
@@ -707,3 +581,147 @@ class Pipeline:
                 self.logger.info(f"Converted {base_name}.txt")
 
         self.logger.info("Annotations convertation is finished")
+
+
+class InferenceRunner:
+    """
+    Класс InferenceRunner осуществляет инференс на тестовых изображениях.
+    Parameters:
+        model (torch.nn.Module): обученная модель YOLOv11.
+        img_size (int): размер изображения (изображение квадратное).
+        annotation_processor (AnnotationProcessor): экземпляр класса AnnotationProcessor
+            для создания разметки к инференсу.
+        logger (logging.Logger): объект логгера.
+    """
+
+    def __init__(
+            self,
+            model: ultralytics.models.yolo.model.YOLO,
+            img_size: int,
+            annotation_processor: AnnotationProcessor,
+            logger=LOGGER
+    ) -> None:
+        self.model = model
+        self.img_size = img_size
+        self.annotation_processor = annotation_processor
+        self.logger = logger
+
+    def run_inference(self, image_path: str) -> list:
+        """
+        Метод run_inference производит инференс для одного изображения,
+        хранящегося по указанному пути.
+        Parameters:
+            image_path (str): путь к изображению для инференса.
+        Returns:
+            results (list): объект с результатами инференса.
+        """
+        try:
+            results = self.model.predict(image_path, imgsz=self.img_size, conf=0.5, iou=0.7)
+            return results
+
+        except RuntimeError as exc:
+            self.logger.error("Internal model error! Runtime error")
+            raise RuntimeError("Internal model error! Runtime error") from exc
+
+        except FileNotFoundError as exc:
+            self.logger.error(f"File {image_path} doesn't found")
+            raise FileNotFoundError(f"File {image_path} doesn't found") from exc
+
+    def process_images(self, test_images_dir: str) -> None:
+        """
+        Метод process_images() обрабатывает все изображения в указанной директории,
+        выполняя инференс для каждого изображения и передавая результаты
+        в AnnotationProcessor.
+        Parameters:
+            test_images_dir (str): Путь к директории с изображениями
+        """
+        if not os.path.isdir(test_images_dir):
+            self.logger.error(f"{test_images_dir} is not a directory")
+            raise NotADirectoryError(f"{test_images_dir} is not a directory")
+
+        test_images = [os.path.join(test_images_dir, f) for f in os.listdir(test_images_dir) if
+                       f.endswith(('.jpg', '.png'))]
+        for image_path in test_images:
+            results = self.run_inference(image_path)
+            if results[0].masks is not None:
+                masks = results[0].masks.data.cpu().numpy()
+                labels = results[0].boxes.cls.cpu().numpy()
+                self.annotation_processor.create_labelme_json(
+                    image_path=image_path,
+                    masks=masks,
+                    labels=labels,
+                    class_names=self.annotation_processor.class_names,
+                    output_dir=self.annotation_processor.output_dir
+                )
+            else:
+                self.logger.warning(f"No objects in {image_path}")
+
+
+class Pipeline:
+    """
+    Класс Pipeline предназначен для автоматизации процессов сбора,
+    обработки и аугментации данных,
+    обучения, валидации и сохранения моделей машинного обучения.
+    Parameters:
+        data_cfg (str): .yaml файл конфигурации датасета в формате YOLOv11.
+        data_dir (str): путь к директории с датасетом в файловой системе.
+        model_cfg (str): путь к .pt файлу предобученной модели YOLOv11 в файловой системе.
+        model_hyperparameters (str): путь к .json файлу с гиперпараметрами модели.
+        output_dir (str): путь к директории сохранения обученной модели.
+        logger (logging.Logger): объект логгера.
+    """
+
+    def __init__(self, data_cfg: str, model_cfg: str, model_hyperparameters: str, data_dir: str,
+                 output_dir: str, logger=LOGGER) -> None:
+        self.logger = logger
+        self.logger.info("Pipeline init")
+        self.config_manager = ConfigManager(
+            data_cfg=data_cfg,
+            model_cfg=model_cfg,
+            model_hyperparameters=model_hyperparameters,
+            data_dir=data_dir,
+            output_dir=output_dir
+        )
+        self.config = self.config_manager.load_config()
+        self.data_dir = data_dir
+        self.model_trainer = ModelTrainer(
+            model_cfg=model_cfg,
+            hyperparameters=self.config
+        )
+        self.model = self.model_trainer.model
+        self.logger.info("Pipeline init successfully")
+
+    def fine_tune_for_labeling(self, model_filename: str) -> None:
+        """
+        Метод fine_tune_for_labeling() используется для дообучения под конкретную задачу модели,
+        предобученной на больших данных и ее сохранения в указанной директории.
+        Parameters:
+            model_filename (str): имя файла обученной модели с расширением .pt.
+        """
+        self.logger.info("Starting fine-tuning")
+        self.model = self.model_trainer.train_model()
+        self.logger.info("Saving fine-tuned model")
+        self.model.save(self.config['output_dir'] + model_filename)
+        self.logger.info("Successfully saved")
+
+    def create_new_json_annotations(self, test_images_dir: str,
+                                    annotations_output_dir: str) -> None:
+        """
+        Метод create_new_annotations() используется для создания разметки тестовых изображений
+        с использованием предобученной модели.
+        Parameters:
+            test_images_dir (str): директория с изображениями для инференса.
+            annotations_output_dir (str): директория для сохранения файлов разметки.
+        """
+        self.logger.info("Starting creating annotations")
+        annotation_processor = AnnotationProcessor(
+            class_names=self.config['class_names'],
+            output_dir=annotations_output_dir
+        )
+        inference_runner = InferenceRunner(
+            model=self.model,
+            img_size=self.config['imgsz'],
+            annotation_processor=annotation_processor
+        )
+        inference_runner.process_images(test_images_dir)
+        self.logger.info("Creating annotations finished")
