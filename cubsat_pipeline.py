@@ -13,14 +13,17 @@ if __name__ == '__main__':
     ########     HYPERPARAMETERS AND CONFIGS        ########
     ########################################################
 
-    current_file = os.path.abspath(__file__)
-    current_dir = os.path.dirname(current_file)
-    while not os.path.exists(os.path.join(current_dir, '.venv')):
-        current_dir = os.path.dirname(current_dir)
-        if current_dir == os.path.dirname(current_dir):
-            raise FileNotFoundError("No .venv folder found")
+    init_path = os.path.abspath(__file__)
 
-    project_root_path = os.path.abspath(current_dir)
+    def get_project_root(start_path):
+        current = start_path
+        while current != os.path.dirname(current):
+            if os.path.exists(os.path.join(current, "requirements.txt")):
+                return current
+            current = os.path.dirname(current)
+        raise FileNotFoundError("Project root was not found")
+
+    project_root_path = get_project_root(init_path)
 
     # Logger init
     CUBSAT_LOG_FILE = os.path.join(project_root_path, "src", "logs", "cubsat_log.txt")
@@ -32,7 +35,7 @@ if __name__ == '__main__':
 
     # Путь к корневой папке с датасетом (изменить на свой)
     #DATA_ROOT_PATH = "D:\\Python projects\\CUBSAT_Dataset_segmentation\\Fine_tuning"
-    DATA_ROOT_PATH = "C:\\Users\\Екатерина\\Desktop\\ML ЦНИХМ\\Проекты\\Datasets\\Fine_tuning"
+    DATA_ROOT_PATH = "C:\\Python projects\\Datasets\\Fine_tuning"
 
     # Параметры модели для обучения
     MODEL_HYPERPARAMETERS = os.path.join(
@@ -80,8 +83,12 @@ if __name__ == '__main__':
     )
 
     # Валидация конфигурационных файлов модели
-    config = config_manager.load_config()
+    try:
+        config = config_manager.load_config()
 
+    except Exception as e:
+        LOGGER.error(f"Ошибка валидации конфигурационных файлов: {str(e)}")
+        raise
 
     ########################################################
     ################     TRAIN MODEL        ################
@@ -94,7 +101,12 @@ if __name__ == '__main__':
     )
 
     # Обучение модели
-    model_trainer.train_model()
+    try:
+        model_trainer.train_model()
+
+    except Exception as e:
+        LOGGER.error(f"Ошибка обучения модели: {str(e)}")
+        raise
 
 
     ########################################################
@@ -108,7 +120,12 @@ if __name__ == '__main__':
     )
 
     # Сохранение обученной модели
-    model_exporter.save_model("yolo11n-seg_fine_tuned.pt")
+    try:
+        model_exporter.save_model("yolo11n-seg_fine_tuned.pt")
+
+    except Exception as e:
+        LOGGER.error(f"Ошибка охранения модели: {str(e)}")
+        raise
 
 
     ########################################################
@@ -129,7 +146,12 @@ if __name__ == '__main__':
         ANNOTATIONS_DIR = os.path.join(TEST_DIR, "annotations")
 
         # Запуск инференса
-        inference_results = inference_runner.process_images(TEST_DIR)
+        try:
+            inference_results = inference_runner.process_images(TEST_DIR)
+
+        except Exception as e:
+            LOGGER.error(f"Ошибка инференса: {str(e)}")
+            raise
 
         annotation_processor = AnnotationProcessor(
             class_names=config["class_names"],
@@ -139,9 +161,14 @@ if __name__ == '__main__':
         # Создание аннотаций в формате LabelMe
         for result in inference_results:
             image_path = os.path.join(TEST_DIR, result["filename"])
-            annotation_processor.create_labelme_json(
-                image_path=image_path,
-                masks=result["masks"],
-                labels=result["labels"],
-                output_dir=ANNOTATIONS_DIR
-            )
+            try:
+                annotation_processor.create_labelme_json(
+                    image_path=image_path,
+                    masks=result["masks"],
+                    labels=result["labels"],
+                    output_dir=ANNOTATIONS_DIR
+                )
+
+            except Exception as e:
+                LOGGER.error(f"Ошибка создания аннотаций: {str(e)}")
+                raise
