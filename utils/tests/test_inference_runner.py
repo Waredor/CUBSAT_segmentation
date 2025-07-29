@@ -56,7 +56,7 @@ class TestInferenceRunner(unittest.TestCase):
             "train",
             "0001.jpg"
         )
-        results = inference_runner.run_inference(image_path)
+        results = inference_runner.run_inference(image_path, batch_size=1)
         self.assertTrue(len(results) > 0)
 
     def test_run_inference_file_not_found_error(self):
@@ -81,7 +81,7 @@ class TestInferenceRunner(unittest.TestCase):
         )
 
         with self.assertRaises(FileNotFoundError) as cm:
-            inference_runner.run_inference(wrong_image_path)
+            inference_runner.run_inference(wrong_image_path, batch_size=1)
             self.assertEqual(
                 first=str(cm.exception),
                 second=f"File {wrong_image_path} doesn't found"
@@ -107,7 +107,7 @@ class TestInferenceRunner(unittest.TestCase):
             "train"
         )
 
-        results = inference_runner.process_images(image_dir)
+        results = inference_runner.process_images(image_dir, batch_size=1)
         self.assertEqual(type(results), list)
         for result in results:
             self.assertEqual(type(result), dict)
@@ -140,7 +140,7 @@ class TestInferenceRunner(unittest.TestCase):
         )
 
         with self.assertRaises(NotADirectoryError) as cm:
-            inference_runner.process_images(wrong_image_dir)
+            inference_runner.process_images(wrong_image_dir, batch_size=1)
             self.assertEqual(
                 first=str(cm.exception),
                 second=f"{wrong_image_dir} is not a directory"

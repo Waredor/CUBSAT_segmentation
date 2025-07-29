@@ -149,13 +149,9 @@ class AnnotationProcessor:
             self.logger.error(f"{image_path} is not a path to a file")
             raise FileNotFoundError(f"{image_path} is not a path to a file")
 
-        if np.size(masks) == 0:
-            self.logger.error(f"{masks} is an empty array")
-            raise ValueError(f"{masks} is an empty array")
-
-        if np.size(labels) == 0:
-            self.logger.error(f"{labels} is an empty array")
-            raise ValueError(f"{labels} is an empty array")
+        if np.size(masks) == 0 or np.size(labels) == 0:
+            self.logger.warning(f"Skipping {image_path}: empty masks and/or labels")
+            return None
 
         image_name = Path(image_path).name
         image = cv2.imread(image_path)
@@ -193,7 +189,9 @@ class AnnotationProcessor:
         os.makedirs(output_dir, exist_ok=True)
         with open(output_path, mode="w", encoding='utf-8') as f:
             json.dump(labelme_data, f, indent=2)
+
         self.logger.info(f"Created JSON-file: {output_path}")
+        return None
 
     def convert_labelme_to_yolo(self) -> None:
         """

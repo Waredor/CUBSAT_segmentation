@@ -61,6 +61,8 @@ class TestAnnotationProcessor(unittest.TestCase):
         class_names = ['FT']
         annotation_processor = AnnotationProcessor(
             class_names=class_names,
+            yolo_annotations_path=self.temp_dir,
+            labelme_annotations_path=self.temp_dir,
             logger=self.logger
         )
         polygons = annotation_processor.mask_to_polygons(masks)
@@ -78,6 +80,8 @@ class TestAnnotationProcessor(unittest.TestCase):
         class_names = ['FT']
         annotation_processor = AnnotationProcessor(
             class_names=class_names,
+            yolo_annotations_path=self.temp_dir,
+            labelme_annotations_path=self.temp_dir,
             logger=self.logger
         )
         polygons = annotation_processor.mask_to_polygons(masks)
@@ -119,9 +123,11 @@ class TestAnnotationProcessor(unittest.TestCase):
 
         annotation_processor = AnnotationProcessor(
             class_names=class_names,
+            yolo_annotations_path=self.temp_dir,
+            labelme_annotations_path=self.temp_dir,
             logger=self.logger
         )
-        output_path = annotation_processor.create_labelme_json(
+        annotation_processor.create_labelme_json(
             image_path=image_path,
             masks=masks,
             labels=labels,
@@ -131,7 +137,6 @@ class TestAnnotationProcessor(unittest.TestCase):
         file_dir = os.path.join(self.temp_dir, "0026.json")
 
         self.assertTrue(os.path.exists(file_dir))
-        self.assertEqual(type(output_path), str)
         self.assertEqual(
             self.log_handler.buffer[-1].getMessage(),
             f"Created JSON-file: {file_dir}"
@@ -184,16 +189,22 @@ class TestAnnotationProcessor(unittest.TestCase):
 
         annotation_processor = AnnotationProcessor(
             class_names=class_names,
+            yolo_annotations_path=self.temp_dir,
+            labelme_annotations_path=self.temp_dir,
             logger=self.logger
         )
 
-        with self.assertRaises(ValueError):
-            annotation_processor.create_labelme_json(
-                image_path=image_path,
-                masks=masks,
-                labels=labels,
-                output_dir=self.temp_dir
-            )
+        annotation_processor.create_labelme_json(
+            image_path=image_path,
+            masks=masks,
+            labels=labels,
+            output_dir=self.temp_dir
+        )
+
+        self.assertEqual(
+            self.log_handler.buffer[-1].getMessage(),
+            f"Skipping {image_path}: empty masks and/or labels"
+        )
 
     def test_create_labelme_json_error_empty_labels(self):
         image_path = os.path.join(
@@ -227,16 +238,22 @@ class TestAnnotationProcessor(unittest.TestCase):
 
         annotation_processor = AnnotationProcessor(
             class_names=class_names,
+            yolo_annotations_path=self.temp_dir,
+            labelme_annotations_path=self.temp_dir,
             logger=self.logger
         )
 
-        with self.assertRaises(ValueError):
-            annotation_processor.create_labelme_json(
-                image_path=image_path,
-                masks=masks,
-                labels=labels,
-                output_dir=self.temp_dir
-            )
+        annotation_processor.create_labelme_json(
+            image_path=image_path,
+            masks=masks,
+            labels=labels,
+            output_dir=self.temp_dir
+        )
+
+        self.assertEqual(
+            self.log_handler.buffer[-1].getMessage(),
+            f"Skipping {image_path}: empty masks and/or labels"
+        )
 
     def test_create_labelme_json_error_incorrect_output_dir(self):
         image_path = os.path.join(
@@ -273,6 +290,8 @@ class TestAnnotationProcessor(unittest.TestCase):
 
         annotation_processor = AnnotationProcessor(
             class_names=class_names,
+            yolo_annotations_path=self.temp_dir,
+            labelme_annotations_path=self.temp_dir,
             logger=self.logger
         )
 
@@ -319,6 +338,8 @@ class TestAnnotationProcessor(unittest.TestCase):
 
         annotation_processor = AnnotationProcessor(
             class_names=class_names,
+            yolo_annotations_path=self.temp_dir,
+            labelme_annotations_path=self.temp_dir,
             logger=self.logger
         )
 

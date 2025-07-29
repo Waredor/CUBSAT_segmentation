@@ -1,2 +1,10 @@
-data_root_path: D:\Python projects\CUBSAT_Dataset_segmentation\Fine_tuning
-create_annotations: False
+data_root_path: C:\Python projects\Datasets\Fine_tuning
+raw_data_dir: C:\Python projects\Datasets\train_test_split
+configure_data: False
+train_model: False
+images_extensions: ['.jpg']
+labels_extensions: ['.txt']
+create_annotations:
+  flag: True
+  labelme: True
+  yolo: False
