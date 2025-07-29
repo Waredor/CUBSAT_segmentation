@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     project_root_path = get_project_root(init_path)
 
-    # Logger init
+    # Инициализация логгера
     CUBSAT_LOG_FILE = os.path.join(project_root_path, "logs", "cubsat_log.txt")
     CUBSAT_LOGGER_NAME = "cubsat_pipeline_logger"
     LOGGER = setup_logger(
@@ -35,7 +35,7 @@ if __name__ == '__main__':
         logger_file_path=CUBSAT_LOG_FILE
     )
 
-    # Load pipeline config
+    # Загрузка конфигурационного файла пайплайна
     pipeline_config_path = os.path.join(
         project_root_path, "configs", "pipeline_config.yaml"
     )
