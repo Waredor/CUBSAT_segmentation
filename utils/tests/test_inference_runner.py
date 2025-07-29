@@ -2,6 +2,7 @@ import logging
 import logging.handlers
 import unittest
 import os
+import numpy as np
 
 from utils.inference_runner import InferenceRunner
 from ultralytics import YOLO
@@ -35,7 +36,7 @@ class TestInferenceRunner(unittest.TestCase):
         self.logger.removeHandler(self.log_handler)
         self.log_handler.close()
 
-    def run_inference_success(self):
+    def test_run_inference_success(self):
         """
         Этот тест осуществляет проверку работоспособности метода
         InferenceRunner.run_inference() при валидных входных данных.
@@ -57,3 +58,90 @@ class TestInferenceRunner(unittest.TestCase):
         )
         results = inference_runner.run_inference(image_path)
         self.assertTrue(len(results) > 0)
+
+    def test_run_inference_file_not_found_error(self):
+        """
+        Этот тест осуществляет проверку работоспособности метода
+        InferenceRunner.run_inference() при неверном пути к файлу изображения.
+        """
+        inference_runner = InferenceRunner(
+            model=self.model,
+            img_size=self.img_size,
+            logger=self.logger
+        )
+
+        wrong_image_path = os.path.join(
+            project_root_path,
+            "utils",
+            "tests",
+            "test_data",
+            "images",
+            "train",
+            "0005.jpg"
+        )
+
+        with self.assertRaises(FileNotFoundError) as cm:
+            inference_runner.run_inference(wrong_image_path)
+            self.assertEqual(
+                first=str(cm.exception),
+                second=f"File {wrong_image_path} doesn't found"
+            )
+
+    def test_process_images_success(self):
+        """
+        Этот тест осуществляет проверку работоспособности метода
+        InferenceRunner.process_images() при валидных входнх данных.
+        """
+        inference_runner = InferenceRunner(
+            model=self.model,
+            img_size=self.img_size,
+            logger=self.logger
+        )
+
+        image_dir = os.path.join(
+            project_root_path,
+            "utils",
+            "tests",
+            "test_data",
+            "images",
+            "train"
+        )
+
+        results = inference_runner.process_images(image_dir)
+        self.assertEqual(type(results), list)
+        for result in results:
+            self.assertEqual(type(result), dict)
+            self.assertTrue("masks" in result.keys())
+            self.assertTrue("filename" in result.keys())
+            self.assertTrue("labels" in result.keys())
+            for key, value in result.items():
+                if key == "filename":
+                    self.assertEqual(type(value), str)
+
+                elif key == "masks" or key == "labels":
+                    self.assertEqual(type(value), np.ndarray)
+
+    def test_process_images_not_a_directory_error(self):
+        """
+        Этот тест осуществляет проверку работоспособности метода
+        InferenceRunner.process_images() при неверном пути к директории с изображениями.
+        """
+        inference_runner = InferenceRunner(
+            model=self.model,
+            img_size=self.img_size,
+            logger=self.logger
+        )
+
+        wrong_image_dir = os.path.join(
+            project_root_path,
+            "utils",
+            "abc",
+            "wrong_dir"
+        )
+
+        with self.assertRaises(NotADirectoryError) as cm:
+            inference_runner.process_images(wrong_image_dir)
+            self.assertEqual(
+                first=str(cm.exception),
+                second=f"{wrong_image_dir} is not a directory"
+            )
