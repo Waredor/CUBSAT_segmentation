@@ -1,5 +1,7 @@
-from torch import cuda
+import logging
+
 from ultralytics import YOLO
+from torch import cuda
 
 
 class ModelTrainer:
@@ -13,7 +15,7 @@ class ModelTrainer:
         logger (logging.Logger): объект логгера.
     """
 
-    def __init__(self, model_cfg: str, hyperparameters: dict, logger) -> None:
+    def __init__(self, model_cfg: str, hyperparameters: dict, logger: logging.Logger) -> None:
         self.model_cfg = model_cfg
         self.hyperparameters = hyperparameters
         self.model = YOLO(self.model_cfg)
@@ -36,9 +38,12 @@ class ModelTrainer:
             layer_count += 1
         self.logger.info(f"Froze first {layer_count} layers")
 
-    def train_model(self) -> YOLO:
+    def train_model(self, augment=False) -> YOLO:
         """
         Метод train_model выполняет обучение модели YOLOv11.
+        Parameters:
+            augment (bool): флаг использования аугментаций.
+            с помощью albumentations.Compose()
         Returns:
             self.model (ultralytics.models.yolo.model.YOLO)
         """
@@ -54,13 +59,24 @@ class ModelTrainer:
         optimizer = self.hyperparameters['optimizer']
         patience = self.hyperparameters['patience']
         device = self.hyperparameters['device']
+
         if device == 0:
-            if cuda.is_available() is True:
-                self.logger.info("Cuda is available, training on GPU")
+            if cuda.is_available():
+                self.logger.info("Using GPU device")
 
             else:
+                self.logger.info("Using CPU device")
                 device = "cpu"
-                self.logger.info("Cuda is not available, training on CPU")
+
+        augment_params = {
+            'hsv_h': 0.015,  # Аугментация оттенка (аналог RandomBrightnessContrast)
+            'hsv_s': 0.7,  # Аугментация насыщенности
+            'hsv_v': 0.4,  # Аугментация яркости
+            'fliplr': 0.5,  # Горизонтальный флип (аналог HorizontalFlip(p=0.5))
+            'degrees': 30,  # Поворот до 30 градусов (аналог Rotate(limit=30, p=0.3))
+            'scale': 0.2,  # Масштабирование (приближение к RandomCrop)
+            'erasing': 0.2  # Случайное стирание (приближение к GaussNoise)
+        } if augment else {}
 
         self.model.train(
             data=data_dir,
@@ -70,7 +86,9 @@ class ModelTrainer:
             lr0=initial_learning_rate,
             optimizer=optimizer,
             patience=patience,
-            device=device
+            device=device,
+            **augment_params
         )
+
         self.logger.info("Training completed")
         return self.model

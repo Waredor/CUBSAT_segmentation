@@ -27,62 +27,44 @@ if __name__ == '__main__':
 
     project_root_path = get_project_root(init_path)
 
-    # Инициализация логгера
-    CUBSAT_LOG_FILE = os.path.join(project_root_path, "logs", "cubsat_log.txt")
+
+    CUBSAT_LOG_FILE = os.path.join(
+        project_root_path, "logs", "cubsat_pipeline_log.txt"
+    )
     CUBSAT_LOGGER_NAME = "cubsat_pipeline_logger"
     LOGGER = setup_logger(
         logger_name=CUBSAT_LOGGER_NAME,
         logger_file_path=CUBSAT_LOG_FILE
     )
 
-    # Загрузка конфигурационного файла пайплайна
+
     pipeline_config_path = os.path.join(
         project_root_path, "configs", "pipeline_config.yaml"
     )
     with open(pipeline_config_path, mode='r', encoding='utf-8') as f:
         pipeline_yaml_config = yaml.safe_load(f)
 
-    # Путь к корневой папке с датасетом
-    DATA_ROOT_PATH = pipeline_yaml_config["data_root_path"]
+    DATA_ROOT_PATH = pipeline_yaml_config["paths"]["data_root_dir"]
+    RAW_DATA_DIR = pipeline_yaml_config["paths"]["raw_data_dir"]
 
-    # Флаг для предобработки данных
-    CONFIGURE_DATA = pipeline_yaml_config["configure_data"]
+    PRE_TRAINED_MODEL_NAME = pipeline_yaml_config["names"]["pt_model_name"]
+    MODEL_NAME_FOR_EXPORT = pipeline_yaml_config["names"]["exported_model_name"]
+    MODEL_HYPERPARAMETERS_FILENAME = pipeline_yaml_config["names"]["model_hyperparameters_file"]
 
-    # Флаг для обучения модели
-    TRAIN_MODEL = pipeline_yaml_config["train_model"]
+    IMAGES_EXTENSIONS = pipeline_yaml_config["names"]["images_extensions"]
+    LABELS_EXTENSIONS = pipeline_yaml_config["names"]["labels_extensions"]
+    IMG_SIZE = pipeline_yaml_config["names"]["img_size"]
 
-    # Флаг для создания аннотаций
-    CREATE_ANNOTATIONS_FLAG = pipeline_yaml_config["create_annotations"]["flag"]
-
-    # Флаг для запуска AnnotationProcessor.create_labelme_json()
-    CREATE_ANNOTATIONS_LABELME = pipeline_yaml_config["create_annotations"]["labelme"]
-
-    # Флаг для запуска AnnotationProcessor.convert_labelme_to_yolo()
-    CREATE_ANNOTATIONS_YOLO = pipeline_yaml_config["create_annotations"]["yolo"]
-
-    # Список допустимых расширений файлов изображений
-    IMAGES_EXTENSIONS = pipeline_yaml_config["images_extensions"]
-
-    # Список допустимых расширений файлов изображений
-    LABELS_EXTENSIONS = pipeline_yaml_config["labels_extensions"]
-
-    # Директория с необработанными данными
-    RAW_DATA_DIR = pipeline_yaml_config["raw_data_dir"]
-
-    # Параметры модели для обучения
-    MODEL_HYPERPARAMETERS = os.path.join(project_root_path, "configs", "model_cfg.json")
-
-    # Конфигурационный файл датасета
+    MODEL_HYPERPARAMETERS = os.path.join(
+        project_root_path, "configs", str(MODEL_HYPERPARAMETERS_FILENAME)
+    )
     DATA_CFG = os.path.join(DATA_ROOT_PATH, "dataset.yaml")
-
-    # Файл с предобученной моделью
-    MODEL_PATH = os.path.join(project_root_path, "models", "yolo11n-seg.pt")
-
-    # Директория для сохранения модели
+    MODEL_PATH = os.path.join(project_root_path, "models", str(PRE_TRAINED_MODEL_NAME))
     OUTPUT_DIR = os.path.join(project_root_path, "models")
 
-    # Поперечный размер изображений в датасете
-    IMG_SIZE = 1024
+    stages = []
+    for stage in pipeline_yaml_config["stages"]:
+        stages.append(stage)
 
 
     ########################################################
@@ -98,9 +80,13 @@ if __name__ == '__main__':
         logger = LOGGER
     )
 
-    # Валидация конфигурационных файлов модели
     try:
         config = config_manager.load_config()
+        model_trainer = ModelTrainer(
+            model_cfg=MODEL_PATH,
+            hyperparameters=config,
+            logger=LOGGER
+        )
 
     except Exception as e:
         LOGGER.error(f"Ошибка валидации конфигурационных файлов: {str(e)}")
@@ -108,126 +94,100 @@ if __name__ == '__main__':
 
 
     ########################################################
-    ##############     CONFIGURE DATA        ###############
+    ##############     PIPELINE STAGES        ##############
     ########################################################
 
-    if CONFIGURE_DATA:
-        data_configurator = DataConfigurator(
-            source_dir=RAW_DATA_DIR,
-            destination_dir=DATA_ROOT_PATH,
-            images_extensions=IMAGES_EXTENSIONS,
-            labels_extensions=LABELS_EXTENSIONS,
-            logger=LOGGER
-        )
+    for stage in stages:
+        if stage == "configure_data":
+            data_configurator = DataConfigurator(
+                source_dir=RAW_DATA_DIR,
+                destination_dir=DATA_ROOT_PATH,
+                images_extensions=IMAGES_EXTENSIONS,
+                labels_extensions=LABELS_EXTENSIONS,
+                logger=LOGGER
+            )
+            try:
+                data_configurator.train_test_split(max_workers=3)
 
-        # Предобработка данных
-        try:
-            data_configurator.train_test_split(max_workers=3)
-
-        except Exception as e:
-            LOGGER.error(f"Ошибка предобработки данных: {str(e)}")
-            raise
-
-
-    ########################################################
-    ################     TRAIN MODEL        ################
-    ########################################################
-
-    model_trainer = ModelTrainer(
-        model_cfg=MODEL_PATH,
-        hyperparameters=config,
-        logger=LOGGER
-    )
-
-    if TRAIN_MODEL:
-        # Обучение модели
-        try:
-            model_trainer.train_model()
-
-        except Exception as e:
-            LOGGER.error(f"Ошибка обучения модели: {str(e)}")
-            raise
+            except Exception as e:
+                LOGGER.error(f"Ошибка предобработки данных: {str(e)}")
+                raise
 
 
-    ########################################################
-    ################     SAVE MODEL        #################
-    ########################################################
+        elif stage == "train_model":
+            try:
+                model = model_trainer.train_model(augment=True)
 
-    if TRAIN_MODEL:
-        model_exporter = ModelExporter(
-            model=model_trainer.model,
-            output_dir=OUTPUT_DIR,
-            logger=LOGGER
-        )
-
-        # Сохранение обученной модели
-        try:
-            model_exporter.save_model("yolo11n-seg_fine_tuned.pt")
-
-        except Exception as e:
-            LOGGER.error(f"Ошибка охранения модели: {str(e)}")
-            raise
+            except Exception as e:
+                LOGGER.error(f"Ошибка обучения модели: {str(e)}")
+                raise
 
 
-    ########################################################
-    #############    CREATE ANNOTATIONS        #############
-    ########################################################
-
-    if CREATE_ANNOTATIONS_FLAG:
-        # Директория с изображениями для инференса
-        TEST_DIR = os.path.join(DATA_ROOT_PATH, "images", "test")
-
-        # Директория с аннотациями в формате LabelMe
-        LABELME_ANNOTATIONS_DIR = os.path.join(DATA_ROOT_PATH, "labels", "test")
-
-        # Директория для сохранения аннотаций в формате YOLO
-        YOLO_ANNOTATIONS_DIR = os.path.join(RAW_DATA_DIR, "labels")
-
-        annotation_processor = AnnotationProcessor(
-            class_names=config["class_names"],
-            yolo_annotations_path=YOLO_ANNOTATIONS_DIR,
-            labelme_annotations_path=LABELME_ANNOTATIONS_DIR,
-            logger=LOGGER
-        )
-
-        if CREATE_ANNOTATIONS_LABELME:
-            inference_runner = InferenceRunner(
+        elif stage == "export_model":
+            model_exporter = ModelExporter(
                 model=model_trainer.model,
-                img_size=IMG_SIZE,
+                output_dir=OUTPUT_DIR,
+                logger=LOGGER
+            )
+            try:
+                model_exporter.save_model("yolo11n-seg_fine_tuned.pt")
+
+            except Exception as e:
+                LOGGER.error(f"Ошибка охранения модели: {str(e)}")
+                raise
+
+
+        elif stage in ("create_labelme_annotations", "create_yolo_annotations"):
+            INFERENCE_IMAGES_DIR = os.path.join(
+                DATA_ROOT_PATH, str(pipeline_yaml_config["paths"]["inference_images_dir"])
+            )
+            LABELME_ANNOTATIONS_DIR = os.path.join(
+                DATA_ROOT_PATH, str(pipeline_yaml_config["paths"]["inference_annotations_dir"])
+            )
+            YOLO_ANNOTATIONS_DIR = os.path.join(RAW_DATA_DIR, "labels")
+
+            annotation_processor = AnnotationProcessor(
+                class_names=config["class_names"],
+                yolo_annotations_path=YOLO_ANNOTATIONS_DIR,
+                labelme_annotations_path=LABELME_ANNOTATIONS_DIR,
                 logger=LOGGER
             )
 
-            # Запуск инференса
-            try:
-                inference_results = inference_runner.process_images(
-                    TEST_DIR,
-                    batch_size=config["batch"],
+
+            if stage == "create_labelme_annotations":
+                inference_runner = InferenceRunner(
+                    model=model_trainer.model,
+                    img_size=IMG_SIZE,
+                    logger=LOGGER
                 )
-
-            except Exception as e:
-                LOGGER.error(f"Ошибка инференса: {str(e)}")
-                raise
-
-            # Создание аннотаций в формате LabelMe
-            for result in inference_results:
-                image_path = os.path.join(TEST_DIR, result["filename"])
                 try:
-                    annotation_processor.create_labelme_json(
-                        image_path=image_path,
-                        masks=result["masks"],
-                        labels=result["labels"],
-                        output_dir=LABELME_ANNOTATIONS_DIR
+                    inference_results = inference_runner.process_images(
+                        INFERENCE_IMAGES_DIR,
+                        batch_size=config["batch"],
                     )
+
+                except Exception as e:
+                    LOGGER.error(f"Ошибка инференса: {str(e)}")
+                    raise
+
+                for result in inference_results:
+                    image_path = os.path.join(INFERENCE_IMAGES_DIR, result["filename"])
+                    try:
+                        annotation_processor.create_labelme_json(
+                            image_path=image_path,
+                            masks=result["masks"],
+                            labels=result["labels"],
+                            output_dir=LABELME_ANNOTATIONS_DIR
+                        )
+
+                    except Exception as e:
+                        LOGGER.error(f"Ошибка создания аннотаций: {str(e)}")
+                        raise
+
+            elif stage == "create_yolo_annotations":
+                try:
+                    annotation_processor.convert_labelme_to_yolo()
 
                 except Exception as e:
                     LOGGER.error(f"Ошибка создания аннотаций: {str(e)}")
                     raise
-
-        if CREATE_ANNOTATIONS_YOLO:
-            # Создание аннотаций в формате YOLO
-            try:
-                annotation_processor.convert_labelme_to_yolo()
-
-            except Exception as e:
-                LOGGER.error(f"Ошибка создания аннотаций: {str(e)}")
-                raise
