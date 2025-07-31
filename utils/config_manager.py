@@ -28,7 +28,7 @@ class ConfigManager:
 
     def __init__(self, data_cfg: str, model_hyperparameters: str,
                  data_dir: str, model_cfg: str, output_dir: str,
-                 logger) -> None:
+                 logger: logging.Logger) -> None:
         self.params = [data_cfg, model_hyperparameters, data_dir, model_cfg, output_dir]
         self.metadata = {0: {'name': 'data_cfg', 'expected_type': str,
                              'is_file': True, 'is_dir': False, 'extension': ['.yaml']},

@@ -3,6 +3,7 @@ import logging.handlers
 import unittest
 import os
 import json
+import yaml
 
 from utils.model_trainer import ModelTrainer
 from ultralytics import YOLO
@@ -43,6 +44,29 @@ class TestModelTrainer(unittest.TestCase):
             'tests',
             'test_data',
             'model_trainer_valid_hyperparameters.json'
+        )
+
+        self.valid_dataset = os.path.join(
+            project_root_path,
+            'utils',
+            'tests',
+            'test_data',
+            'valid_dataset.yaml'
+        )
+
+        with open(self.valid_dataset, mode='r', encoding='utf-8') as f:
+            dataset_yaml_data = yaml.safe_load(f)
+
+        dataset_yaml_data['path'] = self.temp_dir
+        with open(self.valid_dataset, mode='w', encoding='utf-8') as f:
+            yaml.safe_dump(dataset_yaml_data, f, encoding='utf-8')
+
+        self.valid_hyperparameters = os.path.join(
+            project_root_path,
+            'utils',
+            'tests',
+            'test_data',
+            'valid_hyperparameters.json'
         )
 
         with open(self.valid_hyperparameters, mode='r', encoding='utf-8') as f:

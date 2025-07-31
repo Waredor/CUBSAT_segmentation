@@ -4,12 +4,38 @@ from logging.handlers import RotatingFileHandler
 from PIL import Image, ImageDraw
 from ultralytics import YOLO
 
+init_path = os.path.abspath(__file__)
+
+def get_project_root(start_path):
+    current = start_path
+    while current != os.path.dirname(current):
+        if os.path.exists(os.path.join(current, "requirements.txt")):
+            return current
+        current = os.path.dirname(current)
+    raise FileNotFoundError("Project root was not found")
+
+
+project_root_path = get_project_root(init_path)
+
 # Ручное указание путей
-IMAGE_PATH = "C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/CUBSAT_segmentation/inference/4.jpg"
-MODEL_PATH = ("C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/CUBSAT_segmentation/inference"
-              "/yolo11n-seg_final.pt")
-OUTPUT_PATH = ("C:/Users/Екатерина/Desktop/ML ЦНИХМ/Проекты/CUBSAT_segmentation/inference/"
-               "output/4_pred.png")
+IMAGE_PATH = os.path.join(
+    project_root_path,
+    'inference',
+    '5.png'
+)
+
+MODEL_PATH = os.path.join(
+    project_root_path,
+    'models',
+    'yolo11n-seg_labeling.pt'
+)
+
+OUTPUT_PATH = os.path.join(
+    project_root_path,
+    'inference',
+    'output',
+    '5_pred.png'
+)
 
 logging.basicConfig(
     format='%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s] %(message)s',

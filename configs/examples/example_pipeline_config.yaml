@@ -1,0 +1,20 @@
+paths:
+  data_root_dir: path\to\your\data_root
+  raw_data_dir: path\to\your\raw_data
+  inference_images_dir: images\test
+  inference_annotations_dir: labels\test
+
+names:
+  pt_model_name: your_pt_model_name.pt
+  exported_model_name: your_exported_model_name.pt
+  model_hyperparameters_file: your_model_hyperparameters_file.json
+  images_extensions: ['.jpg']
+  labels_extensions: ['.txt']
+  img_size: 1024
+
+stages:
+  - configure_data
+  - train_model
+  - export_model
+  - create_labelme_annotations
+  - create_yolo_annotations

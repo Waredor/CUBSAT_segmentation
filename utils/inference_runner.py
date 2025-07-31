@@ -23,17 +23,20 @@ class InferenceRunner:
         self.img_size = img_size
         self.logger = logger
 
-    def run_inference(self, image_path: str) -> list:
+    def run_inference(self, image_path: str, batch_size: int) -> list:
         """
         Метод run_inference производит инференс для одного изображения,
         хранящегося по указанному пути.
         Parameters:
             image_path (str): путь к изображению для инференса.
+            batch_size (int): Размер батча
         Returns:
             results (list): объект с результатами инференса.
         """
         try:
-            results = self.model.predict(image_path, imgsz=self.img_size, conf=0.5, iou=0.7)
+            results = self.model.predict(
+                image_path, imgsz=self.img_size, conf=0.5, iou=0.7, batch=batch_size
+            )
             return results
 
         except RuntimeError as exc:
@@ -44,12 +47,13 @@ class InferenceRunner:
             self.logger.error(f"File {image_path} doesn't found")
             raise FileNotFoundError(f"File {image_path} doesn't found") from exc
 
-    def process_images(self, test_images_dir: str) -> list:
+    def process_images(self, test_images_dir: str, batch_size: int) -> list:
         """
         Метод process_images() обрабатывает все изображения в указанной директории,
         выполняя инференс для каждого изображения.
         Parameters:
             test_images_dir (str): Путь к директории с изображениями
+            batch_size (int): Размер батча
         Returns:
             inference_results (list): Список словарей с именами файлов изображений,
                 масками и метками
@@ -58,19 +62,19 @@ class InferenceRunner:
             self.logger.error(f"{test_images_dir} is not a directory")
             raise NotADirectoryError(f"{test_images_dir} is not a directory")
 
-        test_images = [os.path.join(test_images_dir, f) for f in os.listdir(test_images_dir) if
-                       f.endswith(('.jpg', '.png'))]
         inference_results = []
-        for image_path in test_images:
-            results = self.run_inference(image_path)
-            if results[0].masks is not None:
-                masks = results[0].masks.data.cpu().numpy()
-                labels = results[0].boxes.cls.cpu().numpy()
-                filename = os.path.split(image_path)[-1]
-                img_result = {"filename": filename, "masks": masks, "labels": labels}
-                inference_results.append(img_result)
+        for f in os.listdir(test_images_dir):
+            if f.endswith(('.jpg', '.png')):
+                image_path = os.path.join(test_images_dir, f)
+                results = self.run_inference(image_path, batch_size)
+                if results[0].masks is not None:
+                    inference_results.append({
+                        "filename": f,
+                        "masks": results[0].masks.data.cpu().numpy(),
+                        "labels": results[0].boxes.cls.cpu().numpy()
+                    })
 
-            else:
-                self.logger.warning(f"No objects in {image_path}")
+                else:
+                    self.logger.warning(f"No objects in {image_path}")
 
         return inference_results

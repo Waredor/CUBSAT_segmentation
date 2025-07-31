@@ -1,0 +1,304 @@
+config_manager.py[LINE:230]# INFO     [2025-07-30 10:12:57,911] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 10:12:57,912] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 10:12:57,953] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 10:12:57,954] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 10:12:57,954] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+data_configurator.py[LINE:74]# INFO     [2025-07-30 10:12:58,212] Starting creating dataframes...
+data_configurator.py[LINE:87]# INFO     [2025-07-30 10:12:58,222] Dataframes created
+data_configurator.py[LINE:88]# INFO     [2025-07-30 10:12:58,223] Starting train-test split...
+cubsat_pipeline.py[LINE:114]# ERROR    [2025-07-30 10:12:58,226] Ошибка предобработки данных: Found input variables with inconsistent numbers of samples: [0, 70]
+config_manager.py[LINE:230]# INFO     [2025-07-30 10:13:44,690] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 10:13:44,690] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 10:13:44,691] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 10:13:44,692] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 10:13:44,692] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+data_configurator.py[LINE:74]# INFO     [2025-07-30 10:13:44,834] Starting creating dataframes...
+data_configurator.py[LINE:87]# INFO     [2025-07-30 10:13:44,835] Dataframes created
+data_configurator.py[LINE:88]# INFO     [2025-07-30 10:13:44,835] Starting train-test split...
+cubsat_pipeline.py[LINE:114]# ERROR    [2025-07-30 10:13:44,836] Ошибка предобработки данных: With n_samples=0, test_size=None and train_size=0.85, the resulting train set will be empty. Adjust any of the aforementioned parameters.
+config_manager.py[LINE:230]# INFO     [2025-07-30 10:14:41,321] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 10:14:41,322] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 10:14:41,323] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 10:14:41,323] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 10:14:41,324] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+data_configurator.py[LINE:74]# INFO     [2025-07-30 10:14:41,460] Starting creating dataframes...
+data_configurator.py[LINE:87]# INFO     [2025-07-30 10:14:41,488] Dataframes created
+data_configurator.py[LINE:88]# INFO     [2025-07-30 10:14:41,488] Starting train-test split...
+data_configurator.py[LINE:106]# INFO     [2025-07-30 10:14:41,500] Train-test split done
+data_configurator.py[LINE:107]# INFO     [2025-07-30 10:14:41,500] Starting moving files into dataset dir...
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,501] Moving 0198.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,512] Moving 0068.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,517] Moving 0176.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,525] Moving 0033.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,527] Moving 0128.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,528] Moving 0116.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,530] Moving 0064.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,535] Moving 0143.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,545] Moving 0202.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,548] Moving 0018.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,552] Moving 0051.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,559] Moving 0149.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,560] Moving 0100.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,563] Moving 0219.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,564] Moving 0190.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:126]# INFO     [2025-07-30 10:14:41,566] Moving 0181.jpg to C:\Python projects\Datasets\Fine_tuning\images\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,582] Moving 0198.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,585] Moving 0097.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,587] Moving 0219.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,588] Moving 0116.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,593] Moving 0017.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,596] Moving 0176.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,598] Moving 0068.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,599] Moving 0189.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,600] Moving 0155.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,606] Moving 0149.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,611] Moving 0098.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,612] Moving 0128.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,617] Moving 0030.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,620] Moving 0010.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,624] Moving 0067.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,627] Moving 0042.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,635] Moving 0113.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,636] Moving 0094.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,639] Moving 0020.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,644] Moving 0058.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,649] Moving 0133.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,650] Moving 0102.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,652] Moving 0076.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,653] Moving 0018.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,655] Moving 0109.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:148]# INFO     [2025-07-30 10:14:41,656] Moving 0181.txt to C:\Python projects\Datasets\Fine_tuning\labels\train
+data_configurator.py[LINE:153]# INFO     [2025-07-30 10:14:41,667] Configuration successfully completed
+model_trainer.py[LINE:45]# INFO     [2025-07-30 10:14:41,667] Starting training
+model_trainer.py[LINE:46]# INFO     [2025-07-30 10:14:41,667] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:37]# INFO     [2025-07-30 10:14:41,668] Froze first 10 layers
+model_trainer.py[LINE:63]# INFO     [2025-07-30 10:14:41,668] Cuda is not available, training on CPU
+config_manager.py[LINE:230]# INFO     [2025-07-30 14:09:55,036] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 14:09:55,038] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 14:09:55,040] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 14:09:55,041] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 14:09:55,041] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:140]# INFO     [2025-07-30 14:09:55,284] Starting training
+model_trainer.py[LINE:141]# INFO     [2025-07-30 14:09:55,284] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:128]# INFO     [2025-07-30 14:09:55,284] Froze first 10 layers
+model_trainer.py[LINE:154]# INFO     [2025-07-30 14:09:55,285] Augment is enabled
+cubsat_pipeline.py[LINE:136]# ERROR    [2025-07-30 14:09:55,285] Ошибка обучения модели: 'NoneType' object is not subscriptable
+config_manager.py[LINE:230]# INFO     [2025-07-30 19:17:40,918] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 19:17:40,919] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:17:40,923] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:17:40,924] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:17:40,925] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:140]# INFO     [2025-07-30 19:17:41,287] Starting training
+model_trainer.py[LINE:141]# INFO     [2025-07-30 19:17:41,288] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:128]# INFO     [2025-07-30 19:17:41,289] Froze first 10 layers
+model_trainer.py[LINE:154]# INFO     [2025-07-30 19:17:41,289] Augment is enabled
+cubsat_pipeline.py[LINE:136]# ERROR    [2025-07-30 19:17:41,290] Ошибка обучения модели: 'NoneType' object is not subscriptable
+config_manager.py[LINE:230]# INFO     [2025-07-30 19:22:16,445] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 19:22:16,445] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:22:16,446] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:22:16,447] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:22:16,447] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:141]# INFO     [2025-07-30 19:22:16,584] Starting training
+model_trainer.py[LINE:142]# INFO     [2025-07-30 19:22:16,584] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:129]# INFO     [2025-07-30 19:22:16,585] Froze first 10 layers
+model_trainer.py[LINE:155]# INFO     [2025-07-30 19:22:16,585] Augment is enabled
+cubsat_pipeline.py[LINE:136]# ERROR    [2025-07-30 19:22:16,586] Ошибка обучения модели: 'NoneType' object is not subscriptable
+config_manager.py[LINE:230]# INFO     [2025-07-30 19:24:40,549] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 19:24:40,550] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:24:40,551] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:24:40,552] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:24:40,552] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:141]# INFO     [2025-07-30 19:24:40,687] Starting training
+model_trainer.py[LINE:142]# INFO     [2025-07-30 19:24:40,688] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:129]# INFO     [2025-07-30 19:24:40,688] Froze first 10 layers
+model_trainer.py[LINE:155]# INFO     [2025-07-30 19:24:40,688] Augment is enabled
+cubsat_pipeline.py[LINE:136]# ERROR    [2025-07-30 19:24:40,689] Ошибка обучения модели: 'NoneType' object is not subscriptable
+config_manager.py[LINE:230]# INFO     [2025-07-30 19:26:57,384] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 19:26:57,385] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:26:57,386] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:26:57,387] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:26:57,387] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:141]# INFO     [2025-07-30 19:26:57,523] Starting training
+model_trainer.py[LINE:142]# INFO     [2025-07-30 19:26:57,523] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:129]# INFO     [2025-07-30 19:26:57,524] Froze first 10 layers
+model_trainer.py[LINE:158]# INFO     [2025-07-30 19:26:57,525] Augment is enabled
+cubsat_pipeline.py[LINE:136]# ERROR    [2025-07-30 19:26:57,525] Ошибка обучения модели: 'NoneType' object is not subscriptable
+config_manager.py[LINE:230]# INFO     [2025-07-30 19:30:41,591] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 19:30:41,592] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:30:41,614] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:30:41,614] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:30:41,615] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:141]# INFO     [2025-07-30 19:30:41,836] Starting training
+model_trainer.py[LINE:142]# INFO     [2025-07-30 19:30:41,836] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:129]# INFO     [2025-07-30 19:30:41,836] Froze first 10 layers
+model_trainer.py[LINE:158]# INFO     [2025-07-30 19:30:41,838] Augment is enabled
+cubsat_pipeline.py[LINE:136]# ERROR    [2025-07-30 19:30:41,838] Ошибка обучения модели: BaseDataset.__init__() missing 1 required positional argument: 'img_path'
+config_manager.py[LINE:230]# INFO     [2025-07-30 19:35:59,711] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 19:35:59,713] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:35:59,714] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:35:59,714] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:35:59,715] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:142]# INFO     [2025-07-30 19:35:59,912] Starting training
+model_trainer.py[LINE:143]# INFO     [2025-07-30 19:35:59,912] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:130]# INFO     [2025-07-30 19:35:59,912] Froze first 10 layers
+model_trainer.py[LINE:161]# INFO     [2025-07-30 19:35:59,914] Augment is enabled
+cubsat_pipeline.py[LINE:136]# ERROR    [2025-07-30 19:36:01,845] Ошибка обучения модели: Invalid CUDA 'device=0' requested. Use 'device=cpu' or pass valid CUDA device(s) if available, i.e. 'device=0' or 'device=0,1,2,3' for Multi-GPU.
+
+torch.cuda.is_available(): False
+torch.cuda.device_count(): 0
+os.environ['CUDA_VISIBLE_DEVICES']: None
+See https://pytorch.org/get-started/locally/ for up-to-date torch install instructions if no CUDA devices are seen by torch.
+
+config_manager.py[LINE:230]# INFO     [2025-07-30 19:38:26,329] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 19:38:26,330] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:38:26,331] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:38:26,332] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:38:26,332] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:143]# INFO     [2025-07-30 19:38:26,553] Starting training
+model_trainer.py[LINE:144]# INFO     [2025-07-30 19:38:26,554] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:131]# INFO     [2025-07-30 19:38:26,554] Froze first 10 layers
+model_trainer.py[LINE:161]# INFO     [2025-07-30 19:38:26,554] Using CPU device
+model_trainer.py[LINE:170]# INFO     [2025-07-30 19:38:26,555] Augment is enabled
+cubsat_pipeline.py[LINE:136]# ERROR    [2025-07-30 19:38:28,840] Ошибка обучения модели: Dataset '<utils.model_trainer.CustomYOLODataset object at 0x000001DF45C0C4D0>' error  '<utils.model_trainer.CustomYOLODataset object at 0x000001DF45C0C4D0>' does not exist
+config_manager.py[LINE:230]# INFO     [2025-07-30 19:39:06,426] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 19:39:06,427] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:39:06,428] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:39:06,429] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:39:06,429] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:143]# INFO     [2025-07-30 19:39:06,620] Starting training
+model_trainer.py[LINE:144]# INFO     [2025-07-30 19:39:06,620] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:131]# INFO     [2025-07-30 19:39:06,621] Froze first 10 layers
+model_trainer.py[LINE:161]# INFO     [2025-07-30 19:39:06,621] Using CPU device
+model_trainer.py[LINE:170]# INFO     [2025-07-30 19:39:06,622] Augment is enabled
+cubsat_pipeline.py[LINE:136]# ERROR    [2025-07-30 19:39:09,945] Ошибка обучения модели: Dataset '<utils.model_trainer.CustomYOLODataset object at 0x0000022D98032E10>' error  '<utils.model_trainer.CustomYOLODataset object at 0x0000022D98032E10>' does not exist
+config_manager.py[LINE:230]# INFO     [2025-07-30 19:42:16,117] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 19:42:16,118] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:42:16,119] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:42:16,120] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:42:16,121] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:143]# INFO     [2025-07-30 19:42:16,349] Starting training
+model_trainer.py[LINE:144]# INFO     [2025-07-30 19:42:16,350] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:131]# INFO     [2025-07-30 19:42:16,350] Froze first 10 layers
+model_trainer.py[LINE:161]# INFO     [2025-07-30 19:42:16,350] Using CPU device
+model_trainer.py[LINE:170]# INFO     [2025-07-30 19:42:16,351] Augment is enabled
+cubsat_pipeline.py[LINE:136]# ERROR    [2025-07-30 19:42:18,989] Ошибка обучения модели: '[31m[1mdataset[0m' is not a valid YOLO argument. Similar arguments are i.e. ['data'].
+
+    Arguments received: ['yolo']. Ultralytics 'yolo' commands use the following syntax:
+
+        yolo TASK MODE ARGS
+
+        Where   TASK (optional) is one of ['obb', 'classify', 'segment', 'pose', 'detect']
+                MODE (required) is one of ['val', 'predict', 'export', 'benchmark', 'track', 'train']
+                ARGS (optional) are any number of custom 'arg=value' pairs like 'imgsz=320' that override defaults.
+                    See all ARGS at https://docs.ultralytics.com/usage/cfg or with 'yolo cfg'
+
+    1. Train a detection model for 10 epochs with an initial learning_rate of 0.01
+        yolo train data=coco8.yaml model=yolo11n.pt epochs=10 lr0=0.01
+
+    2. Predict a YouTube video using a pretrained segmentation model at image size 320:
+        yolo predict model=yolo11n-seg.pt source='https://youtu.be/LNwODJXcvt4' imgsz=320
+
+    3. Val a pretrained detection model at batch-size 1 and image size 640:
+        yolo val model=yolo11n.pt data=coco8.yaml batch=1 imgsz=640
+
+    4. Export a YOLO11n classification model to ONNX format at image size 224 by 128 (no TASK required)
+        yolo export model=yolo11n-cls.pt format=onnx imgsz=224,128
+
+    5. Ultralytics solutions usage
+        yolo solutions count or in ['crop', 'blur', 'workout', 'heatmap', 'isegment', 'visioneye', 'speed', 'queue', 'analytics', 'inference', 'trackzone'] source="path/to/video.mp4"
+
+    6. Run special commands:
+        yolo help
+        yolo checks
+        yolo version
+        yolo settings
+        yolo copy-cfg
+        yolo cfg
+        yolo solutions help
+
+    Docs: https://docs.ultralytics.com
+    Solutions: https://docs.ultralytics.com/solutions/
+    Community: https://community.ultralytics.com
+    GitHub: https://github.com/ultralytics/ultralytics
+    
+config_manager.py[LINE:230]# INFO     [2025-07-30 19:48:10,641] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 19:48:10,642] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:48:10,644] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:48:10,644] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:48:10,645] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:143]# INFO     [2025-07-30 19:48:10,848] Starting training
+model_trainer.py[LINE:144]# INFO     [2025-07-30 19:48:10,849] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:131]# INFO     [2025-07-30 19:48:10,849] Froze first 10 layers
+model_trainer.py[LINE:161]# INFO     [2025-07-30 19:48:10,850] Using CPU device
+cubsat_pipeline.py[LINE:136]# ERROR    [2025-07-30 19:48:13,867] Ошибка обучения модели: '[31m[1mbrightness[0m' is not a valid YOLO argument. 
+'[31m[1mcrop[0m' is not a valid YOLO argument. Similar arguments are i.e. ['save_crop=False'].
+'[31m[1mrotate[0m' is not a valid YOLO argument. 
+'[31m[1mcontrast[0m' is not a valid YOLO argument. 
+'[31m[1mnoise[0m' is not a valid YOLO argument. Similar arguments are i.e. ['pose=12.0', 'opset'].
+
+    Arguments received: ['yolo']. Ultralytics 'yolo' commands use the following syntax:
+
+        yolo TASK MODE ARGS
+
+        Where   TASK (optional) is one of ['detect', 'segment', 'pose', 'obb', 'classify']
+                MODE (required) is one of ['train', 'predict', 'val', 'export', 'benchmark', 'track']
+                ARGS (optional) are any number of custom 'arg=value' pairs like 'imgsz=320' that override defaults.
+                    See all ARGS at https://docs.ultralytics.com/usage/cfg or with 'yolo cfg'
+
+    1. Train a detection model for 10 epochs with an initial learning_rate of 0.01
+        yolo train data=coco8.yaml model=yolo11n.pt epochs=10 lr0=0.01
+
+    2. Predict a YouTube video using a pretrained segmentation model at image size 320:
+        yolo predict model=yolo11n-seg.pt source='https://youtu.be/LNwODJXcvt4' imgsz=320
+
+    3. Val a pretrained detection model at batch-size 1 and image size 640:
+        yolo val model=yolo11n.pt data=coco8.yaml batch=1 imgsz=640
+
+    4. Export a YOLO11n classification model to ONNX format at image size 224 by 128 (no TASK required)
+        yolo export model=yolo11n-cls.pt format=onnx imgsz=224,128
+
+    5. Ultralytics solutions usage
+        yolo solutions count or in ['crop', 'blur', 'workout', 'heatmap', 'isegment', 'visioneye', 'speed', 'queue', 'analytics', 'inference', 'trackzone'] source="path/to/video.mp4"
+
+    6. Run special commands:
+        yolo help
+        yolo checks
+        yolo version
+        yolo settings
+        yolo copy-cfg
+        yolo cfg
+        yolo solutions help
+
+    Docs: https://docs.ultralytics.com
+    Solutions: https://docs.ultralytics.com/solutions/
+    Community: https://community.ultralytics.com
+    GitHub: https://github.com/ultralytics/ultralytics
+    
+config_manager.py[LINE:230]# INFO     [2025-07-30 19:50:13,003] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 19:50:13,003] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:50:13,005] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:50:13,005] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:50:13,006] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:143]# INFO     [2025-07-30 19:50:13,217] Starting training
+model_trainer.py[LINE:144]# INFO     [2025-07-30 19:50:13,217] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:131]# INFO     [2025-07-30 19:50:13,218] Froze first 10 layers
+model_trainer.py[LINE:161]# INFO     [2025-07-30 19:50:13,218] Using CPU device
+cubsat_pipeline.py[LINE:136]# ERROR    [2025-07-30 19:50:15,342] Ошибка обучения модели: expected str, bytes or os.PathLike object, not dict
+config_manager.py[LINE:230]# INFO     [2025-07-30 19:50:56,948] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 19:50:56,949] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:50:56,950] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:50:56,951] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:50:56,951] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:143]# INFO     [2025-07-30 19:50:57,088] Starting training
+model_trainer.py[LINE:144]# INFO     [2025-07-30 19:50:57,088] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:131]# INFO     [2025-07-30 19:50:57,089] Froze first 10 layers
+model_trainer.py[LINE:161]# INFO     [2025-07-30 19:50:57,089] Using CPU device
+config_manager.py[LINE:230]# INFO     [2025-07-30 19:54:22,496] Starting validation
+config_manager.py[LINE:252]# INFO     [2025-07-30 19:54:22,498] Validation completed
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:54:22,501] Loaded configuration file: C:\Python projects\Datasets\Fine_tuning\dataset.yaml
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:54:22,502] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\configs\model_cfg.json
+config_manager.py[LINE:293]# INFO     [2025-07-30 19:54:22,504] Loaded configuration file: C:\Python projects\CUBSAT_segmentation\models\yolo11n-seg.pt
+model_trainer.py[LINE:50]# INFO     [2025-07-30 19:54:22,943] Starting training
+model_trainer.py[LINE:51]# INFO     [2025-07-30 19:54:22,944] Training model with parameters: {'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml', 'class_names': ['FT', 'Engine', 'Solar Panel'], 'epochs': 30, 'imgsz': 1024, 'batch': 20, 'lr0': 0.001, 'patience': 10, 'device': 0, 'optimizer': 'Adam', 'freeze_layers': 10, 'output_dir': 'C:\\Python projects\\CUBSAT_segmentation\\models'}
+model_trainer.py[LINE:39]# INFO     [2025-07-30 19:54:22,945] Froze first 10 layers
+model_trainer.py[LINE:68]# INFO     [2025-07-30 19:54:22,945] Using CPU device
