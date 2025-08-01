@@ -21,20 +21,20 @@ project_root_path = get_project_root(init_path)
 IMAGE_PATH = os.path.join(
     project_root_path,
     'inference',
-    '5.png'
+    '6.jpg'
 )
 
 MODEL_PATH = os.path.join(
     project_root_path,
     'models',
-    'yolo11n-seg_labeling.pt'
+    'yolo11n-seg_fine_tuned.pt'
 )
 
 OUTPUT_PATH = os.path.join(
     project_root_path,
     'inference',
     'output',
-    '5_pred.png'
+    '6_pred.png'
 )
 
 logging.basicConfig(

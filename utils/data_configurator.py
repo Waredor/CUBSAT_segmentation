@@ -118,11 +118,11 @@ class DataConfigurator:
                     if (destination_dir == "val" and filename
                             not in os.listdir(os.path.join(self.destination_dir, "images",
                                                            "train"))):
-                        shutil.move(source_path, destination_path)
+                        shutil.copy(source_path, destination_path)
                         self.logger.info(f"Moving {filename} to {destination_path}")
 
                     elif destination_dir == "train":
-                        shutil.move(source_path, destination_path)
+                        shutil.copy(source_path, destination_path)
                         self.logger.info(f"Moving {filename} to {destination_path}")
 
                 except Exception as e:
@@ -140,11 +140,11 @@ class DataConfigurator:
                     if (destination_dir == "val" and filename
                             not in os.listdir(os.path.join(self.destination_dir, "labels",
                                                            "train"))):
-                        shutil.move(source_path, destination_path)
+                        shutil.copy(source_path, destination_path)
                         self.logger.info(f"Moving {filename} to {destination_path}")
 
                     elif destination_dir == "train":
-                        shutil.move(source_path, destination_path)
+                        shutil.copy(source_path, destination_path)
                         self.logger.info(f"Moving {filename} to {destination_path}")
 
                 except Exception as e:

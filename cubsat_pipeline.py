@@ -1,8 +1,9 @@
 import os
 import yaml
 
+from ultralytics import YOLO
 from utils.config_manager import ConfigManager, setup_logger
-from utils.model_trainer import ModelTrainer
+from utils.model_trainer import train_model
 from utils.model_exporter import ModelExporter
 from utils.inference_runner import InferenceRunner
 from utils.annotation_processor import AnnotationProcessor
@@ -14,6 +15,8 @@ if __name__ == '__main__':
     ########################################################
     ########     HYPERPARAMETERS AND CONFIGS        ########
     ########################################################
+
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
     init_path = os.path.abspath(__file__)
 
@@ -82,11 +85,8 @@ if __name__ == '__main__':
 
     try:
         config = config_manager.load_config()
-        model_trainer = ModelTrainer(
-            model_cfg=MODEL_PATH,
-            hyperparameters=config,
-            logger=LOGGER
-        )
+        model = YOLO(MODEL_PATH)
+        LOGGER.info("Модель успешно инициализирована")
 
     except Exception as e:
         LOGGER.error(f"Ошибка валидации конфигурационных файлов: {str(e)}")
@@ -116,7 +116,7 @@ if __name__ == '__main__':
 
         elif stage == "train_model":
             try:
-                model = model_trainer.train_model(augment=True)
+                model = train_model(model=model, hyperparameters=config, logger=LOGGER, augment=True)
 
             except Exception as e:
                 LOGGER.error(f"Ошибка обучения модели: {str(e)}")
@@ -125,12 +125,12 @@ if __name__ == '__main__':
 
         elif stage == "export_model":
             model_exporter = ModelExporter(
-                model=model_trainer.model,
+                model=model,
                 output_dir=OUTPUT_DIR,
                 logger=LOGGER
             )
             try:
-                model_exporter.save_model("yolo11n-seg_fine_tuned.pt")
+                model_exporter.save_model(MODEL_NAME_FOR_EXPORT)
 
             except Exception as e:
                 LOGGER.error(f"Ошибка охранения модели: {str(e)}")
@@ -156,7 +156,7 @@ if __name__ == '__main__':
 
             if stage == "create_labelme_annotations":
                 inference_runner = InferenceRunner(
-                    model=model_trainer.model,
+                    model=model,
                     img_size=IMG_SIZE,
                     logger=LOGGER
                 )

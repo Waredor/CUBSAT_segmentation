@@ -3,6 +3,6 @@ names:
 - Engine
 - Solar Panel
 nc: 3
-path: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data
+path: D:\Python projects\CUBSAT_segmentation\utils\tests\test_data
 train: images/train
 val: images/val

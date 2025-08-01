@@ -1,94 +1,80 @@
 import logging
+import ultralytics
 
 from ultralytics import YOLO
 from torch import cuda
 
 
-class ModelTrainer:
+def train_model(
+    model: ultralytics.models.yolo.model.YOLO, logger: logging.Logger, hyperparameters: dict, augment=False
+) -> YOLO:
     """
-    Класс ModelTrainer отвечает за инициализацию и обучение модели YOLOv11.
+    Метод train_model() выполняет обучение модели YOLOv11.
     Parameters:
-        model_cfg (str): путь к .yaml файлу конфигурации модели
-            или .pt файлу предобученной модели.
+        model (ultralytics.models.yolo.model.YOLO): инициализированная модель YOLOv11.
         hyperparameters (dict): словарь с гиперпараметрами модели для обучения
             и путем к конфигурационному файлу датасета.
         logger (logging.Logger): объект логгера.
+        augment (bool): флаг использования аугментаций.
+    Returns:
+        model (ultralytics.models.yolo.model.YOLO)
     """
+    logger.info("Starting training")
+    logger.info(f"Training model with parameters: {hyperparameters}")
+    cuda.empty_cache()
+    num_layers_to_freeze = hyperparameters['freeze_layers']
+    data_dir = hyperparameters['data_path']
+    epochs = hyperparameters['epochs']
+    batch_size = hyperparameters['batch']
+    image_size = hyperparameters['imgsz']
+    initial_learning_rate = hyperparameters['lr0']
+    optimizer = hyperparameters['optimizer']
+    patience = hyperparameters['patience']
+    device = hyperparameters['device']
 
-    def __init__(self, model_cfg: str, hyperparameters: dict, logger: logging.Logger) -> None:
-        self.model_cfg = model_cfg
-        self.hyperparameters = hyperparameters
-        self.model = YOLO(self.model_cfg)
-        self.logger = logger
+    if device == 0:
+        if cuda.is_available():
+            logger.info("Using GPU device")
 
-    def freeze_layers(self, num_layers_to_freeze: int) -> None:
-        """
-        Метод freeze_layers() осуществляет заморозку слоев в backbone.
-        Parameters:
-            num_layers_to_freeze (int): количество замораживаемых слоев начиная с входного.
-        Returns:
-            None
-        """
-        layer_count = 0
-        for param in self.model.model.parameters():
-            if layer_count < num_layers_to_freeze:
-                param.requires_grad = False
-            else:
-                break
-            layer_count += 1
-        self.logger.info(f"Froze first {layer_count} layers")
+        else:
+            logger.info("Using CPU device")
+            device = "cpu"
 
-    def train_model(self, augment=False) -> YOLO:
-        """
-        Метод train_model выполняет обучение модели YOLOv11.
-        Parameters:
-            augment (bool): флаг использования аугментаций.
-            с помощью albumentations.Compose()
-        Returns:
-            self.model (ultralytics.models.yolo.model.YOLO)
-        """
-        self.logger.info("Starting training")
-        self.logger.info(f"Training model with parameters: {self.hyperparameters}")
-        num_layers_to_freeze = self.hyperparameters['freeze_layers']
-        self.freeze_layers(num_layers_to_freeze)
-        data_dir = self.hyperparameters['data_path']
-        epochs = self.hyperparameters['epochs']
-        batch_size = self.hyperparameters['batch']
-        image_size = self.hyperparameters['imgsz']
-        initial_learning_rate = self.hyperparameters['lr0']
-        optimizer = self.hyperparameters['optimizer']
-        patience = self.hyperparameters['patience']
-        device = self.hyperparameters['device']
+    augment_params = {
+        'fliplr': 0.5,
+        'flipud': 0.5,
+        'translate': 0.1,
+        'degrees': 15,
+        'shear': 10,
+        'mosaic': 1.0,
+        'mixup': 0.2,
+        'copy_paste': 0.3,
+        'perspective': 0.0
+    } if augment else {}
 
-        if device == 0:
-            if cuda.is_available():
-                self.logger.info("Using GPU device")
+    model.train(
+        data=data_dir,
+        epochs=epochs,
+        imgsz=image_size,
+        batch=batch_size,
+        lr0=initial_learning_rate,
+        optimizer=optimizer,
+        patience=patience,
+        device=device,
+        freeze=num_layers_to_freeze,
+        workers=2,
+        project="runs/train",
+        name="exp",
+        exist_ok=True,
+        cos_lr=True,
+        lrf=0.005,
+        dropout=0.3,
+        weight_decay=0.001,
+        label_smoothing=0.1,
+        warmup_epochs=3,
+        iou=0.7,
+        **augment_params
+    )
 
-            else:
-                self.logger.info("Using CPU device")
-                device = "cpu"
-
-        augment_params = {
-            'hsv_h': 0.015,  # Аугментация оттенка (аналог RandomBrightnessContrast)
-            'hsv_s': 0.7,  # Аугментация насыщенности
-            'hsv_v': 0.4,  # Аугментация яркости
-            'fliplr': 0.5,  # Горизонтальный флип (аналог HorizontalFlip(p=0.5))
-            'degrees': 30,  # Поворот до 30 градусов (аналог Rotate(limit=30, p=0.3))
-            'scale': 0.2,  # Масштабирование (приближение к RandomCrop)
-            'erasing': 0.2  # Случайное стирание (приближение к GaussNoise)
-        } if augment else {}
-
-        self.model.train(
-            data=data_dir,
-            epochs=epochs,
-            imgsz=image_size,
-            batch=batch_size,
-            lr0=initial_learning_rate,
-            optimizer=optimizer,
-            patience=patience,
-            device=device,
-            **augment_params
-        )
-
-        self.logger.info("Training completed")
-        return self.model
+    logger.info("Training completed")
+    return model

@@ -1,3 +1,3 @@
-run_inference.py[LINE:121]# INFO     [2025-07-29 10:52:05,230] Проверка пути изображения: C:\Python projects\CUBSAT_segmentation\inference\5.png
-run_inference.py[LINE:122]# INFO     [2025-07-29 10:52:05,230] Текущая рабочая директория: C:\Python projects\CUBSAT_segmentation\inference
-run_inference.py[LINE:156]# INFO     [2025-07-29 10:52:05,407] Изображение с масками сохранено: C:\Python projects\CUBSAT_segmentation\inference\output\5_pred.png
+run_inference.py[LINE:121]# INFO     [2025-08-01 12:31:54,676] Проверка пути изображения: D:\Python projects\CUBSAT_segmentation\inference\6.jpg
+run_inference.py[LINE:122]# INFO     [2025-08-01 12:31:54,676] Текущая рабочая директория: D:\Python projects\CUBSAT_segmentation\inference
+run_inference.py[LINE:156]# INFO     [2025-08-01 12:31:54,755] Изображение с масками сохранено: D:\Python projects\CUBSAT_segmentation\inference\output\6_pred.png

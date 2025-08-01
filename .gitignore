@@ -1,6 +1,8 @@
 __pycache__/
 *.pyc
 runs/*
+utils/tests/runs/
 .venv/
 venv/
 env/
+yolo11n.pt
