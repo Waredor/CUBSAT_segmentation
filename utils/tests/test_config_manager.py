@@ -25,309 +25,416 @@ class TestConfigManager(unittest.TestCase):
             project_root_path,
             'utils\\tests\\test_data'
         )
-        self.model_cfg = os.path.join(
+        self.valid_config = os.path.join(
             project_root_path,
-            'utils\\tests\\test_data\\model.pt'
+            'utils\\tests\\test_data\\valid_config.yaml'
         )
-        self.valid_dataset = os.path.join(
+        self.invalid_config_extension = os.path.join(
             project_root_path,
-            'utils\\tests\\test_data\\valid_dataset.yaml'
-        )
-        self.valid_hyperparameters = os.path.join(
-            project_root_path,
-            'utils\\tests\\test_data\\valid_hyperparameters.json'
-        )
-        with open(self.valid_dataset, mode='r', encoding='utf-8') as f:
-            dataset_yaml_data = yaml.safe_load(f)
-
-        dataset_yaml_data['path'] = self.temp_dir
-        with open(self.valid_dataset, mode='w', encoding='utf-8') as f:
-            yaml.safe_dump(dataset_yaml_data, f, encoding='utf-8')
-
-        self.valid_hyperparameters = os.path.join(
-            project_root_path,
-            'utils\\tests\\test_data\\valid_hyperparameters.json'
-        )
-        self.invalid_dataset_key_error = os.path.join(
-            project_root_path,
-            'utils\\tests\\test_data\\invalid_dataset_key_error.yaml'
-        )
-        self.invalid_dataset_key_none = os.path.join(
-            project_root_path,
-            'utils\\tests\\test_data\\invalid_dataset_key_none.yaml'
-        )
-        self.invalid_dataset_key_not_a_directory = os.path.join(
-            project_root_path,
-            'utils\\tests\\test_data\\invalid_dataset_key_not_a_directory.yaml'
-        )
-        self.invalid_hyperparameters = os.path.join(
-            project_root_path,
-            'utils\\tests\\test_data\\invalid_hyperparameters.json'
-        )
-        self.invalid_json_to_parse = os.path.join(
-            project_root_path,
-            'utils\\tests\\test_data\\invalid_json_to_parse.json'
+            'utils\\tests\\test_data\\valid_config.txt'
         )
         self.invalid_yaml_to_parse = os.path.join(
             project_root_path,
             'utils\\tests\\test_data\\invalid_yaml_to_parse.yaml'
         )
+        self.invalid_config_key_error_first_level = os.path.join(
+            project_root_path,
+            'utils\\tests\\test_data\\invalid_config_key_error_first_level.yaml'
+        )
+        self.invalid_config_key_error_paths = os.path.join(
+            project_root_path,
+            'utils\\tests\\test_data\\invalid_config_key_error_paths.yaml'
+        )
+        self.invalid_config_key_error_names = os.path.join(
+            project_root_path,
+            'utils\\tests\\test_data\\invalid_config_key_error_names.yaml'
+        )
+        self.invalid_config_key_error_extensions = os.path.join(
+            project_root_path,
+            'utils\\tests\\test_data\\invalid_config_key_error_extensions.yaml'
+        )
+        self.invalid_config_key_error_model_hyperparameters = os.path.join(
+            project_root_path,
+            'utils\\tests\\test_data\\invalid_config_key_error_model_hyperparameters.yaml'
+        )
+        self.invalid_config_key_error_dataset_cfg = os.path.join(
+            project_root_path,
+            'utils\\tests\\test_data\\invalid_config_key_error_dataset_cfg.yaml'
+        )
+        self.invalid_config_value_error_dataset_cfg = os.path.join(
+            project_root_path,
+            'utils\\tests\\test_data\\invalid_config_value_error_dataset_cfg.yaml'
+        )
+        self.invalid_config_file_not_found_error_dataset_cfg = os.path.join(
+            project_root_path,
+            'utils\\tests\\test_data\\invalid_config_file_not_found_error_dataset_cfg.yaml'
+        )
+        self.invalid_config_not_a_directory_error_dataset_cfg = os.path.join(
+            project_root_path,
+            'utils\\tests\\test_data\\invalid_config_not_a_directory_error_dataset_cfg.yaml'
+        )
+
+        with open(self.valid_config, mode='r', encoding='utf-8') as f:
+            dataset_yaml_data = yaml.safe_load(f)
+
+        dataset_yaml_data['dataset_cfg']['path'] = self.temp_dir
+        dataset_yaml_data['paths']['inference_images_dir'] = os.path.join(
+            self.temp_dir, 'images', 'test'
+        )
+        dataset_yaml_data['paths']['labelme_inference_annotations_dir'] = os.path.join(
+            self.temp_dir, 'labels', 'test'
+        )
+        dataset_yaml_data['paths']['raw_data_dir'] = self.temp_dir
+        with open(self.valid_config, mode='w', encoding='utf-8') as f:
+            yaml.safe_dump(dataset_yaml_data, f, encoding='utf-8')
 
     def tearDown(self):
         self.logger.removeHandler(self.log_handler)
         self.log_handler.close()
 
-    def test_validate_config_success(self):
+    def test_load_yaml_success(self):
         """
-        Этот тест проверяет работу метода ConfigManager.validate_config()
-        с валидными конфигурационными файлами
+        Этот тест проверяет работу метода ConfigManager.load_yaml()
+        с валидным конфигурационным файлом.
         """
         config_manager = ConfigManager(
-            data_cfg=self.valid_dataset,
-            model_hyperparameters=self.valid_hyperparameters,
-            data_dir=self.temp_dir,
-            model_cfg=self.model_cfg,
-            output_dir=self.temp_dir,
+            project_root=self.temp_dir,
+            pipeline_cfg=self.valid_config,
             logger=self.logger
         )
-        config_manager.validate_config()
+        data = config_manager.load_yaml()
+        self.assertEqual(type(data), dict)
+
+    def test_load_yaml_failure(self):
+        """
+        Этот тест проверяет работу метода ConfigManager.load_yaml()
+        с ошибкой в синтаксисе конфигурационного файла.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.invalid_yaml_to_parse,
+            logger=self.logger
+        )
+
+        with self.assertRaises(ValueError):
+            config_manager.load_yaml()
+
+    def test_validate_param_failure_none_type(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._validate_param()
+        при передаче в качестве параметра NoneType.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.valid_config,
+            logger=self.logger
+        )
+        with self.assertRaises(ValueError):
+            config_manager._validate_param(None, config_manager.metadata[0])
+
+    def test_validate_param_failure_negative_int_value(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._validate_param()
+        при передаче в качестве параметра целого отрицательного числа.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.valid_config,
+            logger=self.logger
+        )
+        with self.assertRaises(ValueError):
+            config_manager._validate_param(-1, config_manager.metadata[15])
+
+    def test_validate_param_failure_negative_float_value(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._validate_param()
+        при передаче в качестве параметра дробного отрицательного числа.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.valid_config,
+            logger=self.logger
+        )
+        with self.assertRaises(ValueError):
+            config_manager._validate_param(-0.55, config_manager.metadata[18])
+
+    def test_validate_param_failure_type_error(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._validate_param()
+        при несоответсвии типа данных передаваемого параметра и требуемого типа данных.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.valid_config,
+            logger=self.logger
+        )
+        with self.assertRaises(TypeError):
+            config_manager._validate_param(5, config_manager.metadata[0])
+
+    def test_validate_param_failure_empty_string(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._validate_param()
+        при передачи в качестве параметра пустой строки.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.valid_config,
+            logger=self.logger
+        )
+        with self.assertRaises(ValueError):
+            config_manager._validate_param('', config_manager.metadata[0])
+
+    def test_validate_param_failure_file_not_found_error(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._validate_param()
+        при передачи в качестве параметра строки не являющейся путем к файлу,
+        но имеющей флаг is_file в метаданных.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.valid_config,
+            logger=self.logger
+        )
+        with self.assertRaises(FileNotFoundError):
+            config_manager._validate_param(
+                'wrong/path/to/file.file', config_manager.metadata[1]
+            )
+
+    def test_validate_param_failure_not_a_directory_error(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._validate_param()
+        при передачи в качестве параметра строки не являющейся путем к директории,
+        но имеющей флаг is_dir в метаданных.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.valid_config,
+            logger=self.logger
+        )
+        with self.assertRaises(NotADirectoryError):
+            config_manager._validate_param(
+                'wrong/path/to/dir', config_manager.metadata[0]
+            )
+
+    def test_validate_param_failure_wrong_extension(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._validate_param()
+        при передачи в качестве параметра пути к файлу с неверным расширением.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.valid_config,
+            logger=self.logger
+        )
+        with self.assertRaises(ValueError):
+            config_manager._validate_param(
+                self.invalid_config_extension, config_manager.metadata[1]
+            )
+
+    def test_check_input_success(self):
+        """
+        Этот тест проверяет работу метода ConfigManager.check_input()
+        с валидными переменными.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.valid_config,
+            logger=self.logger
+        )
+        for el in config_manager.metadata[0:2]:
+            self.assertTrue(el.name in config_manager.params.keys())
+
+        config_manager.check_input()
 
         log_count = len(self.log_handler.buffer)
         self.assertEqual(log_count, 2)
 
-        self.assertEqual(self.log_handler.buffer[0].getMessage(), "Starting validation")
-        self.assertEqual(self.log_handler.buffer[-1].getMessage(), "Validation completed")
+        self.assertEqual(self.log_handler.buffer[0].getMessage(), "Starting checking input")
+        self.assertEqual(self.log_handler.buffer[-1].getMessage(), "Checking input completed")
 
-    def test_validate_config_none_data_cfg(self):
+    def test_check_yaml_file_success(self):
         """
-        Этот тест проверяет работу метода ConfigManager.validate_config()
-        с переданным параметром data_cfg=None
+        Этот тест проверяет работу метода ConfigManager._check_yaml_file()
+        с валидным конфигурационным файлом
         """
         config_manager = ConfigManager(
-            data_cfg=None,
-            model_hyperparameters=self.valid_hyperparameters,
-            data_dir=self.temp_dir,
-            model_cfg=self.model_cfg,
-            output_dir=self.temp_dir,
+            project_root=self.temp_dir,
+            pipeline_cfg=self.valid_config,
             logger=self.logger
         )
-        with self.assertRaises(ValueError) as cm:
-            config_manager.validate_config()
+        data = config_manager.load_yaml()
+        config_manager._check_yaml_file(data)
+
+        log_count = len(self.log_handler.buffer)
+        self.assertEqual(log_count, 2)
+
         self.assertEqual(
-            first=str(cm.exception),
-            second="Parameter data_cfg is None"
+            self.log_handler.buffer[0].getMessage(), "Starting validation of YAML file"
+        )
+        self.assertEqual(
+            self.log_handler.buffer[-1].getMessage(), "Validated successfully"
         )
 
-    def test_validate_config_invalid_filepath_data_cfg(self):
+    def test_check_yaml_file_failure_key_error_first_level(self):
         """
-        Этот тест проверяет работу метода ConfigManager.validate_config()
-        с неверным путем до data_cfg
+        Этот тест проверяет работу метода ConfigManager._check_yaml_file()
+        с отсутствующим ключом первого уровня в словаре с данными из .yaml файла конфигурации
         """
         config_manager = ConfigManager(
-            data_cfg=os.path.join('path', 'false_path.yaml'),
-            model_hyperparameters=self.valid_hyperparameters,
-            data_dir=self.temp_dir,
-            model_cfg=self.model_cfg,
-            output_dir=self.temp_dir,
+            project_root=self.temp_dir,
+            pipeline_cfg=self.invalid_config_key_error_first_level,
             logger=self.logger
         )
-        with self.assertRaises(FileNotFoundError) as cm:
-            config_manager.validate_config()
-        self.assertEqual(
-            first=str(cm.exception),
-            second=os.path.join("path", "false_path.yaml") + " is not a path to file"
-        )
+        data = config_manager.load_yaml()
 
-    def test_validate_config_invalid_filetype_data_cfg(self):
-        """
-        Этот тест проверяет работу метода ConfigManager.validate_config()
-        с неверным расширением файла data_cfg
-        """
-        filepath = os.path.join(
-            project_root_path,
-            'utils',
-            'tests',
-            'test_data',
-            'valid_dataset.txt'
-        )
-        config_manager = ConfigManager(
-            data_cfg=filepath,
-            model_hyperparameters=self.valid_hyperparameters,
-            data_dir=self.temp_dir,
-            model_cfg=self.model_cfg,
-            output_dir=self.temp_dir,
-            logger=self.logger
-        )
-        with self.assertRaises(ValueError) as cm:
-            config_manager.validate_config()
-        self.assertEqual(
-            first=str(cm.exception),
-            second=f"{filepath} has invalid file extension"
-        )
+        with self.assertRaises(KeyError):
+            config_manager._check_yaml_file(data)
 
-    def test_validate_config_incorrect_type_data_dir(self):
+    def test_check_yaml_file_failure_key_error_paths(self):
         """
-        Этот тест проверяет работу метода ConfigManager.validate_config()
-        с неверным типом данных data_dir
+        Этот тест проверяет работу метода ConfigManager._check_yaml_file()
+        с отсутствующим ключом в словаре, получаемому по ключу 'paths' из .yaml
+        файла конфигурации.
         """
         config_manager = ConfigManager(
-            data_cfg=self.valid_dataset,
-            model_hyperparameters=self.valid_hyperparameters,
-            data_dir=5,
-            model_cfg=self.model_cfg,
-            output_dir=self.temp_dir,
+            project_root=self.temp_dir,
+            pipeline_cfg=self.invalid_config_key_error_paths,
             logger=self.logger
         )
-        with self.assertRaises(ValueError) as cm:
-            config_manager.validate_config()
-        self.assertEqual(
-            first=str(cm.exception),
-            second="Parameter data_dir has incorrect type "
-            "(expected: <class 'str'>, got: <class 'int'>)"
+        data = config_manager.load_yaml()
+
+        with self.assertRaises(KeyError):
+            config_manager._check_yaml_file(data)
+
+    def test_check_yaml_file_failure_key_error_names(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._check_yaml_file()
+        с отсутствующим ключом в словаре, получаемому по ключу 'names' из .yaml
+        файла конфигурации.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.invalid_config_key_error_names,
+            logger=self.logger
         )
+        data = config_manager.load_yaml()
+
+        with self.assertRaises(KeyError):
+            config_manager._check_yaml_file(data)
+
+    def test_check_yaml_file_failure_key_error_extensions(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._check_yaml_file()
+        с отсутствующим ключом в словаре, получаемому по ключу 'extensions' из .yaml
+        файла конфигурации.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.invalid_config_key_error_extensions,
+            logger=self.logger
+        )
+        data = config_manager.load_yaml()
+
+        with self.assertRaises(KeyError):
+            config_manager._check_yaml_file(data)
+
+    def test_check_yaml_file_failure_key_error_model_hyperparameters(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._check_yaml_file()
+        с отсутствующим ключом в словаре, получаемому по ключу 'model_hyperparameters' из .yaml
+        файла конфигурации.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.invalid_config_key_error_model_hyperparameters,
+            logger=self.logger
+        )
+        data = config_manager.load_yaml()
+
+        with self.assertRaises(KeyError):
+            config_manager._check_yaml_file(data)
+
+    def test_check_yaml_file_failure_key_error_dataset_cfg(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._check_yaml_file()
+        с отсутствующим ключом в словаре, получаемому по ключу 'dataset_cfg' из .yaml
+        файла конфигурации.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.invalid_config_key_error_dataset_cfg,
+            logger=self.logger
+        )
+        data = config_manager.load_yaml()
+
+        with self.assertRaises(KeyError):
+            config_manager._check_yaml_file(data)
+
+    def test_check_yaml_file_failure_value_error_dataset_cfg(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._check_yaml_file()
+        с несовпадающим количеством классов в списке class_names и указанным числом классов nc
+        в словаре, получаемому по ключу 'dataset_cfg' из .yaml
+        файла конфигурации.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.invalid_config_value_error_dataset_cfg,
+            logger=self.logger
+        )
+        data = config_manager.load_yaml()
+
+        with self.assertRaises(ValueError):
+            config_manager._check_yaml_file(data)
+
+    def test_check_yaml_file_failure_file_not_found_error_dataset_cfg(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._check_yaml_file()
+        с некорректным путем к директории train или val в словаре,
+        получаемому по ключу 'dataset_cfg' из .yaml файла конфигурации.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.invalid_config_file_not_found_error_dataset_cfg,
+            logger=self.logger
+        )
+        data = config_manager.load_yaml()
+
+        with self.assertRaises(FileNotFoundError):
+            config_manager._check_yaml_file(data)
+
+    def test_check_yaml_file_failure_not_a_directory_error_dataset_cfg(self):
+        """
+        Этот тест проверяет работу метода ConfigManager._check_yaml_file()
+        с путем, не являющийся путем к директории train или val в словаре,
+        получаемому по ключу 'dataset_cfg' из .yaml файла конфигурации.
+        """
+        config_manager = ConfigManager(
+            project_root=self.temp_dir,
+            pipeline_cfg=self.invalid_config_not_a_directory_error_dataset_cfg,
+            logger=self.logger
+        )
+        data = config_manager.load_yaml()
+
+        with self.assertRaises(NotADirectoryError):
+            config_manager._check_yaml_file(data)
 
     def test_load_config_success(self):
         """
         Этот тест проверяет работу метода ConfigManager.load_config()
-        с валидными конфигурационными файлами
+        при валидных переменных
         """
         config_manager = ConfigManager(
-            data_cfg=self.valid_dataset,
-            model_hyperparameters=self.valid_hyperparameters,
-            data_dir=self.temp_dir,
-            model_cfg=self.model_cfg,
-            output_dir=self.temp_dir,
+            project_root=self.temp_dir,
+            pipeline_cfg=self.valid_config,
             logger=self.logger
         )
-        metadata = {
-            "epochs": [int],
-            "imgsz": [int],
-            "batch": [int],
-            "lr0": [float],
-            "patience": [int],
-            "device": [str, int],
-            "optimizer": [str],
-            "freeze_layers": [int],
-            "data_path": [str],
-            "class_names": [list],
-            "output_dir": [str]
-        }
-        metadata_len = len(metadata.keys())
-        hyperparams = config_manager.load_config()
+        config = config_manager.load_config()
 
         log_count = len(self.log_handler.buffer)
 
-        self.assertEqual(log_count, 5)
-        self.assertEqual(type(hyperparams), dict)
-        self.assertEqual(len(hyperparams.keys()), metadata_len)
-        self.assertIn("epochs", hyperparams.keys())
-        self.assertIn("imgsz", hyperparams.keys())
-        self.assertIn("batch", hyperparams.keys())
-        self.assertIn("lr0", hyperparams.keys())
-        self.assertIn("patience", hyperparams.keys())
-        self.assertIn("device", hyperparams.keys())
-        self.assertIn("optimizer", hyperparams.keys())
-        self.assertIn("freeze_layers", hyperparams.keys())
-        self.assertIn("data_path", hyperparams.keys())
-        self.assertIn("class_names", hyperparams.keys())
-        self.assertIn("output_dir", hyperparams.keys())
+        self.assertEqual(type(config), dict)
+        self.assertEqual(log_count, 8)
 
-    def test_load_config_dataset_key_error(self):
-        """
-        Этот тест проверяет работу метода ConfigManager.validate_config()
-        на выброс ошибки KeyError при отсутствующем ключе в конфигурационном файле
-        датасета
-        """
-        config_manager = ConfigManager(
-            data_cfg=self.invalid_dataset_key_error,
-            model_hyperparameters=self.valid_hyperparameters,
-            data_dir=self.temp_dir,
-            model_cfg=self.model_cfg,
-            output_dir=self.temp_dir,
-            logger=self.logger
-        )
-        with self.assertRaises(KeyError):
-            config_manager.load_config()
-
-    def test_load_config_dataset_key_not_a_directory(self):
-        """
-        Этот тест проверяет работу метода ConfigManager.load_config()
-        со значением, получаемым по ключу из конфигурационного файла датасета,
-        которое не является директорией
-        """
-        config_manager = ConfigManager(
-            data_cfg=self.invalid_dataset_key_not_a_directory,
-            model_hyperparameters=self.valid_hyperparameters,
-            data_dir=self.temp_dir,
-            model_cfg=self.model_cfg,
-            output_dir=self.temp_dir,
-            logger=self.logger
-        )
-        with self.assertRaises(FileNotFoundError):
-            config_manager.load_config()
-
-    def test_load_config_dataset_key_none(self):
-        """
-        Этот тест проверяет работу метода ConfigManager.load_config()
-        со значением, получаемым по ключу из конфигурационного файла датасета,
-        которое является None
-        """
-        config_manager = ConfigManager(
-            data_cfg=self.invalid_dataset_key_none,
-            model_hyperparameters=self.valid_hyperparameters,
-            data_dir=self.temp_dir,
-            model_cfg=self.model_cfg,
-            output_dir=self.temp_dir,
-            logger=self.logger
-        )
-        with self.assertRaises(ValueError):
-            config_manager.load_config()
-
-    def test_load_config_hyperparameters_key_error(self):
-        """
-        Этот тест проверяет работу метода ConfigManager.load_config()
-        с ошибкой KeyError, возникающей при валидации .json файла с гиперпараметрами
-        модели.
-        """
-        config_manager = ConfigManager(
-            data_cfg=self.valid_dataset,
-            model_hyperparameters=self.invalid_hyperparameters,
-            data_dir=self.temp_dir,
-            model_cfg=self.model_cfg,
-            output_dir=self.temp_dir,
-            logger=self.logger
-        )
-        with self.assertRaises(TypeError):
-            config_manager.load_config()
-
-    def test_load_config_hyperparameters_json_error(self):
-        """
-        Этот тест проверяет работу метода ConfigManager.load_config()
-        с ошибкой JSONError, возникающей при парсинге некорректного .json файла.
-        """
-        config_manager = ConfigManager(
-            data_cfg=self.valid_dataset,
-            model_hyperparameters=self.invalid_json_to_parse,
-            data_dir=self.temp_dir,
-            model_cfg=self.model_cfg,
-            output_dir=self.temp_dir,
-            logger=self.logger
-        )
-        with self.assertRaises(ValueError):
-            config_manager.load_config()
-
-    def test_load_config_hyperparameters_yaml_error(self):
-        """
-         Этот тест проверяет работу метода ConfigManager.load_config()
-         с ошибкой YAMLError, возникающей при парсинге некорректного .yaml файла.
-         """
-        config_manager = ConfigManager(
-            data_cfg=self.invalid_yaml_to_parse,
-            model_hyperparameters=self.valid_hyperparameters,
-            data_dir=self.temp_dir,
-            model_cfg=self.model_cfg,
-            output_dir=self.temp_dir,
-            logger=self.logger
-        )
-        with self.assertRaises(ValueError):
-            config_manager.load_config()
+        self.assertEqual(self.log_handler.buffer[0].getMessage(), "Checking input parameters")
+        self.assertEqual(self.log_handler.buffer[-1].getMessage(), "Config successfully loaded")

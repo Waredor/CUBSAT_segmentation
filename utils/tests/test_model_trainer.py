@@ -51,7 +51,7 @@ class TestModelTrainer(unittest.TestCase):
             'utils',
             'tests',
             'test_data',
-            'valid_dataset.yaml'
+            'valid_config.yaml'
         )
 
         with open(self.valid_dataset, mode='r', encoding='utf-8') as f:
@@ -74,7 +74,7 @@ class TestModelTrainer(unittest.TestCase):
 
         hyperparameters_data['data_path'] = os.path.join(
             self.temp_dir,
-            "valid_dataset.yaml"
+            "valid_config.yaml"
         )
         self.hyperparameters = hyperparameters_data
 

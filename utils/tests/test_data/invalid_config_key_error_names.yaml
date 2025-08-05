@@ -1,0 +1,50 @@
+dataset_cfg:
+  names:
+  - FT
+  - Engine
+  - Solar Panel
+  nc: 3
+  path: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data
+  train: images/train
+  val: images/val
+extensions:
+  images_extensions:
+  - .jpg
+  labels_extensions:
+  - .txt
+model_hyperparameters:
+  augment_params:
+    copy_paste: 0.3
+    degrees: 15
+    fliplr: 0.5
+    flipud: 0.5
+    mixup: 0.2
+    mosaic: 1.0
+    perspective: 0.0
+    shear: 10
+    translate: 0.1
+  batch: 4
+  cos_lr: true
+  device: 0
+  dropout: 0.3
+  epochs: 100
+  freeze_layers: 10
+  imgsz: 1024
+  iou: 0.7
+  label_smoothing: 0.1
+  lr0: 0.001
+  lrf: 0.005
+  num_workers: 2
+  optimizer: Adam
+  patience: 20
+  warmup_epochs: 3
+  weight_decay: 0.001
+names:
+  exported_model_name: yolo11n-seg_fine_tuned.pt
+paths:
+  inference_images_dir: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data\images\test
+  labelme_inference_annotations_dir: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data\labels\test
+  raw_data_dir: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data
+stages:
+- train_model
+- export_model
