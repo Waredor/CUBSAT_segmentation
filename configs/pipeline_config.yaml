@@ -12,7 +12,6 @@ names:
   model_hyperparameters_file: model_cfg.json
   images_extensions: ['.jpg']
   labels_extensions: ['.txt']
-  img_size: 1024 # убрать, т.к. дублируется
 
 
 model_hyperparameters:
