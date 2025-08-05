@@ -1,8 +1,8 @@
 paths:
   data_root_dir: D:\Python projects\CUBSAT_dataset_segmentation\Fine_tuning
   raw_data_dir: D:\Python projects\CUBSAT_dataset_segmentation\train_test_split
-  inference_images_dir: images\test
-  inference_annotations_dir: labels\test
+  inference_images_dir: D:\Python projects\CUBSAT_dataset_segmentation\train_test_split\images\test
+  labelme_inference_annotations_dir: D:\Python projects\CUBSAT_dataset_segmentation\train_test_split\labels\test
 
 
 names:
