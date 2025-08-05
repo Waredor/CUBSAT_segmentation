@@ -1,4 +1,0 @@
-path: \path\to\dataset
-train: images\train
-val: images\val
-names: ['FT', 'Engine', 'Solar Panel']

@@ -1,0 +1,24 @@
+dataset_cfg:
+  names:
+  - FT
+  - Engine
+  - Solar Panel
+  nc: 3
+  path: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data
+  train: images/train
+  val: images/val
+extensions:
+  images_extensions:
+  - .jpg
+  labels_extensions:
+  - .txt
+names:
+  exported_model_name: yolo11n-seg_fine_tuned.pt
+  pt_model_name: model.pt
+paths:
+  inference_images_dir: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data\images\test
+  labelme_inference_annotations_dir: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data\labels\test
+  raw_data_dir: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data
+stages:
+- train_model
+- export_model

@@ -1,147 +1,184 @@
 import os
 import logging
-import json
+import yaml
 
+from types import UnionType
+from dataclasses import dataclass
 from pathlib import Path
 from logging.handlers import RotatingFileHandler
 
-import yaml
+
+@dataclass
+class ParamConfig:
+    """
+    Класс ParamConfig отвечает за создание списка с метаданными о параметрах,
+    поступающих в класс ConfigManager для валидации
+    Parameters:
+        name (str): имя параметра.
+        expected_type (type): ожидаемый тип данных параметра.
+        is_file (bool): флаг, сигнализирующий о том, является ли параметр путем к файлу.
+        is_dir (bool): флаг, сигнализирующий о том, является ли параметр путем к директории.
+        extensions (list): список допустимых расширений файла, которым является параметр.
+            (если параметр это не файл - единственный элемент списка пустая строка)
+    """
+    name: str
+    expected_type: type | UnionType
+    is_file: bool
+    is_dir: bool
+    extensions: list
 
 
 class ConfigManager:
     """
     Класс ConfigManager отвечает за загрузку и валидацию конфигурационных файлов
     и гиперпараметров модели.
+    При создании класса инициализируется список с метаданными для валидации со следующей структурой:
+     - Элементы с индексами 0 и 1: переменные, подаваемые на вход класса.
+     - Элементы с индексами 2 - 7: значения, получаемые по ключам первого уровня словаря конфигурации пайплайна.
+     - Элементы с индексами 8 - 10: значения, получаемые по ключам словаря, являющегося значением ключа первого уровня 'paths'.
+     - Элементы с индексами 11 - 12: значения, получаемые по ключам словаря, являющегося значением ключа первого уровня 'names'.
+     - Элементы с индексами 13 - 14: значения, получаемые по ключам словаря, являющегося значением ключа первого уровня 'extensions'.
+     - Элементы с индексами 15 - 31: значения, получаемые по ключам словаря, являющегося значением ключа первого уровня 'model_hyperparameters'.
+     - Элементы с индексами 32 - 36: значения, получаемые по ключам словаря, являющегося значением ключа первого уровня 'dataset_cfg'.
     Parameters:
-        data_cfg (str): путь до .yaml файла конфигурации датасета
-            в формате совместимом с моделью YOLOv11.
-            Файл находится в корневой папке датасета.
-            Также в корневой папке датасета находятся папки images/ и labels/.
-        model_hyperparameters (str): путь до .json файла с гиперпараметрами
-            для обучения модели YOLOv11.
-        data_dir (str): путь до корневой папки датасета.
-        model_cfg (str): путь до .yaml файла конфигурации модели,
-            либо до .pt файла с предобученной моделью.
-        output_dir (str): путь к директории для сохранения обученной модели.
+        pipeline_cfg (str): путь до .yaml файла конфигурации пайплайна.
+        project_root (str): путь до корневой папки проекта.
         logger (logging.Logger): объект логгера.
     """
 
-    def __init__(self, data_cfg: str, model_hyperparameters: str,
-                 data_dir: str, model_cfg: str, output_dir: str,
+    def __init__(self, project_root: str, pipeline_cfg: str,
                  logger: logging.Logger) -> None:
-        self.params = [data_cfg, model_hyperparameters, data_dir, model_cfg, output_dir]
-        self.metadata = {0: {'name': 'data_cfg', 'expected_type': str,
-                             'is_file': True, 'is_dir': False, 'extension': ['.yaml']},
-                         1: {'name': 'model_hyperparameters', 'expected_type': str,
-                             'is_file': True, 'is_dir': False, 'extension': ['.json']},
-                         2: {'name': 'data_dir', 'expected_type': str,
-                             'is_file': False, 'is_dir': True, 'extension': ['']},
-                         3: {'name': 'model_cfg', 'expected_type': str,
-                             'is_file': True, 'is_dir': False, 'extension': ['.pt', '.yaml']},
-                         4: {'name': 'output_dir', 'expected_type': str,
-                             'is_file': False, 'is_dir': True, 'extension': ['']}
-                         }
+        self.params = {'project_root': project_root, 'pipeline_cfg': pipeline_cfg}
+        self.metadata = [
+            ParamConfig('project_root', str, False, True, ['']),    # Входные переменные
+            ParamConfig('pipeline_cfg', str, True, False, ['.yaml']),
+            ParamConfig('paths', dict, False, False, ['']), # Значения, получаемые по ключам первого уровня
+            ParamConfig('names', dict, False, False, ['']),
+            ParamConfig('extensions', dict, False, False, ['']),
+            ParamConfig('model_hyperparameters', dict, False, False, ['']),
+            ParamConfig('dataset_cfg', dict, False, False, ['']),
+            ParamConfig('stages', list, False, False, ['']),
+            ParamConfig('raw_data_dir', str, False, True, ['']),    # Значения, получаемые по ключам словаря 'paths'
+            ParamConfig('inference_images_dir', str, False, True, ['']),
+            ParamConfig('labelme_inference_annotations_dir', str, False, True, ['']),
+            ParamConfig('pt_model_name', str, True, False, ['.pt']),    # Значения, получаемые по ключам словаря 'names'
+            ParamConfig('exported_model_name', str, True, False, ['.pt']),
+            ParamConfig('images_extensions', list, False, False, ['']), # Значения, получаемые по ключам словаря 'extensions'
+            ParamConfig('labels_extensions', list, False, False, ['']),
+            ParamConfig('epochs', int, False, False, ['']), # Значения, получаемые по ключам словаря 'model_hyperparameters'
+            ParamConfig('imgsz', int, False, False, ['']),
+            ParamConfig('batch', int, False, False, ['']),
+            ParamConfig('lr0', float, False, False, ['']),
+            ParamConfig('lrf', float, False, False, ['']),
+            ParamConfig('patience', int, False, False, ['']),
+            ParamConfig('device', int | str, False, False, ['']),
+            ParamConfig('optimizer', str, False, False, ['']),
+            ParamConfig('freeze_layers', int, False, False, ['']),
+            ParamConfig('num_workers', int, False, False, ['']),
+            ParamConfig('dropout', float, False, False, ['']),
+            ParamConfig('weight_decay', float, False, False, ['']),
+            ParamConfig('label_smoothing', float, False, False, ['']),
+            ParamConfig('warmup_epochs', int, False, False, ['']),
+            ParamConfig('iou', float, False, False, ['']),
+            ParamConfig('cos_lr', bool, False, False, ['']),
+            ParamConfig('augment_params', dict, False, False, ['']),
+            ParamConfig('path', str, False, True, ['']), # Значения, получаемые по ключам словаря 'dataset_cfg'
+            ParamConfig('train', str, False, False, ['']),
+            ParamConfig('val', str, False, False, ['']),
+            ParamConfig('nc', int, False, False, ['']),
+            ParamConfig('names', list, False, False, ['']),
+        ]
         self.logger = logger
 
-    def _validate_path(self, el: str, is_file: bool, is_dir: bool, extensions: list) -> None:
+    def _validate_param(self, param , config: ParamConfig) -> None:
         """
-        Вспомогательный метод _validate_path() проверяет корректность путей
-        к файлу/директории и расширение файла.
+        Вспомогательный метод _validate_param() проверяет тип параметра, корректность путей
+        к файлу/директории и расширение файла, если параметр является файлом либо директорией.
         Parameters:
-            el (str): проверяемый путь
-            is_file (bool): флаг, отвечающий за то,
-                является ли данный путь путем к файлу
-            is_dir (bool): флаг, отвечающий за то,
-                является ли данный путь путем к директории
-            extensions (list): список с расширениями файла
-                (если это путь к директории, то расширение - список с пустой строкой
-                в качестве единственного элемента)
+            param: проверяемый параметр.
+            config (ParamConfig): датакласс с метаданными для проверки валидности параметра.
         Returns:
             None
         Raises:
-            NotADirectoryError: если путь, указанный как путь к директории,
-                не является таковым
-            FileNotFoundError: если путь, указанный как путь к файлу,
-                не является таковым
-            ValueError: если файл имеет неверное расширение
+            ValueError: если параметр является отрицательным числом, пустой строкой либо None.
+            TypeError: если тип параметра не соответствует требуемому.
+            FileNotFoundError: если параметр не является путем к файлу.
+            NotADirectoryError: если параметр не является путем к директории.
         """
-        if is_dir:
-            if not os.path.isdir(el):
-                self.logger.error(f'{el} is not a directory')
-                raise NotADirectoryError(f'{el} is not a directory')
+        if param is None:
+            self.logger.error(f"Parameter {config.name} is None")
+            raise ValueError(f"Parameter {config.name} is None")
 
-        elif is_file:
-            if not os.path.isfile(el):
-                self.logger.error(f'{el} is not a path to file')
-                raise FileNotFoundError(f'{el} is not a path to file')
+        if not isinstance(param, config.expected_type):
+            self.logger.error(
+                f"Wrong type of the {config.name} (expected: {config.expected_type}, got: {type(param)})")
+            raise TypeError(f"Wrong type of the {config.name}")
 
-            if not Path(el).suffix in extensions:
-                self.logger.error(f'{el} has invalid file extension')
-                raise ValueError(f'{el} has invalid file extension')
+        if isinstance(param, int | float):
+            if param < 0:
+                self.logger.error(f"Value for key {config.name} in YAML file is negative")
+                raise ValueError(f"Value for key {config.name} in YAML file is negative")
 
-    def _check_json_file(self, json_dict) -> None:
+        if isinstance(param, str):
+            if len(param) == 0:
+                self.logger.error(f"List element {param} for key {config.name} "
+                                  f"is an empty string")
+                raise ValueError(f"List element {param} for key {config.name} "
+                                 f"is an empty string")
+
+        if config.is_file:
+            if not os.path.isfile(param):
+                self.logger.error(f'{param} is not a path to file')
+                raise FileNotFoundError(f'{param} is not a path to file')
+
+            if not Path(param).suffix in config.extensions:
+                self.logger.error(f'{param} has invalid file extension')
+                raise ValueError(f'{param} has invalid file extension')
+
+        elif config.is_dir:
+            if not os.path.isdir(param):
+                self.logger.error(f'{param} is not a directory')
+                raise NotADirectoryError(f'{param} is not a directory')
+
+    def check_input(self) -> None:
         """
-        Вспомогательный метод _check_json_file() осуществляет проверку .json файла
-        с гиперпараметрами модели для обучения.
-        Если обнаружены несоответствия типов данных значений словаря
-        с ожидаемыми типами данных, либо какие-то из пар ключ-значение
-        отсутствуют - метод вызывает ошибку.
-        Parameters:
-            json_dict (dict): словарь с именами и значениями гиперпараметров.
+        Метод check_input() проверяет входные переменные на соответствие требуемой конфигурации.
         Returns:
             None
         Raises:
-            KeyError: если в файле нет требуемого ключа.
-            ValueError: если значение, получаемое по ключу отрицательное или None.
-            TypeError: если тип значения, получаемого по ключу,
-                не соответствует требуемому.
+            ValueError: если в словаре с входными переменными допущена ошибка.
         """
-        json_metadata = {"epochs": [int],
-                         "imgsz": [int],
-                         "batch": [int],
-                         "lr0": [float],
-                         "patience": [int],
-                         "device": [str, int],
-                         "optimizer": [str],
-                         "freeze_layers": [int]
-                         }
+        self.logger.info("Starting checking input")
+        input_metadata = self.metadata[0:2]
+        for el in input_metadata:
+            if el.name not in self.params.keys():
+                raise ValueError(f"Config error! {el.name} is missing!")
+            self._validate_param(self.params[el.name], el)
+        self.logger.info("Checking input completed")
 
-        for key, value in json_metadata.items():
-            if key not in json_dict.keys():
-                self.logger.error(f"Key {key} not found in hyperparameters JSON file")
-                raise KeyError(f"Key {key} not found in hyperparameters JSON file")
+    def load_yaml(self) -> dict:
+        """
+        Метод load_yaml() загружает содержимое .yaml файла в словарь python
+        Returns:
+            data (dict): словарь с содержимым .yaml файла.
+        Raises:
+            ValueError: если синтаксис .yaml файла содержит ошибки
+        """
+        try:
+            with open(self.params['pipeline_cfg'], mode='r', encoding='utf-8') as f:
+                data = yaml.safe_load(f)
+                return data
 
-            if json_dict[key] is None:
-                self.logger.error(f"Value for key {key} in JSON is None")
-                raise ValueError(f"Value for key {key} in JSON is None")
+        except yaml.YAMLError as exc:
+            self.logger.error(f"Error parsing YAML file {self.params['pipeline_cfg']}")
+            raise ValueError(f"Error parsing YAML file {self.params['pipeline_cfg']}") from exc
 
-            if type(json_dict[key]) not in value:
-                self.logger.error(f"Type of value for key {key} "
-                                  f"in JSON does not match required type "
-                                  f"(expected: {value}, got: {type(json_dict[key])})")
-                raise TypeError(f"Type of value for key {key} "
-                                f"in JSON does not match required type "
-                                f"(expected: {value}, got: {type(json_dict[key])})")
-
-            if value in ([int], [float]):
-                if json_dict[key] < 0:
-                    self.logger.error(f"Value for key {key} in JSON file is negative")
-                    raise ValueError(f"Value for key {key} in JSON file is negative")
-
-            if key == "device":
-                if json_dict[key] not in [0, "cpu"]:
-                    self.logger.error(f"Invalid value for key {key} in JSON "
-                                      f"(expected: {[0, 'cpu']}, got: {json_dict[key]})")
-                    raise ValueError(f"Invalid value for key {key} in JSON "
-                                     f"(expected: {[0, 'cpu']}, got: {json_dict[key]})")
-
-    def _check_yaml_file(self, yaml_dict) -> None:
+    def _check_yaml_file(self, yaml_data: dict) -> None:
         """
         Вспомогательный метод _check_yaml_file() осуществляет проверку .yaml файла
-        конфигурации датасета на корректность.
+        конфигурации пайплайна на корректность.
         Parameters:
-            yaml_dict (dict): словарь, полученный при открытии .yaml файла
-                через .yaml.safe_load().
+            yaml_data (dict): словарь с данными .yaml файла конфигурации пайплайна
         Returns:
             None
         Raises:
@@ -150,106 +187,89 @@ class ConfigManager:
                 является пустой строкой или None.
             TypeError: если тип значения, получаемого по ключу,
                 не соответствует требуемому.
-            NotADirectoryError: если путь к директории не существует или этот путь
-                не является путем к дирректории.
+            NotADirectoryError: если путь не является путем к дирректории.
+            FileNotFoundError: если путь к директории не существует
         """
-        yaml_metadata = {"path": str,
-                         "train": str,
-                         "val": str,
-                         "nc": int,
-                         "names": list
-                         }
+        self.logger.info("Starting validation of YAML file")
+        for idx, param in enumerate(self.metadata):
+            if 2 <= idx < 8:
+                if param.name not in yaml_data.keys():
+                    self.logger.error(f"Key {param.name} not found in pipeline_config YAML file")
+                    raise KeyError(f"Key {param.name} not found in pipeline_config YAML file")
+                self._validate_param(yaml_data[param.name], param)
 
-        for key, value in yaml_metadata.items():
-            if key not in yaml_dict.keys():
-                self.logger.error(f"Key {key} not found in dataset YAML file")
-                raise KeyError(f"Key {key} not found in dataset YAML file")
+            elif 8 <= idx < 11:
+                if param.name not in yaml_data['paths'].keys():
+                    self.logger.error(f"Key {param.name} not found in pipeline_config['paths'] dict")
+                    raise KeyError(f"Key {param.name} not found in pipeline_config['paths'] dict")
+                self._validate_param(yaml_data['paths'][param.name], param)
 
-            if yaml_dict[key] is None:
-                self.logger.error(f"Value for key {key} in YAML is None")
-                raise ValueError(f"Value for key {key} in YAML is None")
-
-            if not isinstance(yaml_dict[key], value):
-                self.logger.error(f"Type of value for key {key} in YAML "
-                                  f"does not match required type "
-                                  f"(expected: {value}, got: {type(yaml_dict[key])})")
-                raise TypeError(f"Type of value for key {key} in YAML "
-                                f"does not match required type "
-                                f"(expected: {value}, got: {type(yaml_dict[key])})")
-
-            if isinstance(yaml_dict[key], int):
-                if yaml_dict[key] < 0:
-                    self.logger.error(f"Value for key {key} in YAML file is negative")
-                    raise ValueError(f"Value for key {key} in YAML file is negative")
-
-            if isinstance(yaml_dict[key], list):
-                if len(set(yaml_dict[key])) != yaml_dict["nc"]:
-                    self.logger.error("Length of class names list for key "
-                                      "'names' does not match "
-                                      "the number of classes specified in YAML, "
-                                      "or class names are duplicated")
-                    raise ValueError("Length of class names list for key "
-                                     "'names' does not match "
-                                     "the number of classes specified in YAML, "
-                                     "or class names are duplicated")
-
-                for el in yaml_dict[key]:
-                    if not isinstance(el, str):
-                        self.logger.error(f"Type of list element {el} "
-                                          f"for key {key} does not match required type "
-                                          f"(expected: {str}, got: {type(el)})")
-                        raise TypeError(f"Type of list element {el} "
-                                        f"for key {key} does not match required type "
-                                        f"(expected: {str}, got: {type(el)})")
-
-                    if len(el) == 0:
-                        self.logger.error(f"List element {el} for key {key} "
-                                          f"is an empty string")
-                        raise ValueError(f"List element {el} for key {key} "
-                                         f"is an empty string")
-
-            elif key in ('train', 'val'):
-                full_path = os.path.join(self.params[2], yaml_dict[key])
-                if not os.path.exists(full_path):
-                    self.logger.error(f"{full_path} is not exists")
-                    raise FileNotFoundError(f"{full_path} is not exists")
-
-                if not os.path.isdir(full_path):
-                    self.logger.error(f"{full_path} is not a directory")
-                    raise NotADirectoryError(f"{full_path} is not a directory")
-
-    def validate_config(self) -> None:
-        """
-        Метод validate_config() осуществляет проверку переданных в класс переменных
-        на наличие различных ошибок.
-        Returns:
-            None
-        Raises:
-             ValueError: если тип переменной не соответствует целевому, либо None
-        """
-        self.logger.info("Starting validation")
-        for idx, el in enumerate(self.params):
-            if el is None:
-                self.logger.error(f"Parameter {self.metadata[idx]['name']} is None")
-                raise ValueError(f"Parameter {self.metadata[idx]['name']} is None")
-
-            if not isinstance(el, self.metadata[idx]['expected_type']):
-                self.logger.error(f"Parameter {self.metadata[idx]['name']} has incorrect type "
-                                  f"(expected: {self.metadata[idx]['expected_type']}, "
-                                  f"got: {type(el)})")
-                raise ValueError(f"Parameter {self.metadata[idx]['name']} has incorrect type "
-                                 f"(expected: {self.metadata[idx]['expected_type']}, "
-                                 f"got: {type(el)})")
-
-            if isinstance(el, str):
-                self._validate_path(
-                    el,
-                    self.metadata[idx]['is_file'],
-                    self.metadata[idx]['is_dir'],
-                    self.metadata[idx]['extension']
+            elif idx == 11:
+                if param.name not in yaml_data['names'].keys():
+                    self.logger.error(f"Key {param.name} not found in pipeline_config['names'] dict")
+                    raise KeyError(f"Key {param.name} not found in pipeline_config['names'] dict")
+                full_path = os.path.join(
+                    self.params['project_root'], yaml_data['names'][param.name]
                 )
+                self._validate_param(full_path, param)
 
-        self.logger.info("Validation completed")
+            elif 13 <= idx < 15:
+                if param.name not in yaml_data['extensions'].keys():
+                    self.logger.error(f"Key {param.name} not found in pipeline_config['extensions'] dict")
+                    raise KeyError(f"Key {param.name} not found in pipeline_config['extensions'] dict")
+                self._validate_param(yaml_data['extensions'][param.name], param)
+
+            elif 15 <= idx < 32:
+                if param.name not in yaml_data['model_hyperparameters'].keys():
+                    self.logger.error(f"Key {param.name} not found in pipeline_config['model_hyperparameters'] dict")
+                    raise KeyError(f"Key {param.name} not found in pipeline_config['model_hyperparameters'] dict")
+                self._validate_param(yaml_data['model_hyperparameters'][param.name], param)
+
+            elif 32 <= idx < 37:
+                if param.name not in yaml_data['dataset_cfg'].keys():
+                    self.logger.error(f"Key {param.name} not found in pipeline_config['dataset_cfg'] dict")
+                    raise KeyError(f"Key {param.name} not found in pipeline_config['dataset_cfg'] dict")
+
+                if param.name not in ('train', 'val'):
+                    if not isinstance(yaml_data['dataset_cfg'][param.name], list):
+                        self._validate_param(yaml_data['dataset_cfg'][param.name], param)
+                    else:
+                        if len(set(yaml_data['dataset_cfg'][param.name])) != yaml_data['dataset_cfg']["nc"]:
+                            self.logger.error("Length of class names list for key "
+                                              "'names' does not match "
+                                              "the number of classes specified in YAML, "
+                                              "or class names are duplicated")
+                            raise ValueError("Length of class names list for key "
+                                             "'names' does not match "
+                                             "the number of classes specified in YAML, "
+                                             "or class names are duplicated")
+
+                        for el in yaml_data['dataset_cfg'][param.name]:
+                            if not isinstance(el, str):
+                                self.logger.error(f"Type of list element {el} "
+                                                  f"for key {param.name} does not match required type "
+                                                  f"(expected: {str}, got: {type(el)})")
+                                raise TypeError(f"Type of list element {el} "
+                                                f"for key {param.name} does not match required type "
+                                                f"(expected: {str}, got: {type(el)})")
+
+                            if len(el) == 0:
+                                self.logger.error(f"List element {el} for key {param.name} "
+                                                  f"is an empty string")
+                                raise ValueError(f"List element {el} for key {param.name} "
+                                                 f"is an empty string")
+                else:
+                    full_path = os.path.join(
+                        yaml_data['dataset_cfg']['path'], yaml_data['dataset_cfg'][param.name]
+                    )
+                    if not os.path.exists(full_path):
+                        self.logger.error(f"{full_path} is not exists")
+                        raise FileNotFoundError(f"{full_path} is not exists")
+                    if not os.path.isdir(full_path):
+                        self.logger.error(f"{full_path} is not a directory")
+                        raise NotADirectoryError(f"{full_path} is not a directory")
+
+        self.logger.info("Validated successfully")
 
     def load_config(self) -> dict:
         """
@@ -261,42 +281,22 @@ class ConfigManager:
         Raises:
             ValueError: если возникает ошибка в парсинге .yaml и json файлов.
         """
-        self.validate_config()
         hyperparameters = {}
-        for idx, el in enumerate(self.params):
-            if self.metadata[idx]['is_file'] is True:
-                if Path(el).suffix == '.json':
-                    try:
-                        with open(el, mode='r', encoding='utf-8') as f:
-                            train_hyperparameters = json.load(f)
-                            self._check_json_file(train_hyperparameters)
-                            for key in train_hyperparameters.keys():
-                                hyperparameters[key] = train_hyperparameters[key]
+        self.logger.info("Checking input parameters")
+        self.check_input()
 
-                    except json.JSONDecodeError as exc:
-                        self.logger.error(f"Error parsing JSON file {el}")
-                        raise ValueError(f"Error parsing JSON file {el}") from exc
+        self.logger.info("Loading YAML data")
+        yaml_data = self.load_yaml()
 
-                # указываем индекс, так как расширение .yaml может иметь и файл модели
-                elif Path(el).suffix == '.yaml' and idx == 0:
-                    try:
-                        with open(el, mode='r', encoding='utf-8') as f:
-                            data_dict = yaml.safe_load(f)
-                            self._check_yaml_file(data_dict)
-                            hyperparameters['data_path'] = el
-                            hyperparameters['class_names'] = data_dict['names']
+        self.logger.info("Checking YAML file")
+        self._check_yaml_file(yaml_data)
 
-                    except yaml.YAMLError as exc:
-                        self.logger.error(f"Error parsing YAML file {el}")
-                        raise ValueError(f"Error parsing YAML file {el}") from exc
+        for key, value in yaml_data.items():
+            hyperparameters[key] = value
 
-                self.logger.info(f"Loaded configuration file: {el}")
-
-            if self.metadata[idx]['is_dir'] is True:
-                if idx == 4:
-                    hyperparameters['output_dir'] = self.params[4]
-
+        self.logger.info("Config successfully loaded")
         return hyperparameters
+
 
 def setup_logger(
         logger_name: str,
