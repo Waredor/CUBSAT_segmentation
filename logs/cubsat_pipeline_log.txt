@@ -1707,3 +1707,95 @@ cubsat_pipeline.py[LINE:83]# INFO     [2025-08-06 09:25:24,447] Модель у�
 model_trainer.py[LINE:22]# INFO     [2025-08-06 09:25:24,448] Starting training
 model_trainer.py[LINE:23]# INFO     [2025-08-06 09:25:24,448] Training model with parameters: {'batch': 4, 'cos_lr': True, 'device': 0, 'dropout': 0.3, 'epochs': 100, 'freeze_layers': 10, 'imgsz': 1024, 'iou': 0.7, 'label_smoothing': 0.1, 'lr0': 0.001, 'lrf': 0.005, 'num_workers': 2, 'optimizer': 'Adam', 'patience': 20, 'warmup_epochs': 3, 'weight_decay': 0.001, 'augment_params': {'copy_paste': 0.3, 'degrees': 15, 'fliplr': 0.5, 'flipud': 0.5, 'mixup': 0.2, 'mosaic': 1.0, 'perspective': 0.0, 'shear': 10, 'translate': 0.1}}
 cubsat_pipeline.py[LINE:116]# ERROR    [2025-08-06 09:25:24,449] Ошибка обучения модели: 'data_path'
+config_manager.py[LINE:285]# INFO     [2025-08-06 10:01:58,780] Checking input parameters
+config_manager.py[LINE:151]# INFO     [2025-08-06 10:01:58,780] Starting checking input
+config_manager.py[LINE:157]# INFO     [2025-08-06 10:01:58,781] Checking input completed
+config_manager.py[LINE:288]# INFO     [2025-08-06 10:01:58,781] Loading YAML data
+config_manager.py[LINE:291]# INFO     [2025-08-06 10:01:58,785] Checking YAML file
+config_manager.py[LINE:193]# INFO     [2025-08-06 10:01:58,785] Starting validation of YAML file
+config_manager.py[LINE:272]# INFO     [2025-08-06 10:01:58,785] Validated successfully
+config_manager.py[LINE:300]# INFO     [2025-08-06 10:01:58,786] Config successfully loaded
+cubsat_pipeline.py[LINE:83]# INFO     [2025-08-06 10:01:58,923] Модель успешно инициализирована
+model_trainer.py[LINE:22]# INFO     [2025-08-06 10:01:58,923] Starting training
+model_trainer.py[LINE:23]# INFO     [2025-08-06 10:01:58,923] Training model with parameters: {'batch': 4, 'cos_lr': True, 'device': 0, 'dropout': 0.3, 'epochs': 100, 'freeze_layers': 10, 'imgsz': 1024, 'iou': 0.7, 'label_smoothing': 0.1, 'lr0': 0.001, 'lrf': 0.005, 'num_workers': 2, 'optimizer': 'Adam', 'patience': 20, 'warmup_epochs': 3, 'weight_decay': 0.001, 'augment_params': {'copy_paste': 0.3, 'degrees': 15, 'fliplr': 0.5, 'flipud': 0.5, 'mixup': 0.2, 'mosaic': 1.0, 'perspective': 0.0, 'shear': 10, 'translate': 0.1}}
+cubsat_pipeline.py[LINE:116]# ERROR    [2025-08-06 10:01:58,923] Ошибка обучения модели: 'data_cfg'
+config_manager.py[LINE:285]# INFO     [2025-08-06 10:04:59,611] Checking input parameters
+config_manager.py[LINE:151]# INFO     [2025-08-06 10:04:59,612] Starting checking input
+config_manager.py[LINE:157]# INFO     [2025-08-06 10:04:59,612] Checking input completed
+config_manager.py[LINE:288]# INFO     [2025-08-06 10:04:59,612] Loading YAML data
+config_manager.py[LINE:291]# INFO     [2025-08-06 10:04:59,616] Checking YAML file
+config_manager.py[LINE:193]# INFO     [2025-08-06 10:04:59,616] Starting validation of YAML file
+config_manager.py[LINE:272]# INFO     [2025-08-06 10:04:59,617] Validated successfully
+config_manager.py[LINE:301]# INFO     [2025-08-06 10:04:59,618] Config successfully loaded
+cubsat_pipeline.py[LINE:83]# INFO     [2025-08-06 10:04:59,753] Модель успешно инициализирована
+model_trainer.py[LINE:22]# INFO     [2025-08-06 10:04:59,753] Starting training
+model_trainer.py[LINE:23]# INFO     [2025-08-06 10:04:59,754] Training model with parameters: {'batch': 4, 'cos_lr': True, 'device': 0, 'dropout': 0.3, 'epochs': 100, 'freeze_layers': 10, 'imgsz': 1024, 'iou': 0.7, 'label_smoothing': 0.1, 'lr0': 0.001, 'lrf': 0.005, 'num_workers': 2, 'optimizer': 'Adam', 'patience': 20, 'warmup_epochs': 3, 'weight_decay': 0.001, 'augment_params': {'copy_paste': 0.3, 'degrees': 15, 'fliplr': 0.5, 'flipud': 0.5, 'mixup': 0.2, 'mosaic': 1.0, 'perspective': 0.0, 'shear': 10, 'translate': 0.1}}
+cubsat_pipeline.py[LINE:116]# ERROR    [2025-08-06 10:04:59,754] Ошибка обучения модели: 'data_cfg'
+config_manager.py[LINE:285]# INFO     [2025-08-06 10:07:45,523] Checking input parameters
+config_manager.py[LINE:151]# INFO     [2025-08-06 10:07:45,524] Starting checking input
+config_manager.py[LINE:157]# INFO     [2025-08-06 10:07:45,524] Checking input completed
+config_manager.py[LINE:288]# INFO     [2025-08-06 10:07:45,524] Loading YAML data
+config_manager.py[LINE:291]# INFO     [2025-08-06 10:07:45,528] Checking YAML file
+config_manager.py[LINE:193]# INFO     [2025-08-06 10:07:45,528] Starting validation of YAML file
+config_manager.py[LINE:272]# INFO     [2025-08-06 10:07:45,529] Validated successfully
+config_manager.py[LINE:301]# INFO     [2025-08-06 10:07:45,529] Config successfully loaded
+cubsat_pipeline.py[LINE:86]# ERROR    [2025-08-06 10:07:45,529] Ошибка валидации конфигурационных файлов: 'dataset_cfg'
+config_manager.py[LINE:285]# INFO     [2025-08-06 10:08:11,564] Checking input parameters
+config_manager.py[LINE:151]# INFO     [2025-08-06 10:08:11,564] Starting checking input
+config_manager.py[LINE:157]# INFO     [2025-08-06 10:08:11,564] Checking input completed
+config_manager.py[LINE:288]# INFO     [2025-08-06 10:08:11,565] Loading YAML data
+config_manager.py[LINE:291]# INFO     [2025-08-06 10:08:11,568] Checking YAML file
+config_manager.py[LINE:193]# INFO     [2025-08-06 10:08:11,568] Starting validation of YAML file
+config_manager.py[LINE:272]# INFO     [2025-08-06 10:08:11,569] Validated successfully
+config_manager.py[LINE:301]# INFO     [2025-08-06 10:08:11,569] Config successfully loaded
+cubsat_pipeline.py[LINE:86]# ERROR    [2025-08-06 10:08:11,570] Ошибка валидации конфигурационных файлов: 'data_cfg'
+config_manager.py[LINE:285]# INFO     [2025-08-06 10:12:34,103] Checking input parameters
+config_manager.py[LINE:151]# INFO     [2025-08-06 10:12:34,103] Starting checking input
+config_manager.py[LINE:157]# INFO     [2025-08-06 10:12:34,103] Checking input completed
+config_manager.py[LINE:288]# INFO     [2025-08-06 10:12:34,103] Loading YAML data
+config_manager.py[LINE:291]# INFO     [2025-08-06 10:12:34,108] Checking YAML file
+config_manager.py[LINE:193]# INFO     [2025-08-06 10:12:34,108] Starting validation of YAML file
+config_manager.py[LINE:272]# INFO     [2025-08-06 10:12:34,109] Validated successfully
+config_manager.py[LINE:300]# INFO     [2025-08-06 10:12:34,109] Config successfully loaded
+cubsat_pipeline.py[LINE:79]# INFO     [2025-08-06 10:12:34,245] Модель успешно инициализирована
+model_trainer.py[LINE:22]# INFO     [2025-08-06 10:12:34,245] Starting training
+model_trainer.py[LINE:23]# INFO     [2025-08-06 10:12:34,245] Training model with parameters: {'batch': 4, 'cos_lr': True, 'device': 0, 'dropout': 0.3, 'epochs': 100, 'freeze_layers': 10, 'imgsz': 1024, 'iou': 0.7, 'label_smoothing': 0.1, 'lr0': 0.001, 'lrf': 0.005, 'num_workers': 2, 'optimizer': 'Adam', 'patience': 20, 'warmup_epochs': 3, 'weight_decay': 0.001, 'augment_params': {'copy_paste': 0.3, 'degrees': 15, 'fliplr': 0.5, 'flipud': 0.5, 'mixup': 0.2, 'mosaic': 1.0, 'perspective': 0.0, 'shear': 10, 'translate': 0.1}, 'data_cfg': {'names': ['FT', 'Engine', 'Solar Panel'], 'nc': 3, 'path': 'C:\\Python projects\\Datasets\\Fine_tuning', 'train': 'images/train', 'val': 'images/val'}}
+model_trainer.py[LINE:40]# INFO     [2025-08-06 10:12:34,246] Using CPU device
+cubsat_pipeline.py[LINE:112]# ERROR    [2025-08-06 10:12:34,475] Ошибка обучения модели: expected str, bytes or os.PathLike object, not dict
+config_manager.py[LINE:285]# INFO     [2025-08-06 10:13:20,323] Checking input parameters
+config_manager.py[LINE:151]# INFO     [2025-08-06 10:13:20,323] Starting checking input
+config_manager.py[LINE:157]# INFO     [2025-08-06 10:13:20,323] Checking input completed
+config_manager.py[LINE:288]# INFO     [2025-08-06 10:13:20,323] Loading YAML data
+config_manager.py[LINE:291]# INFO     [2025-08-06 10:13:20,327] Checking YAML file
+config_manager.py[LINE:193]# INFO     [2025-08-06 10:13:20,328] Starting validation of YAML file
+config_manager.py[LINE:272]# INFO     [2025-08-06 10:13:20,328] Validated successfully
+config_manager.py[LINE:300]# INFO     [2025-08-06 10:13:20,329] Config successfully loaded
+cubsat_pipeline.py[LINE:79]# INFO     [2025-08-06 10:13:20,465] Модель успешно инициализирована
+model_trainer.py[LINE:22]# INFO     [2025-08-06 10:13:20,465] Starting training
+model_trainer.py[LINE:23]# INFO     [2025-08-06 10:13:20,466] Training model with parameters: {'batch': 4, 'cos_lr': True, 'device': 0, 'dropout': 0.3, 'epochs': 100, 'freeze_layers': 10, 'imgsz': 1024, 'iou': 0.7, 'label_smoothing': 0.1, 'lr0': 0.001, 'lrf': 0.005, 'num_workers': 2, 'optimizer': 'Adam', 'patience': 20, 'warmup_epochs': 3, 'weight_decay': 0.001, 'augment_params': {'copy_paste': 0.3, 'degrees': 15, 'fliplr': 0.5, 'flipud': 0.5, 'mixup': 0.2, 'mosaic': 1.0, 'perspective': 0.0, 'shear': 10, 'translate': 0.1}, 'data_cfg': {'names': ['FT', 'Engine', 'Solar Panel'], 'nc': 3, 'path': 'C:\\Python projects\\Datasets\\Fine_tuning', 'train': 'images/train', 'val': 'images/val'}}
+model_trainer.py[LINE:40]# INFO     [2025-08-06 10:13:20,466] Using CPU device
+cubsat_pipeline.py[LINE:112]# ERROR    [2025-08-06 10:13:20,685] Ошибка обучения модели: Dataset 'C://Python projects/Datasets/Fine_tuning' error  [Errno 13] Permission denied: 'C:\\Python projects\\Datasets\\Fine_tuning'
+config_manager.py[LINE:285]# INFO     [2025-08-06 10:15:00,088] Checking input parameters
+config_manager.py[LINE:151]# INFO     [2025-08-06 10:15:00,088] Starting checking input
+config_manager.py[LINE:157]# INFO     [2025-08-06 10:15:00,089] Checking input completed
+config_manager.py[LINE:288]# INFO     [2025-08-06 10:15:00,089] Loading YAML data
+config_manager.py[LINE:291]# INFO     [2025-08-06 10:15:00,093] Checking YAML file
+config_manager.py[LINE:193]# INFO     [2025-08-06 10:15:00,093] Starting validation of YAML file
+config_manager.py[LINE:272]# INFO     [2025-08-06 10:15:00,094] Validated successfully
+config_manager.py[LINE:300]# INFO     [2025-08-06 10:15:00,094] Config successfully loaded
+cubsat_pipeline.py[LINE:79]# INFO     [2025-08-06 10:15:00,229] Модель успешно инициализирована
+model_trainer.py[LINE:23]# INFO     [2025-08-06 10:15:00,230] Starting training
+model_trainer.py[LINE:24]# INFO     [2025-08-06 10:15:00,230] Training model with parameters: {'batch': 4, 'cos_lr': True, 'device': 0, 'dropout': 0.3, 'epochs': 100, 'freeze_layers': 10, 'imgsz': 1024, 'iou': 0.7, 'label_smoothing': 0.1, 'lr0': 0.001, 'lrf': 0.005, 'num_workers': 2, 'optimizer': 'Adam', 'patience': 20, 'warmup_epochs': 3, 'weight_decay': 0.001, 'augment_params': {'copy_paste': 0.3, 'degrees': 15, 'fliplr': 0.5, 'flipud': 0.5, 'mixup': 0.2, 'mosaic': 1.0, 'perspective': 0.0, 'shear': 10, 'translate': 0.1}, 'data_cfg': {'names': ['FT', 'Engine', 'Solar Panel'], 'nc': 3, 'path': 'C:\\Python projects\\Datasets\\Fine_tuning', 'train': 'images/train', 'val': 'images/val'}}
+model_trainer.py[LINE:41]# INFO     [2025-08-06 10:15:00,230] Using CPU device
+config_manager.py[LINE:295]# INFO     [2025-08-06 10:38:23,051] Checking input parameters
+config_manager.py[LINE:152]# INFO     [2025-08-06 10:38:23,051] Starting checking input
+config_manager.py[LINE:158]# INFO     [2025-08-06 10:38:23,052] Checking input completed
+config_manager.py[LINE:298]# INFO     [2025-08-06 10:38:23,052] Loading YAML data
+config_manager.py[LINE:301]# INFO     [2025-08-06 10:38:23,056] Checking YAML file
+config_manager.py[LINE:194]# INFO     [2025-08-06 10:38:23,056] Starting validation of YAML file
+config_manager.py[LINE:282]# INFO     [2025-08-06 10:38:23,057] Validated successfully
+config_manager.py[LINE:311]# INFO     [2025-08-06 10:38:23,057] Config successfully loaded
+cubsat_pipeline.py[LINE:78]# INFO     [2025-08-06 10:38:23,246] Модель успешно инициализирована
+model_trainer.py[LINE:23]# INFO     [2025-08-06 10:38:23,247] Starting training
+model_trainer.py[LINE:24]# INFO     [2025-08-06 10:38:23,247] Training model with parameters: {'batch': 4, 'cos_lr': True, 'device': 0, 'dropout': 0.3, 'epochs': 100, 'freeze_layers': 10, 'imgsz': 1024, 'iou': 0.7, 'label_smoothing': 0.1, 'lr0': 0.001, 'lrf': 0.005, 'num_workers': 2, 'optimizer': 'Adam', 'patience': 20, 'warmup_epochs': 3, 'weight_decay': 0.001, 'augment_params': {'copy_paste': 0.3, 'degrees': 15, 'fliplr': 0.5, 'flipud': 0.5, 'mixup': 0.2, 'mosaic': 1.0, 'perspective': 0.0, 'shear': 10, 'translate': 0.1}, 'data_path': 'C:\\Python projects\\Datasets\\Fine_tuning\\dataset.yaml'}
+model_trainer.py[LINE:41]# INFO     [2025-08-06 10:38:23,247] Using CPU device

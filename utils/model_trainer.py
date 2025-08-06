@@ -1,3 +1,4 @@
+import os
 import logging
 import ultralytics
 
@@ -23,7 +24,7 @@ def train_model(
     logger.info(f"Training model with parameters: {hyperparameters}")
     cuda.empty_cache()
     num_layers_to_freeze = hyperparameters['freeze_layers']
-    data_dir = hyperparameters['data_path']
+    data_path = hyperparameters['data_path']
     epochs = hyperparameters['epochs']
     batch_size = hyperparameters['batch']
     image_size = hyperparameters['imgsz']
@@ -40,20 +41,10 @@ def train_model(
             logger.info("Using CPU device")
             device = "cpu"
 
-    augment_params = {
-        'fliplr': 0.5,
-        'flipud': 0.5,
-        'translate': 0.1,
-        'degrees': 15,
-        'shear': 10,
-        'mosaic': 1.0,
-        'mixup': 0.2,
-        'copy_paste': 0.3,
-        'perspective': 0.0
-    } if augment else {}
+    augment_params = hyperparameters["augment_params"] if augment else {}
 
     model.train(
-        data=data_dir,
+        data=data_path,
         epochs=epochs,
         imgsz=image_size,
         batch=batch_size,

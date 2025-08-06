@@ -1,5 +1,4 @@
 import os
-import yaml
 
 from ultralytics import YOLO
 from utils.config_manager import ConfigManager, setup_logger
@@ -43,8 +42,6 @@ if __name__ == '__main__':
     pipeline_config_path = os.path.join(
         project_root_path, "configs", "pipeline_config.yaml"
     )
-    with open(pipeline_config_path, mode='r', encoding='utf-8') as f:
-        pipeline_yaml_config = yaml.safe_load(f)
 
 
     ########################################################
@@ -59,25 +56,23 @@ if __name__ == '__main__':
 
     try:
         config = config_manager.load_config()
+        stages = config["stages"]
 
-        stages = pipeline_yaml_config["stages"]
-
-        MODEL_HYPERPARAMETERS = pipeline_yaml_config["model_hyperparameters"]
+        MODEL_HYPERPARAMETERS = config["model_hyperparameters"]
         IMG_SIZE = MODEL_HYPERPARAMETERS["imgsz"]
 
         MODEL_PATH = os.path.join(
-            project_root_path, "models", str(pipeline_yaml_config["names"]["pt_model_name"])
+            project_root_path, "models", str(config["names"]["pt_model_name"])
         )
         EXPORT_MODEL_PATH = os.path.join(
-            project_root_path, "models", str(pipeline_yaml_config["names"]["exported_model_name"])
+            project_root_path, "models", str(config["names"]["exported_model_name"])
         )
 
-        IMAGES_EXTENSIONS = pipeline_yaml_config["extensions"]["images_extensions"]
-        LABELS_EXTENSIONS = pipeline_yaml_config["extensions"]["labels_extensions"]
+        IMAGES_EXTENSIONS = config["extensions"]["images_extensions"]
+        LABELS_EXTENSIONS = config["extensions"]["labels_extensions"]
 
-        DATASET_CFG = pipeline_yaml_config["dataset_cfg"]
-        DATA_ROOT_PATH = DATASET_CFG["path"]
-        RAW_DATA_DIR = pipeline_yaml_config["paths"]["raw_data_dir"]
+        DATA_ROOT_PATH = config["dataset_cfg"]["path"]
+        RAW_DATA_DIR = config["paths"]["raw_data_dir"]
 
         model = YOLO(MODEL_PATH)
         LOGGER.info("Модель успешно инициализирована")
@@ -127,12 +122,12 @@ if __name__ == '__main__':
 
 
         elif stage in ("create_labelme_annotations", "create_yolo_annotations"):
-            INFERENCE_IMAGES_DIR = str(pipeline_yaml_config["paths"]["inference_images_dir"])
-            LABELME_ANNOTATIONS_DIR = str(pipeline_yaml_config["paths"]["inference_annotations_dir"])
+            INFERENCE_IMAGES_DIR = str(config["paths"]["inference_images_dir"])
+            LABELME_ANNOTATIONS_DIR = str(config["paths"]["inference_annotations_dir"])
             YOLO_ANNOTATIONS_DIR = os.path.join(RAW_DATA_DIR, "labels")
 
             annotation_processor = AnnotationProcessor(
-                class_names=config["class_names"],
+                class_names=MODEL_HYPERPARAMETERS["data_cfg"]["names"],
                 yolo_annotations_path=YOLO_ANNOTATIONS_DIR,
                 labelme_annotations_path=LABELME_ANNOTATIONS_DIR,
                 logger=LOGGER
@@ -148,7 +143,7 @@ if __name__ == '__main__':
                 try:
                     inference_results = inference_runner.process_images(
                         INFERENCE_IMAGES_DIR,
-                        batch_size=config["batch"],
+                        batch_size=MODEL_HYPERPARAMETERS["batch"],
                     )
 
                 except Exception as e:

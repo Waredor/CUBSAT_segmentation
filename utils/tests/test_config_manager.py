@@ -143,7 +143,7 @@ class TestConfigManager(unittest.TestCase):
             logger=self.logger
         )
         with self.assertRaises(ValueError):
-            config_manager._validate_param(-1, config_manager.metadata[15])
+            config_manager._validate_param(-1, config_manager.metadata[16])
 
     def test_validate_param_failure_negative_float_value(self):
         """
@@ -156,7 +156,7 @@ class TestConfigManager(unittest.TestCase):
             logger=self.logger
         )
         with self.assertRaises(ValueError):
-            config_manager._validate_param(-0.55, config_manager.metadata[18])
+            config_manager._validate_param(-0.55, config_manager.metadata[19])
 
     def test_validate_param_failure_type_error(self):
         """

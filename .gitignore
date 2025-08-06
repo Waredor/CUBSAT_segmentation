@@ -1,5 +1,8 @@
 __pycache__/
 utils/__pycache__/
+utils/tests/__pycache__/
+utils/tests/test_data/labels/train.cache
+utils/tests/test_data/labels/val.cache
 *.pyc
 runs/*
 utils/tests/runs/
