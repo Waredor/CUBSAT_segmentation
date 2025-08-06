@@ -209,7 +209,7 @@ class ConfigManager:
                     self.logger.error(f"Key {param.name} not found in pipeline_config['names'] dict")
                     raise KeyError(f"Key {param.name} not found in pipeline_config['names'] dict")
                 full_path = os.path.join(
-                    self.params['project_root'], yaml_data['names'][param.name]
+                    self.params['project_root'], 'models', yaml_data['names'][param.name]
                 )
                 self._validate_param(full_path, param)
 

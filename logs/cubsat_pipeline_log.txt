@@ -1667,3 +1667,43 @@ model_trainer.py[LINE:37]# INFO     [2025-08-01 18:07:56,792] Using GPU device
 model_trainer.py[LINE:79]# INFO     [2025-08-01 19:11:41,298] Training completed
 model_exporter.py[LINE:28]# INFO     [2025-08-01 19:11:41,298] Saving model...
 model_exporter.py[LINE:30]# INFO     [2025-08-01 19:11:41,359] Model saved
+config_manager.py[LINE:285]# INFO     [2025-08-06 09:17:10,942] Checking input parameters
+config_manager.py[LINE:151]# INFO     [2025-08-06 09:17:10,943] Starting checking input
+config_manager.py[LINE:113]# ERROR    [2025-08-06 09:17:10,943] Wrong type of the pipeline_cfg (expected: <class 'str'>, got: <class 'dict'>)
+cubsat_pipeline.py[LINE:87]# ERROR    [2025-08-06 09:17:10,943] Ошибка валидации конфигурационных файлов: Wrong type of the pipeline_cfg
+config_manager.py[LINE:285]# INFO     [2025-08-06 09:17:58,039] Checking input parameters
+config_manager.py[LINE:151]# INFO     [2025-08-06 09:17:58,039] Starting checking input
+config_manager.py[LINE:157]# INFO     [2025-08-06 09:17:58,040] Checking input completed
+config_manager.py[LINE:288]# INFO     [2025-08-06 09:17:58,040] Loading YAML data
+config_manager.py[LINE:291]# INFO     [2025-08-06 09:17:58,043] Checking YAML file
+config_manager.py[LINE:193]# INFO     [2025-08-06 09:17:58,044] Starting validation of YAML file
+config_manager.py[LINE:131]# ERROR    [2025-08-06 09:17:58,044] C:\Python projects\CUBSAT_segmentation\model.pt is not a path to file
+cubsat_pipeline.py[LINE:87]# ERROR    [2025-08-06 09:17:58,044] Ошибка валидации конфигурационных файлов: C:\Python projects\CUBSAT_segmentation\model.pt is not a path to file
+config_manager.py[LINE:285]# INFO     [2025-08-06 09:20:04,085] Checking input parameters
+config_manager.py[LINE:151]# INFO     [2025-08-06 09:20:04,085] Starting checking input
+config_manager.py[LINE:157]# INFO     [2025-08-06 09:20:04,085] Checking input completed
+config_manager.py[LINE:288]# INFO     [2025-08-06 09:20:04,086] Loading YAML data
+config_manager.py[LINE:291]# INFO     [2025-08-06 09:20:04,089] Checking YAML file
+config_manager.py[LINE:193]# INFO     [2025-08-06 09:20:04,090] Starting validation of YAML file
+config_manager.py[LINE:131]# ERROR    [2025-08-06 09:20:04,090] C:\Python projects\CUBSAT_segmentation\yolo11n-seg.pt is not a path to file
+cubsat_pipeline.py[LINE:86]# ERROR    [2025-08-06 09:20:04,091] Ошибка валидации конфигурационных файлов: C:\Python projects\CUBSAT_segmentation\yolo11n-seg.pt is not a path to file
+config_manager.py[LINE:285]# INFO     [2025-08-06 09:21:33,731] Checking input parameters
+config_manager.py[LINE:151]# INFO     [2025-08-06 09:21:33,731] Starting checking input
+config_manager.py[LINE:157]# INFO     [2025-08-06 09:21:33,732] Checking input completed
+config_manager.py[LINE:288]# INFO     [2025-08-06 09:21:33,732] Loading YAML data
+config_manager.py[LINE:291]# INFO     [2025-08-06 09:21:33,736] Checking YAML file
+config_manager.py[LINE:193]# INFO     [2025-08-06 09:21:33,737] Starting validation of YAML file
+config_manager.py[LINE:131]# ERROR    [2025-08-06 09:21:33,737] C:\Python projects\CUBSAT_segmentation\yolo11n-seg.pt is not a path to file
+cubsat_pipeline.py[LINE:86]# ERROR    [2025-08-06 09:21:33,737] Ошибка валидации конфигурационных файлов: C:\Python projects\CUBSAT_segmentation\yolo11n-seg.pt is not a path to file
+config_manager.py[LINE:285]# INFO     [2025-08-06 09:25:24,161] Checking input parameters
+config_manager.py[LINE:151]# INFO     [2025-08-06 09:25:24,161] Starting checking input
+config_manager.py[LINE:157]# INFO     [2025-08-06 09:25:24,162] Checking input completed
+config_manager.py[LINE:288]# INFO     [2025-08-06 09:25:24,162] Loading YAML data
+config_manager.py[LINE:291]# INFO     [2025-08-06 09:25:24,165] Checking YAML file
+config_manager.py[LINE:193]# INFO     [2025-08-06 09:25:24,166] Starting validation of YAML file
+config_manager.py[LINE:272]# INFO     [2025-08-06 09:25:24,167] Validated successfully
+config_manager.py[LINE:297]# INFO     [2025-08-06 09:25:24,167] Config successfully loaded
+cubsat_pipeline.py[LINE:83]# INFO     [2025-08-06 09:25:24,447] Модель успешно инициализирована
+model_trainer.py[LINE:22]# INFO     [2025-08-06 09:25:24,448] Starting training
+model_trainer.py[LINE:23]# INFO     [2025-08-06 09:25:24,448] Training model with parameters: {'batch': 4, 'cos_lr': True, 'device': 0, 'dropout': 0.3, 'epochs': 100, 'freeze_layers': 10, 'imgsz': 1024, 'iou': 0.7, 'label_smoothing': 0.1, 'lr0': 0.001, 'lrf': 0.005, 'num_workers': 2, 'optimizer': 'Adam', 'patience': 20, 'warmup_epochs': 3, 'weight_decay': 0.001, 'augment_params': {'copy_paste': 0.3, 'degrees': 15, 'fliplr': 0.5, 'flipud': 0.5, 'mixup': 0.2, 'mosaic': 1.0, 'perspective': 0.0, 'shear': 10, 'translate': 0.1}}
+cubsat_pipeline.py[LINE:116]# ERROR    [2025-08-06 09:25:24,449] Ошибка обучения модели: 'data_path'
