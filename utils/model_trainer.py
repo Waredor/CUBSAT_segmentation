@@ -1,13 +1,14 @@
 import logging
 import ultralytics
 
+from typing import Any
 from ultralytics import YOLO
 from torch import cuda
 
 
 def train_model(
     model: ultralytics.models.yolo.model.YOLO, logger: logging.Logger, hyperparameters: dict, augment=False
-) -> YOLO:
+) -> tuple[YOLO, Any]:
     """
     Метод train_model() выполняет обучение модели YOLOv11.
     Parameters:
@@ -17,20 +18,28 @@ def train_model(
         logger (logging.Logger): объект логгера.
         augment (bool): флаг использования аугментаций.
     Returns:
-        model (ultralytics.models.yolo.model.YOLO)
+        tuple[model (ultralytics.models.yolo.model.YOLO), results (ultralytics.engine.trainer.TrainResults)]
     """
     logger.info("Starting training")
     logger.info(f"Training model with parameters: {hyperparameters}")
     cuda.empty_cache()
     num_layers_to_freeze = hyperparameters['freeze_layers']
-    data_dir = hyperparameters['data_path']
+    data_path = hyperparameters['data_path']
     epochs = hyperparameters['epochs']
     batch_size = hyperparameters['batch']
     image_size = hyperparameters['imgsz']
     initial_learning_rate = hyperparameters['lr0']
+    final_learning_rate = hyperparameters['lrf']
     optimizer = hyperparameters['optimizer']
     patience = hyperparameters['patience']
     device = hyperparameters['device']
+    dropout = hyperparameters['dropout']
+    label_smoothing = hyperparameters['label_smoothing']
+    warmup_epochs = hyperparameters['warmup_epochs']
+    iou = hyperparameters['iou']
+    weight_decay = hyperparameters['weight_decay']
+    cos_lr = hyperparameters['cos_lr']
+    workers = hyperparameters['num_workers']
 
     if device == 0:
         if cuda.is_available():
@@ -40,20 +49,10 @@ def train_model(
             logger.info("Using CPU device")
             device = "cpu"
 
-    augment_params = {
-        'fliplr': 0.5,
-        'flipud': 0.5,
-        'translate': 0.1,
-        'degrees': 15,
-        'shear': 10,
-        'mosaic': 1.0,
-        'mixup': 0.2,
-        'copy_paste': 0.3,
-        'perspective': 0.0
-    } if augment else {}
+    augment_params = hyperparameters["augment_params"] if augment else {}
 
-    model.train(
-        data=data_dir,
+    results = model.train(
+        data=data_path,
         epochs=epochs,
         imgsz=image_size,
         batch=batch_size,
@@ -62,19 +61,21 @@ def train_model(
         patience=patience,
         device=device,
         freeze=num_layers_to_freeze,
-        workers=2,
+        workers=workers,
         project="runs/train",
         name="exp",
         exist_ok=True,
-        cos_lr=True,
-        lrf=0.005,
-        dropout=0.3,
-        weight_decay=0.001,
-        label_smoothing=0.1,
-        warmup_epochs=3,
-        iou=0.7,
+        cos_lr=cos_lr,
+        lrf=final_learning_rate,
+        dropout=dropout,
+        weight_decay=weight_decay,
+        label_smoothing=label_smoothing,
+        warmup_epochs=warmup_epochs,
+        iou=iou,
+        cache=False,
+        split="val",
         **augment_params
     )
 
     logger.info("Training completed")
-    return model
+    return model, results

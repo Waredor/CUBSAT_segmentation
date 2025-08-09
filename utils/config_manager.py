@@ -63,6 +63,7 @@ class ConfigManager:
             ParamConfig('labelme_inference_annotations_dir', str, False, True, ['']),
             ParamConfig('pt_model_name', str, True, False, ['.pt']),    # Значения, получаемые по ключам словаря 'names'
             ParamConfig('exported_model_name', str, True, False, ['.pt']),
+            ParamConfig('dataset_cfg_filename', str, True, False, ['.yaml']),
             ParamConfig('images_extensions', list, False, False, ['']), # Значения, получаемые по ключам словаря 'extensions'
             ParamConfig('labels_extensions', list, False, False, ['']),
             ParamConfig('epochs', int, False, False, ['']), # Значения, получаемые по ключам словаря 'model_hyperparameters'
@@ -209,23 +210,32 @@ class ConfigManager:
                     self.logger.error(f"Key {param.name} not found in pipeline_config['names'] dict")
                     raise KeyError(f"Key {param.name} not found in pipeline_config['names'] dict")
                 full_path = os.path.join(
-                    self.params['project_root'], yaml_data['names'][param.name]
+                    self.params['project_root'], 'models', yaml_data['names'][param.name]
                 )
                 self._validate_param(full_path, param)
 
-            elif 13 <= idx < 15:
+            elif idx == 13:
+                if param.name not in yaml_data['names'].keys():
+                    self.logger.error(f"Key {param.name} not found in pipeline_config['names'] dict")
+                    raise KeyError(f"Key {param.name} not found in pipeline_config['names'] dict")
+                full_path = os.path.join(
+                    yaml_data['dataset_cfg']['path'], yaml_data['names'][param.name]
+                )
+                self._validate_param(full_path, param)
+
+            elif 14 <= idx < 16:
                 if param.name not in yaml_data['extensions'].keys():
                     self.logger.error(f"Key {param.name} not found in pipeline_config['extensions'] dict")
                     raise KeyError(f"Key {param.name} not found in pipeline_config['extensions'] dict")
                 self._validate_param(yaml_data['extensions'][param.name], param)
 
-            elif 15 <= idx < 32:
+            elif 16 <= idx < 33:
                 if param.name not in yaml_data['model_hyperparameters'].keys():
                     self.logger.error(f"Key {param.name} not found in pipeline_config['model_hyperparameters'] dict")
                     raise KeyError(f"Key {param.name} not found in pipeline_config['model_hyperparameters'] dict")
                 self._validate_param(yaml_data['model_hyperparameters'][param.name], param)
 
-            elif 32 <= idx < 37:
+            elif 33 <= idx < 38:
                 if param.name not in yaml_data['dataset_cfg'].keys():
                     self.logger.error(f"Key {param.name} not found in pipeline_config['dataset_cfg'] dict")
                     raise KeyError(f"Key {param.name} not found in pipeline_config['dataset_cfg'] dict")
@@ -293,6 +303,10 @@ class ConfigManager:
 
         for key, value in yaml_data.items():
             hyperparameters[key] = value
+
+        hyperparameters["model_hyperparameters"]["data_path"] = os.path.join(
+            yaml_data['dataset_cfg']['path'], yaml_data["names"]["dataset_cfg_filename"]
+        )
 
         self.logger.info("Config successfully loaded")
         return hyperparameters

@@ -13,6 +13,7 @@ extensions:
   labels_extensions:
   - .txt
 names:
+  dataset_cfg_filename: dataset.yaml
   exported_model_name: yolo11n-seg_fine_tuned.pt
   pt_model_name: model.pt
 paths:

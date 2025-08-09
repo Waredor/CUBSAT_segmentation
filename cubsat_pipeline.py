@@ -1,13 +1,13 @@
 import os
-import yaml
+import shutil
 
 from ultralytics import YOLO
 from utils.config_manager import ConfigManager, setup_logger
 from utils.model_trainer import train_model
-from utils.model_exporter import ModelExporter
 from utils.inference_runner import InferenceRunner
 from utils.annotation_processor import AnnotationProcessor
 from utils.data_configurator import DataConfigurator
+from utils.model_evaluator import evaluate
 
 
 if __name__ == '__main__':
@@ -44,30 +44,6 @@ if __name__ == '__main__':
     pipeline_config_path = os.path.join(
         project_root_path, "configs", "pipeline_config.yaml"
     )
-    with open(pipeline_config_path, mode='r', encoding='utf-8') as f:
-        pipeline_yaml_config = yaml.safe_load(f)
-
-    DATA_ROOT_PATH = pipeline_yaml_config["paths"]["data_root_dir"]
-    RAW_DATA_DIR = pipeline_yaml_config["paths"]["raw_data_dir"]
-
-    PRE_TRAINED_MODEL_NAME = pipeline_yaml_config["names"]["pt_model_name"]
-    MODEL_NAME_FOR_EXPORT = pipeline_yaml_config["names"]["exported_model_name"]
-    MODEL_HYPERPARAMETERS_FILENAME = pipeline_yaml_config["names"]["model_hyperparameters_file"]
-
-    IMAGES_EXTENSIONS = pipeline_yaml_config["names"]["images_extensions"]
-    LABELS_EXTENSIONS = pipeline_yaml_config["names"]["labels_extensions"]
-    IMG_SIZE = pipeline_yaml_config["names"]["img_size"]
-
-    MODEL_HYPERPARAMETERS = os.path.join(
-        project_root_path, "configs", str(MODEL_HYPERPARAMETERS_FILENAME)
-    )
-    DATA_CFG = os.path.join(DATA_ROOT_PATH, "dataset.yaml")
-    MODEL_PATH = os.path.join(project_root_path, "models", str(PRE_TRAINED_MODEL_NAME))
-    OUTPUT_DIR = os.path.join(project_root_path, "models")
-
-    stages = []
-    for stage in pipeline_yaml_config["stages"]:
-        stages.append(stage)
 
 
     ########################################################
@@ -75,18 +51,33 @@ if __name__ == '__main__':
     ########################################################
 
     config_manager = ConfigManager(
-        data_cfg=DATA_CFG,
-        model_hyperparameters=MODEL_HYPERPARAMETERS,
-        data_dir=DATA_ROOT_PATH,
-        model_cfg=MODEL_PATH,
-        output_dir=OUTPUT_DIR,
+        project_root=project_root_path,
+        pipeline_cfg=pipeline_config_path,
         logger = LOGGER
     )
 
     try:
         config = config_manager.load_config()
+        stages = config["stages"]
+
+        MODEL_HYPERPARAMETERS = config["model_hyperparameters"]
+
+        MODEL_PATH = os.path.join(
+            project_root_path, "models", str(config["names"]["pt_model_name"])
+        )
+        EXPORT_MODEL_PATH = os.path.join(
+            project_root_path, "models", str(config["names"]["exported_model_name"])
+        )
+
+        IMAGES_EXTENSIONS = config["extensions"]["images_extensions"]
+        LABELS_EXTENSIONS = config["extensions"]["labels_extensions"]
+
+        DATA_ROOT_PATH = config["dataset_cfg"]["path"]
+        RAW_DATA_DIR = config["paths"]["raw_data_dir"]
+
         model = YOLO(MODEL_PATH)
-        LOGGER.info("Модель успешно инициализирована")
+        results = None
+        LOGGER.info(f"Модель {MODEL_PATH} успешно инициализирована")
 
     except Exception as e:
         LOGGER.error(f"Ошибка валидации конфигурационных файлов: {str(e)}")
@@ -116,7 +107,9 @@ if __name__ == '__main__':
 
         elif stage == "train_model":
             try:
-                model = train_model(model=model, hyperparameters=config, logger=LOGGER, augment=True)
+                model, results = train_model(
+                    model=model, hyperparameters=MODEL_HYPERPARAMETERS, logger=LOGGER, augment=True
+                )
 
             except Exception as e:
                 LOGGER.error(f"Ошибка обучения модели: {str(e)}")
@@ -124,13 +117,13 @@ if __name__ == '__main__':
 
 
         elif stage == "export_model":
-            model_exporter = ModelExporter(
-                model=model,
-                output_dir=OUTPUT_DIR,
-                logger=LOGGER
-            )
             try:
-                model_exporter.save_model(MODEL_NAME_FOR_EXPORT)
+                if results is not None:
+                    best_model_path = os.path.join(results.save_dir, "weights", "best.pt")
+                    shutil.copy(best_model_path, EXPORT_MODEL_PATH)
+                    model.save(EXPORT_MODEL_PATH)
+                else:
+                    LOGGER.error(f"Ошибка при сохранении модели! модель не была обучена.")
 
             except Exception as e:
                 LOGGER.error(f"Ошибка охранения модели: {str(e)}")
@@ -138,16 +131,12 @@ if __name__ == '__main__':
 
 
         elif stage in ("create_labelme_annotations", "create_yolo_annotations"):
-            INFERENCE_IMAGES_DIR = os.path.join(
-                DATA_ROOT_PATH, str(pipeline_yaml_config["paths"]["inference_images_dir"])
-            )
-            LABELME_ANNOTATIONS_DIR = os.path.join(
-                DATA_ROOT_PATH, str(pipeline_yaml_config["paths"]["inference_annotations_dir"])
-            )
+            INFERENCE_IMAGES_DIR = str(config["paths"]["inference_images_dir"])
+            LABELME_ANNOTATIONS_DIR = str(config["paths"]["labelme_inference_annotations_dir"])
             YOLO_ANNOTATIONS_DIR = os.path.join(RAW_DATA_DIR, "labels")
 
             annotation_processor = AnnotationProcessor(
-                class_names=config["class_names"],
+                class_names=config["dataset_cfg"]["names"],
                 yolo_annotations_path=YOLO_ANNOTATIONS_DIR,
                 labelme_annotations_path=LABELME_ANNOTATIONS_DIR,
                 logger=LOGGER
@@ -157,13 +146,15 @@ if __name__ == '__main__':
             if stage == "create_labelme_annotations":
                 inference_runner = InferenceRunner(
                     model=model,
-                    img_size=IMG_SIZE,
+                    img_size=MODEL_HYPERPARAMETERS["imgsz"],
                     logger=LOGGER
                 )
                 try:
                     inference_results = inference_runner.process_images(
                         INFERENCE_IMAGES_DIR,
-                        batch_size=config["batch"],
+                        batch_size=MODEL_HYPERPARAMETERS["batch"],
+                        confidence=0.5,
+                        iou=MODEL_HYPERPARAMETERS["iou"],
                     )
 
                 except Exception as e:
@@ -191,3 +182,13 @@ if __name__ == '__main__':
                 except Exception as e:
                     LOGGER.error(f"Ошибка создания аннотаций: {str(e)}")
                     raise
+
+        elif stage == "evaluate_model":
+            try:
+                evaluate(
+                    model=model, logger=LOGGER, hyperparameters=MODEL_HYPERPARAMETERS
+                )
+
+            except Exception as e:
+                LOGGER.error(f"Ошибка валидации модели: {str(e)}")
+                raise

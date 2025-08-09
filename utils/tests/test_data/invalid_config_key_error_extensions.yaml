@@ -38,6 +38,7 @@ model_hyperparameters:
   warmup_epochs: 3
   weight_decay: 0.001
 names:
+  dataset_cfg_filename: dataset.yaml
   exported_model_name: yolo11n-seg_fine_tuned.pt
   pt_model_name: model.pt
 paths:

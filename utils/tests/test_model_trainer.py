@@ -2,7 +2,6 @@ import logging
 import logging.handlers
 import unittest
 import os
-import json
 import yaml
 
 from utils.model_trainer import train_model
@@ -35,6 +34,7 @@ class TestModelTrainer(unittest.TestCase):
             'utils',
             'tests',
             'test_data',
+            'models',
             'model.pt'
         )
 
@@ -43,40 +43,25 @@ class TestModelTrainer(unittest.TestCase):
             'utils',
             'tests',
             'test_data',
-            'model_trainer_valid_hyperparameters.json'
-        )
-
-        self.valid_dataset = os.path.join(
-            project_root_path,
-            'utils',
-            'tests',
-            'test_data',
-            'valid_config.yaml'
-        )
-
-        with open(self.valid_dataset, mode='r', encoding='utf-8') as f:
-            dataset_yaml_data = yaml.safe_load(f)
-
-        dataset_yaml_data['path'] = self.temp_dir
-        with open(self.valid_dataset, mode='w', encoding='utf-8') as f:
-            yaml.safe_dump(dataset_yaml_data, f, encoding='utf-8')
-
-        self.valid_hyperparameters = os.path.join(
-            project_root_path,
-            'utils',
-            'tests',
-            'test_data',
-            'valid_hyperparameters.json'
+            'model_trainer_valid_hyperparameters.yaml'
         )
 
         with open(self.valid_hyperparameters, mode='r', encoding='utf-8') as f:
-            hyperparameters_data = json.load(f)
+            hyperparameters_yaml_data = yaml.safe_load(f)
 
-        hyperparameters_data['data_path'] = os.path.join(
-            self.temp_dir,
-            "valid_config.yaml"
+        hyperparameters_yaml_data['data_path'] = os.path.join(
+            self.temp_dir, 'dataset.yaml'
         )
-        self.hyperparameters = hyperparameters_data
+
+        with open(hyperparameters_yaml_data['data_path'], mode='r', encoding='utf-8') as f:
+            dataset_yaml_data = yaml.safe_load(f)
+
+        dataset_yaml_data['path'] = self.temp_dir
+
+        with open(hyperparameters_yaml_data['data_path'], mode='w', encoding='utf-8') as f:
+            yaml.safe_dump(dataset_yaml_data, f)
+
+        self.hyperparameters = hyperparameters_yaml_data
 
     def tearDown(self):
         self.logger.removeHandler(self.log_handler)
@@ -89,7 +74,9 @@ class TestModelTrainer(unittest.TestCase):
         train_model() при валидных входных данных
         """
         model = YOLO(self.model_cfg)
-        model = train_model(model=model, hyperparameters=self.hyperparameters, logger=self.logger, augment=False)
+        model, results = train_model(
+            model=model, hyperparameters=self.hyperparameters, logger=self.logger, augment=False
+        )
         layer_count = 0
         for param in model.model.parameters():
             if layer_count < self.hyperparameters["freeze_layers"]:

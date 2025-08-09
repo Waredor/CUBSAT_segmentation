@@ -1,48 +1,61 @@
 paths:
-  data_root_dir: D:\Python projects\CUBSAT_dataset_segmentation\Fine_tuning
-  raw_data_dir: D:\Python projects\CUBSAT_dataset_segmentation\train_test_split
-  inference_images_dir: D:\Python projects\CUBSAT_dataset_segmentation\train_test_split\images\test
-  labelme_inference_annotations_dir: D:\Python projects\CUBSAT_dataset_segmentation\train_test_split\labels\test
+  inference_images_dir: C:\Python projects\Datasets\Fine_tuning\images\test
+  labelme_inference_annotations_dir: C:\Python projects\Datasets\Fine_tuning\labels\test
+  raw_data_dir: C:\Python projects\Datasets\train_test_split
 
 
 names:
-  pt_model_name: yolo11n-seg.pt
   exported_model_name: yolo11n-seg_fine_tuned.pt
+  pt_model_name: yolo11n-seg_fine_tuned_exp2.pt
   dataset_cfg_filename: dataset.yaml
-  model_hyperparameters_file: model_cfg.json
-  images_extensions: ['.jpg']
-  labels_extensions: ['.txt']
+
+
+extensions:
+  images_extensions:
+  - .jpg
+  labels_extensions:
+  - .txt
 
 
 model_hyperparameters:
-  epochs: 100
-  imgsz: 1024
   batch: 4
+  cos_lr: true
+  device: 0
+  dropout: 0.3
+  epochs: 100
+  freeze_layers: 10
+  imgsz: 1024
+  iou: 0.7
+  label_smoothing: 0.1
   lr0: 0.001
   lrf: 0.005
-  patience: 20
-  device: 0
-  optimizer: "Adam"
-  freeze_layers: 10
   num_workers: 2
-  dropout: 0.3
-  weight_decay: 0.001
-  label_smoothing: 0.1
+  optimizer: Adam
+  patience: 20
   warmup_epochs: 3
-  iou: 0.7
-  cos_lr: True
+  weight_decay: 0.001
   augment_params:
+    copy_paste: 0.3
+    degrees: 15
     fliplr: 0.5
     flipud: 0.5
-    translate: 0.1
-    degrees: 15
-    shear: 10
-    mosaic: 1.0
     mixup: 0.2
-    copy_paste: 0.3
+    mosaic: 1.0
     perspective: 0.0
+    shear: 10
+    translate: 0.1
+
+
+dataset_cfg:
+  names:
+  - FT
+  - Engine
+  - Solar Panel
+  nc: 3
+  path: C:\Python projects\Datasets\Fine_tuning
+  train: images/train
+  val: images/val
 
 
 stages:
-  - train_model
-  - export_model
+  - evaluate_model
