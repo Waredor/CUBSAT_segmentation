@@ -32,6 +32,12 @@ class TestInferenceRunner(unittest.TestCase):
         )
         self.model = YOLO(model_path)
         self.img_size = 1024
+        self.temp_dir = os.path.join(
+            project_root_path,
+            "utils",
+            "tests",
+            "test_data"
+        )
 
     def tearDown(self):
         self.logger.removeHandler(self.log_handler)
@@ -57,7 +63,9 @@ class TestInferenceRunner(unittest.TestCase):
             "train",
             "0001.jpg"
         )
-        results = inference_runner.run_inference(image_path, batch_size=1)
+        results = inference_runner.run_inference(
+            image_path, batch_size=1, confidence=0.5, iou=0.7
+        )
         self.assertTrue(len(results) > 0)
 
     def test_run_inference_file_not_found_error(self):
@@ -82,7 +90,9 @@ class TestInferenceRunner(unittest.TestCase):
         )
 
         with self.assertRaises(FileNotFoundError) as cm:
-            inference_runner.run_inference(wrong_image_path, batch_size=1)
+            inference_runner.run_inference(
+                wrong_image_path, batch_size=1, confidence=0.5, iou=0.7
+            )
             self.assertEqual(
                 first=str(cm.exception),
                 second=f"File {wrong_image_path} doesn't found"
@@ -108,7 +118,9 @@ class TestInferenceRunner(unittest.TestCase):
             "train"
         )
 
-        results = inference_runner.process_images(image_dir, batch_size=1)
+        results = inference_runner.process_images(
+            image_dir, batch_size=1, confidence=0.5, iou=0.7
+        )
         self.assertEqual(type(results), list)
         for result in results:
             self.assertEqual(type(result), dict)
@@ -141,7 +153,9 @@ class TestInferenceRunner(unittest.TestCase):
         )
 
         with self.assertRaises(NotADirectoryError) as cm:
-            inference_runner.process_images(wrong_image_dir, batch_size=1)
+            inference_runner.process_images(
+                wrong_image_dir, batch_size=1, confidence=0.5, iou=0.7
+            )
             self.assertEqual(
                 first=str(cm.exception),
                 second=f"{wrong_image_dir} is not a directory"
