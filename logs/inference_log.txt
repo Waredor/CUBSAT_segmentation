@@ -1,0 +1,7 @@
+_internal.py[LINE:97]# WARNING  [2025-08-08 16:31:41,958]  * Debugger is active!
+_internal.py[LINE:97]# INFO     [2025-08-08 16:31:41,963]  * Debugger PIN: 152-586-491
+_internal.py[LINE:97]# INFO     [2025-08-08 16:32:53,910] 127.0.0.1 - - [08/Aug/2025 16:32:53] "GET / HTTP/1.1" 200 -
+_internal.py[LINE:97]# INFO     [2025-08-08 16:32:53,992] 127.0.0.1 - - [08/Aug/2025 16:32:53] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+_internal.py[LINE:97]# INFO     [2025-08-08 16:32:54,006] 127.0.0.1 - - [08/Aug/2025 16:32:54] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+_internal.py[LINE:97]# INFO     [2025-08-08 16:34:42,356] 127.0.0.1 - - [08/Aug/2025 16:34:42] "POST / HTTP/1.1" 200 -
+_internal.py[LINE:97]# INFO     [2025-08-08 16:34:42,372] 127.0.0.1 - - [08/Aug/2025 16:34:42] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -

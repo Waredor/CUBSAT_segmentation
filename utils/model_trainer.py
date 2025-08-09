@@ -1,14 +1,14 @@
-import os
 import logging
 import ultralytics
 
+from typing import Any
 from ultralytics import YOLO
 from torch import cuda
 
 
 def train_model(
     model: ultralytics.models.yolo.model.YOLO, logger: logging.Logger, hyperparameters: dict, augment=False
-) -> YOLO:
+) -> tuple[YOLO, Any]:
     """
     Метод train_model() выполняет обучение модели YOLOv11.
     Parameters:
@@ -18,7 +18,7 @@ def train_model(
         logger (logging.Logger): объект логгера.
         augment (bool): флаг использования аугментаций.
     Returns:
-        model (ultralytics.models.yolo.model.YOLO)
+        tuple[model (ultralytics.models.yolo.model.YOLO), results (ultralytics.engine.trainer.TrainResults)]
     """
     logger.info("Starting training")
     logger.info(f"Training model with parameters: {hyperparameters}")
@@ -29,9 +29,17 @@ def train_model(
     batch_size = hyperparameters['batch']
     image_size = hyperparameters['imgsz']
     initial_learning_rate = hyperparameters['lr0']
+    final_learning_rate = hyperparameters['lrf']
     optimizer = hyperparameters['optimizer']
     patience = hyperparameters['patience']
     device = hyperparameters['device']
+    dropout = hyperparameters['dropout']
+    label_smoothing = hyperparameters['label_smoothing']
+    warmup_epochs = hyperparameters['warmup_epochs']
+    iou = hyperparameters['iou']
+    weight_decay = hyperparameters['weight_decay']
+    cos_lr = hyperparameters['cos_lr']
+    workers = hyperparameters['num_workers']
 
     if device == 0:
         if cuda.is_available():
@@ -43,7 +51,7 @@ def train_model(
 
     augment_params = hyperparameters["augment_params"] if augment else {}
 
-    model.train(
+    results = model.train(
         data=data_path,
         epochs=epochs,
         imgsz=image_size,
@@ -53,19 +61,21 @@ def train_model(
         patience=patience,
         device=device,
         freeze=num_layers_to_freeze,
-        workers=2,
+        workers=workers,
         project="runs/train",
         name="exp",
         exist_ok=True,
-        cos_lr=True,
-        lrf=0.005,
-        dropout=0.3,
-        weight_decay=0.001,
-        label_smoothing=0.1,
-        warmup_epochs=3,
-        iou=0.7,
+        cos_lr=cos_lr,
+        lrf=final_learning_rate,
+        dropout=dropout,
+        weight_decay=weight_decay,
+        label_smoothing=label_smoothing,
+        warmup_epochs=warmup_epochs,
+        iou=iou,
+        cache=False,
+        split="val",
         **augment_params
     )
 
     logger.info("Training completed")
-    return model
+    return model, results

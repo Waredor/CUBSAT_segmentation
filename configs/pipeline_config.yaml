@@ -1,12 +1,12 @@
 paths:
-  inference_images_dir: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data\images\test
-  labelme_inference_annotations_dir: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data\labels\test
-  raw_data_dir: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data
+  inference_images_dir: C:\Python projects\Datasets\Fine_tuning\images\test
+  labelme_inference_annotations_dir: C:\Python projects\Datasets\Fine_tuning\labels\test
+  raw_data_dir: C:\Python projects\Datasets\train_test_split
 
 
 names:
   exported_model_name: yolo11n-seg_fine_tuned.pt
-  pt_model_name: yolo11n-seg.pt
+  pt_model_name: yolo11n-seg_fine_tuned_exp2.pt
   dataset_cfg_filename: dataset.yaml
 
 
@@ -58,5 +58,4 @@ dataset_cfg:
 
 
 stages:
-  - train_model
-  - export_model
+  - evaluate_model

@@ -6,11 +6,11 @@ from tqdm import tqdm
 
 
 parser = argparse.ArgumentParser(description="Конвертация TIFF в RGB JPEG и обработка/переименование JSON-аннотаций LabelMe с возможностью смещения номеров.")
-parser.add_argument("--offset", type=int, default=1275, help="Смещение для номеров файлов (по умолчанию 1000)")
+parser.add_argument("--offset", type=int, default=0, help="Смещение для номеров файлов (по умолчанию 1000)")
 args = parser.parse_args()
 
 
-input_folder = "D:/Python projects/CUBSAT_Dataset_segmentation/images/"
+input_folder = "C:\Python projects\Datasets\images"
 output_folder = os.path.join(input_folder, 'rgb')
 labels_folder = os.path.join(input_folder, 'labels')
 
@@ -26,7 +26,7 @@ def convert_tiff_to_rgb_jpg_and_process_json(input_dir, output_dir, labels_dir, 
     for filename in tqdm(os.listdir(input_dir), desc="Конвертация TIFF -> RGB JPEG"):
         input_path = os.path.join(input_dir, filename)
 
-        if not filename.lower().endswith(('.tif', '.tiff', '.png')):
+        if not filename.lower().endswith(('.tif', '.tiff', '.png', '.jpg')):
             continue
 
         try:

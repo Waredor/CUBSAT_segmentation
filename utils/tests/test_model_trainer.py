@@ -2,7 +2,6 @@ import logging
 import logging.handlers
 import unittest
 import os
-import json
 import yaml
 
 from utils.model_trainer import train_model
@@ -75,7 +74,9 @@ class TestModelTrainer(unittest.TestCase):
         train_model() при валидных входных данных
         """
         model = YOLO(self.model_cfg)
-        model = train_model(model=model, hyperparameters=self.hyperparameters, logger=self.logger, augment=False)
+        model, results = train_model(
+            model=model, hyperparameters=self.hyperparameters, logger=self.logger, augment=False
+        )
         layer_count = 0
         for param in model.model.parameters():
             if layer_count < self.hyperparameters["freeze_layers"]:

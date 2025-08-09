@@ -1,20 +1,65 @@
 paths:
-  data_root_dir: path\to\your\data_root
-  raw_data_dir: path\to\your\raw_data
-  inference_images_dir: images\test
-  inference_annotations_dir: labels\test
+  inference_images_dir: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data\images\test
+  labelme_inference_annotations_dir: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data\labels\test
+  raw_data_dir: C:\Python projects\CUBSAT_segmentation\utils\tests\test_data
+
 
 names:
-  pt_model_name: your_pt_model_name.pt
-  exported_model_name: your_exported_model_name.pt
-  model_hyperparameters_file: your_model_hyperparameters_file.json
-  images_extensions: ['.jpg']
-  labels_extensions: ['.txt']
-  img_size: 1024
+  exported_model_name: yolo11n-seg_fine_tuned.pt
+  pt_model_name: yolo11n-seg.pt
+  dataset_cfg_filename: dataset.yaml
+
+
+extensions:
+  images_extensions:
+  - .jpg
+  labels_extensions:
+  - .txt
+
+
+model_hyperparameters:
+  batch: 4
+  cos_lr: true
+  device: 0
+  dropout: 0.3
+  epochs: 100
+  freeze_layers: 10
+  imgsz: 1024
+  iou: 0.7
+  label_smoothing: 0.1
+  lr0: 0.001
+  lrf: 0.005
+  num_workers: 2
+  optimizer: Adam
+  patience: 20
+  warmup_epochs: 3
+  weight_decay: 0.001
+  augment_params:
+    copy_paste: 0.3
+    degrees: 15
+    fliplr: 0.5
+    flipud: 0.5
+    mixup: 0.2
+    mosaic: 1.0
+    perspective: 0.0
+    shear: 10
+    translate: 0.1
+
+
+dataset_cfg:
+  names:
+  - FT
+  - Engine
+  - Solar Panel
+  nc: 3
+  path: C:\Python projects\Datasets\Fine_tuning
+  train: images/train
+  val: images/val
 
 stages:
   - configure_data
   - train_model
+  - evaluate_model
   - export_model
   - create_labelme_annotations
   - create_yolo_annotations

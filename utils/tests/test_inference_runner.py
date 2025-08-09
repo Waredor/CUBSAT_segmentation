@@ -27,6 +27,7 @@ class TestInferenceRunner(unittest.TestCase):
             "utils",
             "tests",
             "test_data",
+            "models",
             "model.pt"
         )
         self.model = YOLO(model_path)
