@@ -42,8 +42,8 @@ jobs:
       run: |
         echo Current directory:
         cd
-        echo List of files in src/tests:
-        dir src\tests
+        echo List of files in utils/tests:
+        dir utils\tests
       shell: cmd
 
     - name: Check Python version
@@ -53,7 +53,7 @@ jobs:
 
     - name: Set PYTHONPATH
       run: |
-        set PYTHONPATH=%PYTHONPATH%;%CD%\src
+        set PYTHONPATH=%PYTHONPATH%;%CD%\utils
         echo PYTHONPATH=%PYTHONPATH%
       shell: cmd
 
